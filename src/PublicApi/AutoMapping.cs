@@ -9,6 +9,7 @@ using PublicApi.Endpoints.Drivers.CreateRouteTrip;
 using PublicApi.Endpoints.RegisterApi.ConfirmRegister;
 using PublicApi.Endpoints.RegisterApi.ProceedRegisterDriver;
 using PublicApi.Endpoints.RegisterApi.Register;
+using PublicApi.Endpoints.Shared.RefreshToken;
 
 namespace PublicApi
 {
@@ -29,6 +30,11 @@ namespace PublicApi
             CreateMap<RouteInfo, CreateRouteTripResult>();
             CreateMap<CreateCarCommand, CreateCarInfo>();
             CreateMap<CreateCarInfo, CreateCarResult>();
+
+
+            CreateMap<RefreshRequest, RefreshTokenInfo>()
+                .ForMember("AccessToken", opt => opt.MapFrom(o => o.AccessToken))
+                .ForMember("RefreshToken", opt => opt.MapFrom(o => o.RefreshToken));
         }
     }
 }
