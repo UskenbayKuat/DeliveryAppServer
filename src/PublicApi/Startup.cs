@@ -1,12 +1,19 @@
+using System;
+using System.Text;
 using ApplicationCore.Interfaces;
+using ApplicationCore.Interfaces.TokenInterfaces;
 using Infrastructure;
+using Infrastructure.Config;
 using Infrastructure.Services;
+using Infrastructure.Services.TokenServices;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PublicApi.Hub;
 
@@ -20,11 +27,25 @@ namespace PublicApi
         }
 
         public IConfiguration Configuration { get; }
+
         public void ConfigureServices(IServiceCollection services)
         {
             Dependencies.ConfigureServices(Configuration, services);
-            
+
+             //подключение jwt
+
+             var key = Encoding.ASCII.GetBytes(Configuration["JwtSettings:SecretKey"]);
+             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                 .AddJwtBearer(option =>
+                {
+                    option.RequireHttpsMetadata = false;
+                    option.TokenValidationParameters = AuthOptions.ValidationParameters(key, true);
+                });
+
+
             services.AddTransient<IValidation, ValidationMobileData>();
+            services.AddTransient<IGenerateTokenService, TokenService>();
+            services.AddTransient<IRefreshTokenService, TokenService>();
             services.AddTransient<IRouteTrip, RouteTripService>();
             services.AddTransient<IRegistration, RegisterBySmsMock>();
             services.AddTransient<IProceedRegistration, ProceedRegistrationUser>();
@@ -35,16 +56,13 @@ namespace PublicApi
             services.AddTransient<ICalculate, CalculatePrice>();
             services.AddTransient<IConfirmOrder, ConfirmClientPackage>();
             services.AddTransient<ICreateCar, CreateCarService>();
-            services.AddControllers(options =>
-            {
-                options.UseNamespaceRouteToken();
-            });
-            
+            services.AddControllers(options => { options.UseNamespaceRouteToken(); });
+
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressInferBindingSourcesForParameters = true;
             });
-            
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PublicApi", Version = "v1" });
@@ -66,6 +84,7 @@ namespace PublicApi
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

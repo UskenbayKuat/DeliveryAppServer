@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Infrastructure.Migrations
+namespace Infrastructure.DataAccess.AppDb
 {
     public partial class InitialModel : Migration
     {

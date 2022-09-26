@@ -9,8 +9,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Identity.AppIdentityDb
 {
     [DbContext(typeof(AppIdentityDbContext))]
-    [Migration("20220810210350_InitialIdentityModel")]
-    partial class InitialIdentityModel
+    [Migration("20220926073527_InitialAppIdentityDb")]
+    partial class InitialAppIdentityDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -68,10 +68,19 @@ namespace Infrastructure.Identity.AppIdentityDb
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
                     b.Property<string>("Surname")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Token")
                         .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
