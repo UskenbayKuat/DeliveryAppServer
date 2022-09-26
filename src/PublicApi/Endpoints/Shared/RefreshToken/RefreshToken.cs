@@ -23,15 +23,20 @@ namespace PublicApi.Endpoints.Shared.RefreshToken
 
 
         [HttpPost("api/RefreshToken")]
-        public override async Task<ActionResult> HandleAsync([FromBody]RefreshRequest request, CancellationToken cancellationToken = default)
+        public override async Task<ActionResult> HandleAsync([FromBody] RefreshRequest request, CancellationToken cancellationToken = default)
         {
-            var accessToken = await _refreshTokenService.RefreshToken(_mapper.Map<RefreshTokenInfo>(request));
-            if (string.IsNullOrEmpty(accessToken))
+            try
+            {
+                var accessToken = _refreshTokenService.RefreshTokenAsync(_mapper.Map<RefreshTokenInfo>(request));
+                return new OkObjectResult( new RefreshResponse
+                    {
+                        AccessToken = await accessToken
+                    });
+            }
+            catch
             {
                 return new BadRequestResult();
             }
-            return new OkObjectResult(new RefreshResponse { AccessToken = accessToken });
-
         }
     }
 }

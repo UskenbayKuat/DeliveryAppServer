@@ -11,10 +11,7 @@ using ApplicationCore.Entities.ApiEntities;
 using ApplicationCore.Interfaces.TokenInterfaces;
 using Infrastructure.Config;
 using Infrastructure.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Services.TokenServices
 {
@@ -32,7 +29,8 @@ namespace Infrastructure.Services.TokenServices
         public string CreateAccessToken(User user)
         {
             var claimList = new List<Claim> { new("PhoneNumber", user.PhoneNumber) };
-            return new JwtSecurityTokenHandler().WriteToken(AuthOptions.SecurityToken(claimList, Key));
+            return new JwtSecurityTokenHandler()
+                .WriteToken(AuthOptions.SecurityToken(claimList, Key));
         }
 
         public string CreateRefreshToken()
@@ -43,37 +41,32 @@ namespace Infrastructure.Services.TokenServices
             return Convert.ToBase64String(randomNumber);
         }
 
-        public async Task<string> RefreshToken(RefreshTokenInfo tokenInfo)
+        public async Task<string> RefreshTokenAsync(RefreshTokenInfo tokenInfo)
         {
-            var newAccessToken = String.Empty;
-            string phoneNumber = GetPhoneNumberFromToken(tokenInfo.AccessToken);
-            var user = await _identityDb.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber &&
-                                                                        u.RefreshToken == tokenInfo.RefreshToken &&
-                                                                        u.RefreshTokenExpiryTime >= DateTime.Now);
-            if (user is not null)
-            {
-                newAccessToken = CreateAccessToken(user);
-                user.Token = newAccessToken;
-                _identityDb.Users.Update(user);
-                await _identityDb.SaveChangesAsync();
-            }
-            return newAccessToken;
+    //        var phoneNumber = GetPhoneNumberFromToken(tokenInfo.AccessToken);
+            var user = _identityDb.Users.First(u => u.RefreshToken == tokenInfo.RefreshToken &&
+                                                    u.RefreshTokenExpiryTime >= DateTime.Now);
+            user.Token = CreateAccessToken(user);
+            _identityDb.Users.Update(user);
+            await _identityDb.SaveChangesAsync();
+            return user.Token;
         }
-
-        private string GetPhoneNumberFromToken(string token)
-        {
-            try
-            {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                tokenHandler.ValidateToken(token, AuthOptions.ValidationParameters(Key, false),
-                    out SecurityToken validatedToken);
-                var jwtToken = (JwtSecurityToken)validatedToken;
-                return jwtToken.Claims.First(x => x.Type == "PhoneNumber").Value;
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
-        }
+        
+        //check accessToken
+        // private string GetPhoneNumberFromToken(string token)
+        // {
+        //     try
+        //     {
+        //         var tokenHandler = new JwtSecurityTokenHandler();
+        //         tokenHandler.ValidateToken(token, AuthOptions.ValidationParameters(Key, false),
+        //             out SecurityToken validatedToken);
+        //         var jwtToken = (JwtSecurityToken)validatedToken;
+        //         return jwtToken.Claims.First(x => x.Type == "PhoneNumber").Value;
+        //     }
+        //     catch (Exception)
+        //     {
+        //         return string.Empty;
+        //     }
+        // }
     }
 }

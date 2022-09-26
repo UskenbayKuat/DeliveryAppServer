@@ -33,7 +33,6 @@ namespace PublicApi
 
 
             CreateMap<RefreshRequest, RefreshTokenInfo>()
-                .ForMember("AccessToken", opt => opt.MapFrom(o => o.AccessToken))
                 .ForMember("RefreshToken", opt => opt.MapFrom(o => o.RefreshToken));
         }
     }

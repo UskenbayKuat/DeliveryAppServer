@@ -31,15 +31,14 @@ namespace Infrastructure.Config
 
         public static JwtSecurityToken SecurityToken(List<Claim> claims, byte[] key)
         {
-            var now = DateTime.UtcNow;
             return new JwtSecurityToken(
                 Issuer,
                 Audience,
-                notBefore: now,
+                notBefore: DateTime.UtcNow,
                 claims: claims,
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256),
-                expires: now.Add(TimeSpan.FromMinutes(LifeTimeTokenInMinute)));
+                expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(LifeTimeTokenInMinute)));
         }
     }
 }
