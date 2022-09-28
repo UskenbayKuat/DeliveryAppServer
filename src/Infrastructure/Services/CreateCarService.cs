@@ -20,18 +20,15 @@ namespace Infrastructure.Services
 
         public async Task<ActionResult> CreateAuto(CreateCarInfo info, CancellationToken token)
         {
-            var car = _db.Cars.FirstOrDefault(c => c.LicensePlate == info.LicensePlate);
-            if (car is not null)
+            if (info == null)
             {
                 return new BadRequestResult();
             }
-
-            car = new Car()
+            Car car = new Car()
             {
-                Brand = info.Brand,
-                Color = info.Color,
-                CarTypeId = info.CarTypeId,
-                Model = info.Model,
+                CarBrand = info.CarBrand,
+                CarColor = info.CarColor,
+                CarType = info.CarType,
                 LicensePlate = info.LicensePlate,
                 ProductionYear = info.ProductionYear,
                 RegistrationCertificate = info.RegistrationCertificate
