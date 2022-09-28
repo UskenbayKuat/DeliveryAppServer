@@ -9,6 +9,25 @@ namespace Infrastructure.DataAccess.AppDb
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Cars",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CarBrand = table.Column<string>(type: "text", nullable: true),
+                    CarType = table.Column<string>(type: "text", nullable: true),
+                    CarColor = table.Column<string>(type: "text", nullable: true),
+                    ProductionYear = table.Column<int>(type: "integer", nullable: false),
+                    RegistrationCertificate = table.Column<string>(type: "text", nullable: true),
+                    LicensePlate = table.Column<string>(type: "text", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cars", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CarTypes",
                 columns: table => new
                 {
@@ -94,29 +113,30 @@ namespace Infrastructure.DataAccess.AppDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "Cars",
+                name: "Drivers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Brand = table.Column<string>(type: "text", nullable: true),
-                    Model = table.Column<string>(type: "text", nullable: true),
-                    ProductionYear = table.Column<int>(type: "integer", nullable: false),
-                    Color = table.Column<int>(type: "integer", nullable: false),
-                    RegistrationCertificate = table.Column<string>(type: "text", nullable: true),
-                    LicensePlate = table.Column<string>(type: "text", nullable: true),
-                    CarTypeId = table.Column<int>(type: "integer", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    IdentityCardFaceScanPath = table.Column<string>(type: "text", nullable: true),
+                    IdentityCardBackScanPath = table.Column<string>(type: "text", nullable: true),
+                    DrivingLicenceScanPath = table.Column<string>(type: "text", nullable: true),
+                    DriverPhoto = table.Column<string>(type: "text", nullable: true),
+                    CarId = table.Column<int>(type: "integer", nullable: true),
+                    Rating = table.Column<double>(type: "double precision", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    IsValid = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Cars", x => x.Id);
+                    table.PrimaryKey("PK_Drivers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Cars_CarTypes_CarTypeId",
-                        column: x => x.CarTypeId,
-                        principalTable: "CarTypes",
+                        name: "FK_Drivers_Cars_CarId",
+                        column: x => x.CarId,
+                        principalTable: "Cars",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -202,33 +222,6 @@ namespace Infrastructure.DataAccess.AppDb
                         principalTable: "Packages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Drivers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: true),
-                    IdentityCardFaceScanPath = table.Column<string>(type: "text", nullable: true),
-                    IdentityCardBackScanPath = table.Column<string>(type: "text", nullable: true),
-                    DrivingLicenceScanPath = table.Column<string>(type: "text", nullable: true),
-                    DriverPhoto = table.Column<string>(type: "text", nullable: true),
-                    CarId = table.Column<int>(type: "integer", nullable: true),
-                    Rating = table.Column<double>(type: "double precision", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    IsValid = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Drivers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Drivers_Cars_CarId",
-                        column: x => x.CarId,
-                        principalTable: "Cars",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -407,11 +400,6 @@ namespace Infrastructure.DataAccess.AppDb
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Cars_CarTypeId",
-                table: "Cars",
-                column: "CarTypeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ClientPackages_CarTypeId",
                 table: "ClientPackages",
                 column: "CarTypeId");
@@ -529,6 +517,9 @@ namespace Infrastructure.DataAccess.AppDb
                 name: "Statuses");
 
             migrationBuilder.DropTable(
+                name: "CarTypes");
+
+            migrationBuilder.DropTable(
                 name: "Cities");
 
             migrationBuilder.DropTable(
@@ -548,9 +539,6 @@ namespace Infrastructure.DataAccess.AppDb
 
             migrationBuilder.DropTable(
                 name: "Cars");
-
-            migrationBuilder.DropTable(
-                name: "CarTypes");
         }
     }
 }

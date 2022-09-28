@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.DataAccess.AppDb
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220818201106_InitialModel")]
+    [Migration("20220928164922_InitialModel")]
     partial class InitialModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,22 +27,19 @@ namespace Infrastructure.DataAccess.AppDb
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<string>("Brand")
+                    b.Property<string>("CarBrand")
                         .HasColumnType("text");
 
-                    b.Property<int>("CarTypeId")
-                        .HasColumnType("integer");
+                    b.Property<string>("CarColor")
+                        .HasColumnType("text");
 
-                    b.Property<int>("Color")
-                        .HasColumnType("integer");
+                    b.Property<string>("CarType")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("LicensePlate")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Model")
                         .HasColumnType("text");
 
                     b.Property<int>("ProductionYear")
@@ -52,8 +49,6 @@ namespace Infrastructure.DataAccess.AppDb
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CarTypeId");
 
                     b.ToTable("Cars");
                 });
@@ -535,17 +530,6 @@ namespace Infrastructure.DataAccess.AppDb
                     b.HasKey("Id");
 
                     b.ToTable("Statuses");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Car", b =>
-                {
-                    b.HasOne("ApplicationCore.Entities.AppEntities.CarType", "CarType")
-                        .WithMany()
-                        .HasForeignKey("CarTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CarType");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.ClientPackage", b =>
