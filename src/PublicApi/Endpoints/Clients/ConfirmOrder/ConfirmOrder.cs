@@ -20,7 +20,7 @@ namespace PublicApi.Endpoints.Clients.ConfirmOrder
             _mapper = mapper;
         }
 
-        [HttpPost("client/confirmOrder")]
+        [HttpPost("api/client/confirmOrder")]
         public override async Task<ActionResult<ConfirmOrderResult>> HandleAsync([FromBody]ConfirmOrderCommand request, CancellationToken cancellationToken = new CancellationToken())
         {
             return await _confirmOrder.CreateClientPackage(_mapper.Map<ClientPackageInfo>(request), cancellationToken);
