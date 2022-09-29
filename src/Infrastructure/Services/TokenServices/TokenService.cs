@@ -15,7 +15,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Services.TokenServices
 {
-    public class TokenService : IGenerateTokenService, IRefreshTokenService
+    public class TokenService : IGenerateToken, IRefreshToken
     {
         private readonly AppIdentityDbContext _identityDb;
         private byte[] Key { get; }

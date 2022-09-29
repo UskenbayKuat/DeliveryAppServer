@@ -1,10 +1,18 @@
 using System;
 using System.Text;
 using ApplicationCore.Interfaces;
+using ApplicationCore.Interfaces.ClientInterfaces;
+using ApplicationCore.Interfaces.DriverInterfaces;
+using ApplicationCore.Interfaces.RegisterInterfaces;
+using ApplicationCore.Interfaces.SharedInterfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
 using Infrastructure;
 using Infrastructure.Config;
 using Infrastructure.Services;
+using Infrastructure.Services.ClientService;
+using Infrastructure.Services.DriverService;
+using Infrastructure.Services.RegisterServices;
+using Infrastructure.Services.Shared;
 using Infrastructure.Services.TokenServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -41,20 +49,20 @@ namespace PublicApi
                     option.RequireHttpsMetadata = false;
                     option.TokenValidationParameters = AuthOptions.ValidationParameters(key, true);
                 });
-
-
-            services.AddTransient<IValidation, ValidationMobileData>();
-            services.AddTransient<IGenerateTokenService, TokenService>();
-            services.AddTransient<IRefreshTokenService, TokenService>();
+             
+            services.AddTransient<IValidation, ValidationService>();
+            services.AddTransient<IGenerateToken, TokenService>();
+            services.AddTransient<IRefreshToken, TokenService>();
             services.AddTransient<IRouteTrip, RouteTripService>();
-            services.AddTransient<IRegistration, RegisterBySmsMock>();
-            services.AddTransient<IProceedRegistration, ProceedRegistrationUser>();
-            services.AddTransient<IGetCities, SendCitiesList>();
-            services.AddTransient<IGetCarTypes, SendCarTypesList>();
-            services.AddTransient<IGetKits, SendKitsList>();
-            services.AddTransient<IGetRouteTrip, SendRouteTrip>();
-            services.AddTransient<ICalculate, CalculatePrice>();
-            services.AddTransient<IConfirmOrder, ConfirmClientPackage>();
+            services.AddTransient<IRegistration, RegisterBySmsMockService>();
+            services.AddTransient<IProceedRegistration, ProceedRegistrationService>();
+            services.AddTransient<ICity, CityService>();
+            services.AddTransient<ICarType, CarTypeService>();
+            services.AddTransient<ICarBrand, CarBrandService>();
+            services.AddTransient<ICarColor, CarColorService>();
+            services.AddTransient<IKit, KitService>();
+            services.AddTransient<ICalculate, CalculatePriceService>();
+            services.AddTransient<IClientPackage, ClientPackageService>();
             services.AddTransient<ICreateCar, CreateCarService>();
             services.AddControllers(options => { options.UseNamespaceRouteToken(); });
 

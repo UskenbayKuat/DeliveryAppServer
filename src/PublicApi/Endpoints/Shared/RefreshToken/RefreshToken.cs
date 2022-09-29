@@ -12,12 +12,12 @@ namespace PublicApi.Endpoints.Shared.RefreshToken
 {
     public class RefreshToken : EndpointBaseAsync.WithRequest<RefreshRequest>.WithActionResult
     {
-        private readonly IRefreshTokenService _refreshTokenService;
+        private readonly IRefreshToken _refreshToken;
         private readonly IMapper _mapper;
 
-        public RefreshToken(IRefreshTokenService refreshTokenService, IMapper mapper)
+        public RefreshToken(IRefreshToken refreshToken, IMapper mapper)
         {
-            _refreshTokenService = refreshTokenService;
+            _refreshToken = refreshToken;
             _mapper = mapper;
         }
 
@@ -27,7 +27,7 @@ namespace PublicApi.Endpoints.Shared.RefreshToken
         {
             try
             {
-                var accessToken = _refreshTokenService.RefreshTokenAsync(_mapper.Map<RefreshTokenInfo>(request));
+                var accessToken = _refreshToken.RefreshTokenAsync(_mapper.Map<RefreshTokenInfo>(request));
                 return new OkObjectResult( new RefreshResponse
                     {
                         AccessToken = await accessToken
