@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.ApiEntities;
 using ApplicationCore.Interfaces;
+using ApplicationCore.Interfaces.DriverInterfaces;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,7 @@ namespace PublicApi.Endpoints.Drivers.CreateCar
             _createCar = createCar;
         }
 
-        [HttpPost("/drivers/createCar")]
+        [HttpPost("api/drivers/createCar")]
         public override async Task<ActionResult<CreateCarResult>> HandleAsync([FromBody]CreateCarCommand request,
             CancellationToken cancellationToken = new CancellationToken())
         {

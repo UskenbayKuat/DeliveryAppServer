@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.ApiEntities;
 using ApplicationCore.Interfaces;
+using ApplicationCore.Interfaces.ClientInterfaces;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -11,19 +12,19 @@ namespace PublicApi.Endpoints.Clients.ConfirmOrder
 {
     public class ConfirmOrder : EndpointBaseAsync.WithRequest<ConfirmOrderCommand>.WithActionResult<ConfirmOrderResult>
     {
-        private readonly IConfirmOrder _confirmOrder;
+        private readonly IClientPackage _clientPackage;
         private readonly IMapper _mapper;
 
-        public ConfirmOrder(IConfirmOrder confirmOrder, IMapper mapper)
+        public ConfirmOrder(IClientPackage clientPackage, IMapper mapper)
         {
-            _confirmOrder = confirmOrder;
+            _clientPackage = clientPackage;
             _mapper = mapper;
         }
 
-        [HttpPost("client/confirmOrder")]
+        [HttpPost("api/client/confirmOrder")]
         public override async Task<ActionResult<ConfirmOrderResult>> HandleAsync([FromBody]ConfirmOrderCommand request, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _confirmOrder.CreateClientPackage(_mapper.Map<ClientPackageInfo>(request), cancellationToken);
+            return await _clientPackage.CreateClientPackage(_mapper.Map<ClientPackageInfo>(request), cancellationToken);
         }
     }
 }

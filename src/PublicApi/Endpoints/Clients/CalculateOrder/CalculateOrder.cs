@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.ApiEntities;
 using ApplicationCore.Interfaces;
+using ApplicationCore.Interfaces.ClientInterfaces;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,7 @@ namespace PublicApi.Endpoints.Clients.CalculateOrder
             _mapper = mapper;
         }
 
-        [HttpPost("client/calculate")]
+        [HttpPost("api/client/calculate")]
         public override async Task<ActionResult<CalculateOrderResult>> HandleAsync([FromBody]CalculateOrderCommand request, CancellationToken cancellationToken = new CancellationToken())
         {
             return await _calculate.Calculate(_mapper.Map<ClientPackageInfo>(request), cancellationToken);

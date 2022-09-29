@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using ApplicationCore.Entities;
 using ApplicationCore.Entities.ApiEntities;
 using ApplicationCore.Interfaces;
+using ApplicationCore.Interfaces.RegisterInterfaces;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
