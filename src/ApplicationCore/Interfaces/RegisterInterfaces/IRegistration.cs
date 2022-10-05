@@ -9,6 +9,6 @@ namespace ApplicationCore.Interfaces.RegisterInterfaces
     {
         public Task<ActionResult> SendTokenAsync(RegistrationToken token);
 
-        public Task<ActionResult> Confirm(ConfirmRegistrationToken token, CancellationToken cancellationToken);
+        public Task<ConfirmRegistrationInfo> Confirm(ConfirmRegistrationInfo info, CancellationToken cancellationToken);
     }
 }

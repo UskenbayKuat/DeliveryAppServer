@@ -22,7 +22,8 @@ namespace PublicApi
             CreateMap<ConfirmRegisterCommand, Driver>();
             CreateMap<Driver, ConfirmRegisterResult>();
             CreateMap<RegisterCommand, RegistrationToken>();
-            CreateMap<ConfirmRegisterCommand, ConfirmRegistrationToken>();
+            CreateMap<ConfirmRegisterCommand, ConfirmRegistrationInfo>();
+            CreateMap<ConfirmRegistrationInfo, ConfirmRegisterResult>();
             CreateMap<ProceedRegisterCommand, ProceedRegistrationInfo>();
             CreateMap<CreateRouteTripCommand, RouteInfo>();
             CreateMap<CalculateOrderCommand, ClientPackageInfo>();
@@ -30,7 +31,6 @@ namespace PublicApi
             CreateMap<RouteInfo, CreateRouteTripResult>();
             CreateMap<CreateCarCommand, CreateCarInfo>();
             CreateMap<CreateCarInfo, CreateCarResult>();
-
 
             CreateMap<RefreshRequest, RefreshTokenInfo>()
                 .ForMember("RefreshToken", opt => opt.MapFrom(o => o.RefreshToken));

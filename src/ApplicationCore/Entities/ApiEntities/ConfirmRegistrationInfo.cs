@@ -1,7 +1,10 @@
-﻿namespace PublicApi.Endpoints.RegisterApi.ConfirmRegister
+﻿namespace ApplicationCore.Entities.ApiEntities
 {
-    public class ConfirmRegisterResult : ConfirmRegisterCommand
+    public class ConfirmRegistrationInfo
     {
+        public string PhoneNumber { get; set; }
+        public string SmsCode { get; set; }
+        public bool IsDriver { get; set; }
         public bool IsValid { get; set; }
         public string UserId { get; set; }
         public int Id { get; set; }
