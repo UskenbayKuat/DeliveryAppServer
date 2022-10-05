@@ -25,9 +25,10 @@ namespace Infrastructure.Services.DriverService
             }
             Car car = new Car()
             {
-                CarBrand = info.CarBrand,
-                CarColor = info.CarColor,
-                CarType = info.CarType,
+                DriverId = info.DriverId,
+                CarBrandId = info.CarBrandId,
+                CarColorId = info.CarColorId,
+                CarTypeId = info.CarTypeId,
                 LicensePlate = info.LicensePlate,
                 ProductionYear = info.ProductionYear,
                 RegistrationCertificate = info.RegistrationCertificate
