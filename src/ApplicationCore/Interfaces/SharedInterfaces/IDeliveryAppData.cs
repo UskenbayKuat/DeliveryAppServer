@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationCore.Interfaces.SharedInterfaces
 {
-    public interface IKit
+    public interface IDeliveryAppData<T>
     {
-        public Task<ActionResult> SendKits(CancellationToken cancellationToken);
+        public Task<ActionResult> SendData(CancellationToken cancellationToken);
     }
 }
