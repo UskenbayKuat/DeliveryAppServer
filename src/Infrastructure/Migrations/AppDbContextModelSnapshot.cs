@@ -26,14 +26,17 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<string>("CarBrand")
-                        .HasColumnType("text");
+                    b.Property<int>("CarBrandId")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("CarColor")
-                        .HasColumnType("text");
+                    b.Property<int>("CarColorId")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("CarType")
-                        .HasColumnType("text");
+                    b.Property<int>("CarTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DriverId")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -321,6 +324,9 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("CarId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("CarId1")
+                        .HasColumnType("integer");
+
                     b.Property<string>("DriverPhoto")
                         .HasColumnType("text");
 
@@ -347,8 +353,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CarId")
-                        .IsUnique();
+                    b.HasIndex("CarId1");
 
                     b.ToTable("Drivers");
                 });
@@ -702,8 +707,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Driver", b =>
                 {
                     b.HasOne("ApplicationCore.Entities.AppEntities.Car", "Car")
-                        .WithOne("Driver")
-                        .HasForeignKey("ApplicationCore.Entities.AppEntities.Driver", "CarId");
+                        .WithMany()
+                        .HasForeignKey("CarId1");
 
                     b.Navigation("Car");
                 });
@@ -811,11 +816,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Location");
 
                     b.Navigation("StartCity");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Car", b =>
-                {
-                    b.Navigation("Driver");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Driver", b =>
