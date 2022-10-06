@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.ApiEntities;
@@ -33,9 +34,12 @@ namespace Infrastructure.Services.DriverService
                 ProductionYear = info.ProductionYear,
                 RegistrationCertificate = info.RegistrationCertificate
             };
-            await _db.Cars.AddAsync(car, token);
+            var driver = _db.Drivers.FirstOrDefault(d => d.Id == info.DriverId);
+            await _db.Cars.AddAsync(car, token);       
+            driver.Car = car;
+            _db.Drivers.Update(driver);
             await _db.SaveChangesAsync(token);
-            return new ObjectResult(new { CarId = car.Id});
+            return new ObjectResult(car);
         }
     }
 }
