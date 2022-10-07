@@ -30,8 +30,11 @@ namespace PublicApi.Endpoints.RegisterApi.ConfirmRegister
             {
                 return BadRequest();
             }
-            return await _registration.Confirm(_mapper.
-                Map<ConfirmRegistrationToken>(request), cancellationToken);
+            var info = await _registration.Confirm(_mapper.
+                Map<ConfirmRegistrationInfo>(request), cancellationToken);
+
+            var result = _mapper.Map<ConfirmRegisterResult>(info);
+            return new OkObjectResult(result);
         }
     }
 }

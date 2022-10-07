@@ -40,9 +40,10 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CarBrand = table.Column<string>(type: "text", nullable: true),
-                    CarType = table.Column<string>(type: "text", nullable: true),
-                    CarColor = table.Column<string>(type: "text", nullable: true),
+                    DriverId = table.Column<int>(type: "integer", nullable: false),
+                    CarBrandId = table.Column<int>(type: "integer", nullable: false),
+                    CarTypeId = table.Column<int>(type: "integer", nullable: false),
+                    CarColorId = table.Column<int>(type: "integer", nullable: false),
                     ProductionYear = table.Column<int>(type: "integer", nullable: false),
                     RegistrationCertificate = table.Column<string>(type: "text", nullable: true),
                     LicensePlate = table.Column<string>(type: "text", nullable: true),
@@ -150,6 +151,7 @@ namespace Infrastructure.Migrations
                     DrivingLicenceScanPath = table.Column<string>(type: "text", nullable: true),
                     DriverPhoto = table.Column<string>(type: "text", nullable: true),
                     CarId = table.Column<int>(type: "integer", nullable: true),
+                    CarId1 = table.Column<int>(type: "integer", nullable: true),
                     Rating = table.Column<double>(type: "double precision", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     IsValid = table.Column<bool>(type: "boolean", nullable: false)
@@ -158,8 +160,8 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Drivers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Drivers_Cars_CarId",
-                        column: x => x.CarId,
+                        name: "FK_Drivers_Cars_CarId1",
+                        column: x => x.CarId1,
                         principalTable: "Cars",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -487,10 +489,9 @@ namespace Infrastructure.Migrations
                 column: "StartCityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Drivers_CarId",
+                name: "IX_Drivers_CarId1",
                 table: "Drivers",
-                column: "CarId",
-                unique: true);
+                column: "CarId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DriversKits_DriverId",

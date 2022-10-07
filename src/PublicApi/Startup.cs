@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using ApplicationCore.Entities.ApiEntities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
@@ -56,14 +57,11 @@ namespace PublicApi
             services.AddTransient<IRouteTrip, RouteTripService>();
             services.AddTransient<IRegistration, RegisterBySmsMockService>();
             services.AddTransient<IProceedRegistration, ProceedRegistrationService>();
-            services.AddTransient<ICity, CityService>();
-            services.AddTransient<ICarType, CarTypeService>();
-            services.AddTransient<ICarBrand, CarBrandService>();
-            services.AddTransient<ICarColor, CarColorService>();
-            services.AddTransient<IKit, KitService>();
             services.AddTransient<ICalculate, CalculatePriceService>();
             services.AddTransient<IClientPackage, ClientPackageService>();
             services.AddTransient<ICreateCar, CreateCarService>();
+            services.AddTransient<IDeliveryAppData<DriverAppDataInfo>, DriverAppDataService>();
+            services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
             services.AddControllers(options => { options.UseNamespaceRouteToken(); });
 
             services.Configure<ApiBehaviorOptions>(options =>

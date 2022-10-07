@@ -13,7 +13,7 @@ namespace Infrastructure.Services.RegisterServices
             throw new System.NotImplementedException();
         }
 
-        public Task<ActionResult> Confirm(ConfirmRegistrationToken token, CancellationToken cancellationToken)
+        public Task<ConfirmRegistrationInfo> Confirm(ConfirmRegistrationInfo info, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
         }
