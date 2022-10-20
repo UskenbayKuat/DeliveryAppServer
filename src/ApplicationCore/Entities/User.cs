@@ -9,7 +9,7 @@ namespace ApplicationCore.Entities
         public string Name { get; set; }
         public string Surname { get; set; }
         public bool IsDriver { get; set; }
-        public string Token { get; set; }
+        public string Token { get; set; } //change name AccessToken
         public string RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; } 
     }
