@@ -18,15 +18,16 @@ namespace Infrastructure.Services.DriverService
             _db = db;
         }
 
-        public async Task<ActionResult> CreateAuto(CreateCarInfo info, CancellationToken token)
+        public async Task<ActionResult> CreateAuto(CreateCarInfo info, string userId, CancellationToken token)
         {
-            if (info == null)
+            var driver = _db.Drivers.First(d => d.UserId == userId);
+            if (driver.CarId is not null || info is null)
             {
-                return new BadRequestResult();
-            }
-            Car car = new Car()
+                return new BadRequestObjectResult("Car not added");
+            } 
+            var car = new Car
             {
-                DriverId = info.DriverId,
+                DriverId = driver.Id,
                 CarBrandId = info.CarBrandId,
                 CarColorId = info.CarColorId,
                 CarTypeId = info.CarTypeId,
@@ -34,12 +35,11 @@ namespace Infrastructure.Services.DriverService
                 ProductionYear = info.ProductionYear,
                 RegistrationCertificate = info.RegistrationCertificate
             };
-            var driver = _db.Drivers.FirstOrDefault(d => d.Id == info.DriverId);
-            await _db.Cars.AddAsync(car, token);       
-            driver.Car = car;
+            _db.Cars.Add(car);       
+            driver.CarId = _db.Entry(car).Property(c => c.Id).CurrentValue;
             _db.Drivers.Update(driver);
             await _db.SaveChangesAsync(token);
-            return new ObjectResult(car);
+            return new OkObjectResult(car);
         }
     }
 }
