@@ -7,6 +7,6 @@ namespace ApplicationCore.Interfaces.DriverInterfaces
 {
     public interface ICreateCar
     {
-        public Task<ActionResult> CreateAuto(CreateCarInfo create, string userId, CancellationToken cancellationToken);
+        public Task<ActionResult> CreateAutoAsync(CreateCarInfo create, string userId, CancellationToken cancellationToken);
     }
 }

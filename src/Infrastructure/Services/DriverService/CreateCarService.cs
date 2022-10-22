@@ -6,6 +6,7 @@ using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.DriverService
 {
@@ -18,12 +19,12 @@ namespace Infrastructure.Services.DriverService
             _db = db;
         }
 
-        public async Task<ActionResult> CreateAuto(CreateCarInfo info, string userId, CancellationToken token)
+        public async Task<ActionResult> CreateAutoAsync(CreateCarInfo info, string userId, CancellationToken token)
         {
-            var driver = _db.Drivers.First(d => d.UserId == userId);
+            var driver = _db.Drivers.Include(d => d.Car).First(d => d.UserId == userId);
             if (driver.CarId is not null || info is null)
             {
-                return new BadRequestObjectResult("Car not added");
+                return new BadRequestObjectResult("Car added");
             } 
             var car = new Car
             {

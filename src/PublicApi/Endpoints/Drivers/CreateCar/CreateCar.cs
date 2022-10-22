@@ -32,7 +32,7 @@ namespace PublicApi.Endpoints.Drivers.CreateCar
             {
                 var claimsIdentity = HttpContext.User.Identity as ClaimsIdentity;
                 var userId = claimsIdentity.Claims.First(c => c.Type == ClaimTypes.UserData).Value;
-                return await _createCar.CreateAuto(_mapper.Map<CreateCarInfo>(request), userId, cancellationToken);
+                return await _createCar.CreateAutoAsync(_mapper.Map<CreateCarInfo>(request), userId, cancellationToken);
             }
             catch
             {
