@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ApplicationCore.Entities.AppEntities
 {
@@ -9,6 +10,7 @@ namespace ApplicationCore.Entities.AppEntities
         public string IdentityCardBackScanPath { get; set; }
         public string DrivingLicenceScanPath { get; set; }
         public string DriverPhoto { get; set; }
+        [ForeignKey("Car")]
         public int? CarId { get; set; }
         public Car Car { get; set; }
         public List<Kit> Kits { get; set; }

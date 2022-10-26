@@ -28,7 +28,7 @@ namespace Infrastructure.Services.TokenServices
 
         public string CreateAccessToken(User user)
         {
-            var claimList = new List<Claim> { new("PhoneNumber", user.PhoneNumber) };
+            var claimList = new List<Claim> { new(ClaimTypes.UserData, user.Id) };
             return new JwtSecurityTokenHandler()
                 .WriteToken(AuthOptions.SecurityToken(claimList, Key));
         }

@@ -16,7 +16,7 @@ namespace PublicApi.Endpoints.Shared.DriverAppData
             _deliveryAppData = deliveryAppData;
         }
 
-        [HttpGet("api/DriverAppData")]
+        [HttpPost("api/DriverAppData")]
         public override Task<ActionResult> HandleAsync(CancellationToken cancellationToken = new CancellationToken()) 
             => _deliveryAppData.SendData(cancellationToken);
     }
