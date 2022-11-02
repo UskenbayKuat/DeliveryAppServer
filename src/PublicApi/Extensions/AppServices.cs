@@ -12,6 +12,7 @@ using Infrastructure.Services.RegisterServices;
 using Infrastructure.Services.Shared;
 using Infrastructure.Services.TokenServices;
 using Microsoft.Extensions.DependencyInjection;
+using PublicApi.Services;
 
 namespace PublicApi.Extensions
 {
@@ -30,6 +31,7 @@ namespace PublicApi.Extensions
             services.AddTransient<ICreateCar, CreateCarService>();
             services.AddTransient<IDeliveryAppData<DriverAppDataInfo>, DriverAppDataService>();
             services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
+            services.AddTransient<UserService>();
         }
     }
 }
