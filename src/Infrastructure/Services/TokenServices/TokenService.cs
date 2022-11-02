@@ -11,6 +11,7 @@ using ApplicationCore.Entities.ApiEntities;
 using ApplicationCore.Interfaces.TokenInterfaces;
 using Infrastructure.Config;
 using Infrastructure.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Services.TokenServices
@@ -41,32 +42,11 @@ namespace Infrastructure.Services.TokenServices
             return Convert.ToBase64String(randomNumber);
         }
 
-        public async Task<string> RefreshTokenAsync(RefreshTokenInfo tokenInfo)
+        public Task<ActionResult> RefreshTokenAsync(RefreshTokenInfo tokenInfo)
         {
-    //        var phoneNumber = GetPhoneNumberFromToken(tokenInfo.AccessToken);
             var user = _identityDb.Users.First(u => u.RefreshToken == tokenInfo.RefreshToken &&
                                                     u.RefreshTokenExpiryTime >= DateTime.Now);
-            user.Token = CreateAccessToken(user);
-            _identityDb.Users.Update(user);
-            await _identityDb.SaveChangesAsync();
-            return user.Token;
+            return Task.FromResult<ActionResult>(new OkObjectResult(CreateAccessToken(user)));
         }
-        
-        //check accessToken
-        // private string GetPhoneNumberFromToken(string token)
-        // {
-        //     try
-        //     {
-        //         var tokenHandler = new JwtSecurityTokenHandler();
-        //         tokenHandler.ValidateToken(token, AuthOptions.ValidationParameters(Key, false),
-        //             out SecurityToken validatedToken);
-        //         var jwtToken = (JwtSecurityToken)validatedToken;
-        //         return jwtToken.Claims.First(x => x.Type == "PhoneNumber").Value;
-        //     }
-        //     catch (Exception)
-        //     {
-        //         return string.Empty;
-        //     }
-        // }
     }
 }

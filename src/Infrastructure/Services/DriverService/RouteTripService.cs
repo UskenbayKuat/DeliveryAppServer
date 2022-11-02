@@ -6,6 +6,7 @@ using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.DriverService
 {
@@ -17,24 +18,26 @@ namespace Infrastructure.Services.DriverService
         {
             _db = db;
         }
-        public async Task<ActionResult> CreateRouteTrip(RouteInfo info, CancellationToken cancellationToken)
+        public async Task<ActionResult> CreateRouteTrip(RouteInfo info, string userId, CancellationToken cancellationToken)
         {
-            var startRoute = _db.Cities.FirstOrDefault(r => r.Id == info.StartCityId);
-            var finishRoute = _db.Cities.FirstOrDefault(r => r.Id == info.FinishCityId);
-            if (startRoute is null || finishRoute is null)
+            var driver = _db.Drivers.FirstOrDefault(d => d.UserId == userId);
+            
+            //check route is null?
+            var route = await _db.Routes.
+                FirstOrDefaultAsync(r => r.StartCityId == info.StartCityId &&
+                                         r.FinishCityId == info.FinishCityId, cancellationToken);
+            var routeDate = new RouteDate
             {
-                return await Task.FromResult<ActionResult>(new BadRequestResult());
-            }
-            var trip = new RouteTrip()
-            {
-                StartCity = startRoute,
-                StartCityId = startRoute.Id,
-                FinishCity = finishRoute,
-                FinishCityId = finishRoute.Id,
-                TripTime = info.TripTime,
-                DriverId = info.DriverId,
+                Route = route,
+                CreateDateTime = info.TripTime
             };
-            await _db.RouteTrips.AddAsync(trip,cancellationToken);
+            var trip = new RouteTrip
+            {
+                RouteDate = routeDate,
+                Driver = driver
+            };
+            await _db.RouteTrips.AddAsync(trip, cancellationToken);
+            await _db.RouteDate.AddAsync(routeDate, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
             return await Task.FromResult<ActionResult>(new OkObjectResult(trip));
         }
