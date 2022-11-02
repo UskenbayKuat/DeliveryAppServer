@@ -1,45 +1,47 @@
-using System.Linq;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.ApiEntities;
-using ApplicationCore.Interfaces;
+using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PublicApi.Services;
 
 namespace PublicApi.Endpoints.Drivers.CreateCar
 {
     [Authorize]
-    public class CreateCar: EndpointBaseAsync.WithRequest<CreateCarCommand>.WithActionResult<CreateCarResult>
+    public class CreateCar: EndpointBaseAsync.WithRequest<CreateCarCommand>.WithActionResult
     {
         private readonly IMapper _mapper;
         private readonly ICreateCar _createCar;
+        private readonly UserService _userService;
 
-        public CreateCar(IMapper mapper, ICreateCar createCar)
+        public CreateCar(IMapper mapper, ICreateCar createCar, UserService userService)
         {
             _mapper = mapper;
             _createCar = createCar;
+            _userService = userService;
         }
 
         [HttpPost("api/drivers/createCar")]
-        public override async Task<ActionResult<CreateCarResult>> HandleAsync([FromBody]CreateCarCommand request,
+        public override async Task<ActionResult> HandleAsync([FromBody]CreateCarCommand request,
             CancellationToken cancellationToken = new CancellationToken())
         {
             try
             {
-                var claimsIdentity = HttpContext.User.Identity as ClaimsIdentity;
-                var userId = claimsIdentity.Claims.First(c => c.Type == ClaimTypes.UserData).Value;
-                return await _createCar.CreateAutoAsync(_mapper.Map<CreateCarInfo>(request), userId, cancellationToken);
+                return await _createCar.CreateAutoAsync(_mapper.Map<CreateCarInfo>(request),
+                    _userService.GetUserId(HttpContext), cancellationToken);
+            }
+            catch(NotExistUserException ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
             }
             catch
             {
                 return new BadRequestObjectResult("Car not added");
             }
-            
-            
         }
     }
 }

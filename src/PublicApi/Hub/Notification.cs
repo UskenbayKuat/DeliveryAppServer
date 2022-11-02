@@ -43,8 +43,7 @@ namespace PublicApi.Hub
             _db.Locations.Add(location);
             
             routeTrip.HubId = hubId;
-            routeTrip.LocationId = location.Id;
-            routeTrip.Location = location;
+            //routeTrip.Location = location;
             _db.RouteTrips.Update(routeTrip);
             await _db.SaveChangesAsync();
             Console.WriteLine($"{hubId}");
@@ -64,13 +63,14 @@ namespace PublicApi.Hub
             _db.Locations.Add(location);
             
             clientPackage.HubId = hubId;
-            clientPackage.LocationId = location.Id;
             clientPackage.Location = location;
             _db.ClientPackages.Update(clientPackage);
             await _db.SaveChangesAsync();
-            var routeTrip = await _db.RouteTrips
-                .Where(r => r.TripTime > clientPackage.DateTime)
-                .FirstOrDefaultAsync(r => r.StartCityId == clientPackage.StartCityId && r.FinishCityId == clientPackage.FinishCityId);
+            // var routeTrip = await _db.RouteTrips
+            //     .Where(r => r.TripTime > clientPackage.DateTime)
+            //     .Include(r => r.StartCity)
+            //     .Include(r => r.FinishCity)
+            //     .FirstOrDefaultAsync(r => r.StartCity == clientPackage.StartCity && r.FinishCity == clientPackage.FinishCity);
             var options = new JsonSerializerOptions()
             {
                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
@@ -81,19 +81,20 @@ namespace PublicApi.Hub
         }
         public async Task UpdateLocation(string hubId, string driverId, string latitude, string longitude)
         {
-            var routeTrip = await _db.RouteTrips.FirstOrDefaultAsync(r => r.DriverId == int.Parse(driverId));
+            var driver = await _db.Drivers.FirstOrDefaultAsync(r => r.Id == int.Parse(driverId));
+            var routeTrip = await _db.RouteTrips.FirstOrDefaultAsync(r => r.Driver == driver);
             if (routeTrip.HubId != hubId)
             {
                 routeTrip.HubId = hubId;
                 _db.RouteTrips.Update(routeTrip);
             }
-            var location = await _db.Locations.FirstOrDefaultAsync(l => l.Id == routeTrip.LocationId);
-            if (Math.Abs(location.Latitude - double.Parse(latitude)) > 0.001 && Math.Abs(location.Longitude - double.Parse(longitude)) > 0.001)
-            {
-                location.Latitude = double.Parse(latitude);
-                location.Longitude = double.Parse(longitude);
-                _db.Locations.Update(location);
-            }
+            // var location = await _db.Locations.FirstOrDefaultAsync(l => l.Id == routeTrip.Location.Id);
+            // if (Math.Abs(location.Latitude - double.Parse(latitude)) > 0.001 && Math.Abs(location.Longitude - double.Parse(longitude)) > 0.001)
+            // {
+            //     location.Latitude = double.Parse(latitude);
+            //     location.Longitude = double.Parse(longitude);
+            //     _db.Locations.Update(location);
+            // }
             await _db.SaveChangesAsync();
         }
     }

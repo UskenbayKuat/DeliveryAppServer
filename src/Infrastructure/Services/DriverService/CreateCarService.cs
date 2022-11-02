@@ -22,22 +22,24 @@ namespace Infrastructure.Services.DriverService
         public async Task<ActionResult> CreateAutoAsync(CreateCarInfo info, string userId, CancellationToken token)
         {
             var driver = _db.Drivers.Include(d => d.Car).First(d => d.UserId == userId);
-            if (driver.CarId is not null || info is null)
+            var carBrand = await _db.CarBrands.FirstOrDefaultAsync(b => b.Id == info.CarBrandId, token);
+            var carColor = await _db.CarColors.FirstOrDefaultAsync(b => b.Id == info.CarColorId, token);
+            var carType = await _db.CarTypes.FirstOrDefaultAsync(b => b.Id == info.CarTypeId, token);
+            if (driver.Car is not null)
             {
-                return new BadRequestObjectResult("Car added");
+                return new BadRequestObjectResult("Car is already added");
             } 
             var car = new Car
             {
-                DriverId = driver.Id,
-                CarBrandId = info.CarBrandId,
-                CarColorId = info.CarColorId,
-                CarTypeId = info.CarTypeId,
-                LicensePlate = info.LicensePlate,
+                CarBrand = carBrand,
+                CarColor = carColor,
+                CarType = carType,
+                CarNumber = info.LicensePlate,
                 ProductionYear = info.ProductionYear,
                 RegistrationCertificate = info.RegistrationCertificate
             };
-            _db.Cars.Add(car);       
-            driver.CarId = _db.Entry(car).Property(c => c.Id).CurrentValue;
+            driver.Car= car;
+            await _db.Cars.AddAsync(car, token); 
             _db.Drivers.Update(driver);
             await _db.SaveChangesAsync(token);
             return new OkObjectResult(car);

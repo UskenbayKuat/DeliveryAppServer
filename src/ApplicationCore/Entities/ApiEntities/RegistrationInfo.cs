@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Entities.ApiEntities
 {
-    public class RegistrationToken
+    public class RegistrationInfo
     {
         public string PhoneNumber { get; set; }
     }

@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using ApplicationCore.Entities;
 using ApplicationCore.Entities.ApiEntities;
-using ApplicationCore.Entities.AppEntities;
 using PublicApi.Endpoints.Clients.CalculateOrder;
 using PublicApi.Endpoints.Clients.ConfirmOrder;
 using PublicApi.Endpoints.Drivers.CreateCar;
@@ -17,20 +15,14 @@ namespace PublicApi
     {
         public AutoMapping()
         {
-            CreateMap<RegisterCommand, Driver>();
-            CreateMap<Driver, RegisterDriverResult>();
-            CreateMap<ConfirmRegisterCommand, Driver>();
-            CreateMap<Driver, ConfirmRegisterResult>();
-            CreateMap<RegisterCommand, RegistrationToken>();
+            //TODO add forMember option for all maps
+            CreateMap<RegisterCommand, RegistrationInfo>();
             CreateMap<ConfirmRegisterCommand, ConfirmRegistrationInfo>();
-            CreateMap<ConfirmRegistrationInfo, ConfirmRegisterResult>();
             CreateMap<ProceedRegisterCommand, ProceedRegistrationInfo>();
             CreateMap<CreateRouteTripCommand, RouteInfo>();
             CreateMap<CalculateOrderCommand, ClientPackageInfo>();
             CreateMap<ConfirmOrderCommand, ClientPackageInfo>();
-            CreateMap<RouteInfo, CreateRouteTripResult>();
             CreateMap<CreateCarCommand, CreateCarInfo>();
-            CreateMap<CreateCarInfo, CreateCarResult>();
 
             CreateMap<RefreshRequest, RefreshTokenInfo>()
                 .ForMember("RefreshToken", opt => opt.MapFrom(o => o.RefreshToken));

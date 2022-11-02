@@ -36,7 +36,7 @@ namespace PublicApi.Endpoints.RegisterApi.Register
             }
             _logger.Info("POST Обращение в RegisterApi");
             return await _registration.SendTokenAsync(_mapper
-                .Map<RegistrationToken>(request));
+                .Map<RegistrationInfo>(request));
         }
     }
 }

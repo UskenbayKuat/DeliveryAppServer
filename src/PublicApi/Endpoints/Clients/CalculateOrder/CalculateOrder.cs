@@ -10,7 +10,7 @@ using PublicApi.Endpoints.Drivers.CreateRouteTrip;
 
 namespace PublicApi.Endpoints.Clients.CalculateOrder
 {
-    public class CalculateOrder : EndpointBaseAsync.WithRequest<CalculateOrderCommand>.WithActionResult<CalculateOrderResult>
+    public class CalculateOrder : EndpointBaseAsync.WithRequest<CalculateOrderCommand>.WithActionResult
     {
         private readonly ICalculate _calculate;
         private readonly IMapper _mapper;
@@ -23,7 +23,7 @@ namespace PublicApi.Endpoints.Clients.CalculateOrder
         }
 
         [HttpPost("api/client/calculate")]
-        public override async Task<ActionResult<CalculateOrderResult>> HandleAsync([FromBody]CalculateOrderCommand request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult> HandleAsync([FromBody]CalculateOrderCommand request, CancellationToken cancellationToken = new CancellationToken())
         {
             return await _calculate.Calculate(_mapper.Map<ClientPackageInfo>(request), cancellationToken);
         }

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicApi.Endpoints.RegisterApi.ConfirmRegister
 {
-    public class ConfirmRegister : EndpointBaseAsync.WithRequest<ConfirmRegisterCommand>.WithActionResult<ConfirmRegisterResult>
+    public class ConfirmRegister : EndpointBaseAsync.WithRequest<ConfirmRegisterCommand>.WithActionResult
     {
         private readonly IMapper _mapper;
         private readonly IRegistration _registration;
@@ -24,17 +24,14 @@ namespace PublicApi.Endpoints.RegisterApi.ConfirmRegister
         }
         
         [HttpPost("api/confirmRegister")]
-        public override async Task<ActionResult<ConfirmRegisterResult>> HandleAsync([FromBody]ConfirmRegisterCommand request, CancellationToken cancellationToken = default)
+        public override async Task<ActionResult> HandleAsync([FromBody]ConfirmRegisterCommand request, CancellationToken cancellationToken = default)
         {
             if (!_validation.ValidationCode(request.SmsCode))
             {
                 return BadRequest();
             }
-            var info = await _registration.Confirm(_mapper.
-                Map<ConfirmRegistrationInfo>(request), cancellationToken);
-
-            var result = _mapper.Map<ConfirmRegisterResult>(info);
-            return new OkObjectResult(result);
+            return await _registration.Confirm(_mapper.
+                Map<ConfirmRegistrationInfo>(request), cancellationToken);;
         }
     }
 }
