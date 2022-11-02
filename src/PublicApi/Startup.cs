@@ -24,6 +24,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PublicApi.Extensions;
 using PublicApi.Hub;
 
 namespace PublicApi
@@ -42,7 +43,6 @@ namespace PublicApi
             Dependencies.ConfigureServices(Configuration, services);
 
              //подключение jwt
-
              var key = Encoding.ASCII.GetBytes(Configuration["JwtSettings:SecretKey"]);
              services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                  .AddJwtBearer(option =>
@@ -51,17 +51,7 @@ namespace PublicApi
                     option.TokenValidationParameters = AuthOptions.ValidationParameters(key, true);
                 });
              
-            services.AddTransient<IValidation, ValidationService>();
-            services.AddTransient<IGenerateToken, TokenService>();
-            services.AddTransient<IRefreshToken, TokenService>();
-            services.AddTransient<IRouteTrip, RouteTripService>();
-            services.AddTransient<IRegistration, RegisterBySmsMockService>();
-            services.AddTransient<IProceedRegistration, ProceedRegistrationService>();
-            services.AddTransient<ICalculate, CalculatePriceService>();
-            services.AddTransient<IClientPackage, ClientPackageService>();
-            services.AddTransient<ICreateCar, CreateCarService>();
-            services.AddTransient<IDeliveryAppData<DriverAppDataInfo>, DriverAppDataService>();
-            services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
+            services.GetServices();
             services.AddControllers(options => { options.UseNamespaceRouteToken(); });
 
             services.Configure<ApiBehaviorOptions>(options =>
