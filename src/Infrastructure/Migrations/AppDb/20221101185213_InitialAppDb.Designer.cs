@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Infrastructure.Migrations
+namespace Infrastructure.Migrations.AppDb
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221002110840_InitialModel")]
-    partial class InitialModel
+    [Migration("20221101185213_InitialAppDb")]
+    partial class InitialAppDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,23 +28,20 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("CarBrandId")
+                    b.Property<int?>("CarBrandId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CarColorId")
+                    b.Property<int?>("CarColorId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CarTypeId")
-                        .HasColumnType("integer");
+                    b.Property<string>("CarNumber")
+                        .HasColumnType("text");
 
-                    b.Property<int>("DriverId")
+                    b.Property<int?>("CarTypeId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("LicensePlate")
-                        .HasColumnType("text");
 
                     b.Property<int>("ProductionYear")
                         .HasColumnType("integer");
@@ -53,6 +50,12 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CarBrandId");
+
+                    b.HasIndex("CarColorId");
+
+                    b.HasIndex("CarTypeId");
 
                     b.ToTable("Cars");
                 });
@@ -247,12 +250,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsValid")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
@@ -268,16 +265,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("CarTypeId")
+                    b.Property<int?>("CarTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ClientId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("FinishCityId")
+                    b.Property<int?>("ClientId")
                         .HasColumnType("integer");
 
                     b.Property<string>("HubId")
@@ -289,14 +280,14 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("LocationId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("PackageId")
+                    b.Property<int?>("PackageId")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
 
-                    b.Property<int>("StartCityId")
+                    b.Property<int?>("RouteDateId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -305,13 +296,11 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("FinishCityId");
-
                     b.HasIndex("LocationId");
 
                     b.HasIndex("PackageId");
 
-                    b.HasIndex("StartCityId");
+                    b.HasIndex("RouteDateId");
 
                     b.ToTable("ClientPackages");
                 });
@@ -326,26 +315,20 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("CarId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("CarId1")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("DriverPhoto")
+                    b.Property<string>("DriverLicenceScanPath")
                         .HasColumnType("text");
 
-                    b.Property<string>("DrivingLicenceScanPath")
+                    b.Property<string>("IdentificationNumber")
                         .HasColumnType("text");
 
-                    b.Property<string>("IdentityCardBackScanPath")
+                    b.Property<string>("IdentificationSeries")
                         .HasColumnType("text");
 
-                    b.Property<string>("IdentityCardFaceScanPath")
+                    b.Property<DateTime>("IdentityCardCreateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("IdentityCardPhotoPath")
                         .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsValid")
-                        .HasColumnType("boolean");
 
                     b.Property<double>("Rating")
                         .HasColumnType("double precision");
@@ -355,7 +338,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CarId1");
+                    b.HasIndex("CarId");
 
                     b.ToTable("Drivers");
                 });
@@ -367,10 +350,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("DriverId")
+                    b.Property<int?>("DriverId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("KitId")
+                    b.Property<int?>("KitId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("PurchaseDate")
@@ -392,9 +375,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int?>("DriverId")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("IsUnlimited")
                         .HasColumnType("boolean");
 
@@ -405,8 +385,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DriverId");
 
                     b.ToTable("Kits");
 
@@ -459,6 +437,31 @@ namespace Infrastructure.Migrations
                     b.ToTable("Locations");
                 });
 
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.LocationDate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("LocationDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("LocationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RouteTripId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("RouteTripId");
+
+                    b.ToTable("LocationDate");
+                });
+
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -469,17 +472,11 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("CancellationDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("ClientPackageId")
+                    b.Property<int?>("ClientPackageId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("CompletionDate")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("DelayDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("DriverKitId")
-                        .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -491,17 +488,20 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime?>("OrderStartDate")
+                    b.Property<int?>("RouteTripId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("StatusId")
+                    b.Property<int?>("StatusId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClientPackageId");
 
-                    b.HasIndex("DriverKitId");
+                    b.HasIndex("RouteTripId");
 
                     b.HasIndex("StatusId");
 
@@ -545,9 +545,6 @@ namespace Infrastructure.Migrations
                     b.Property<int>("FinishCityId")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
-
                     b.Property<int>("StartCityId")
                         .HasColumnType("integer");
 
@@ -564,43 +561,115 @@ namespace Infrastructure.Migrations
                         {
                             Id = 1,
                             FinishCityId = 2,
-                            Price = 1000m,
                             StartCityId = 1
                         },
                         new
                         {
                             Id = 2,
                             FinishCityId = 3,
-                            Price = 2000m,
                             StartCityId = 1
                         },
                         new
                         {
                             Id = 3,
                             FinishCityId = 1,
-                            Price = 1000m,
                             StartCityId = 2
                         },
                         new
                         {
                             Id = 4,
                             FinishCityId = 1,
-                            Price = 2000m,
                             StartCityId = 3
                         },
                         new
                         {
                             Id = 5,
                             FinishCityId = 3,
-                            Price = 2000m,
                             StartCityId = 2
                         },
                         new
                         {
                             Id = 6,
                             FinishCityId = 2,
-                            Price = 2000m,
                             StartCityId = 3
+                        });
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.RouteDate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreateDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("RouteId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RouteId");
+
+                    b.ToTable("RouteDate");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.RoutePrice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("RouteId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RouteId");
+
+                    b.ToTable("RoutePrice");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Price = 1000m,
+                            RouteId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Price = 2000m,
+                            RouteId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Price = 1000m,
+                            RouteId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Price = 2000m,
+                            RouteId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Price = 2000m,
+                            RouteId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Price = 2000m,
+                            RouteId = 6
                         });
                 });
 
@@ -611,33 +680,20 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("DriverId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("FinishCityId")
+                    b.Property<int?>("DriverId")
                         .HasColumnType("integer");
 
                     b.Property<string>("HubId")
                         .HasColumnType("text");
 
-                    b.Property<int?>("LocationId")
+                    b.Property<int?>("RouteDateId")
                         .HasColumnType("integer");
-
-                    b.Property<int>("StartCityId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("TripTime")
-                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DriverId");
 
-                    b.HasIndex("FinishCityId");
-
-                    b.HasIndex("LocationId");
-
-                    b.HasIndex("StartCityId");
+                    b.HasIndex("RouteDateId");
 
                     b.ToTable("RouteTrips");
                 });
@@ -657,25 +713,53 @@ namespace Infrastructure.Migrations
                     b.ToTable("Statuses");
                 });
 
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.WaitingList", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int?>("ClientPackageId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientPackageId");
+
+                    b.ToTable("WaitingList");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Car", b =>
+                {
+                    b.HasOne("ApplicationCore.Entities.AppEntities.CarBrand", "CarBrand")
+                        .WithMany()
+                        .HasForeignKey("CarBrandId");
+
+                    b.HasOne("ApplicationCore.Entities.AppEntities.CarColor", "CarColor")
+                        .WithMany()
+                        .HasForeignKey("CarColorId");
+
+                    b.HasOne("ApplicationCore.Entities.AppEntities.CarType", "CarType")
+                        .WithMany()
+                        .HasForeignKey("CarTypeId");
+
+                    b.Navigation("CarBrand");
+
+                    b.Navigation("CarColor");
+
+                    b.Navigation("CarType");
+                });
+
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.ClientPackage", b =>
                 {
                     b.HasOne("ApplicationCore.Entities.AppEntities.CarType", "CarType")
                         .WithMany()
-                        .HasForeignKey("CarTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CarTypeId");
 
                     b.HasOne("ApplicationCore.Entities.AppEntities.Client", "Client")
                         .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ApplicationCore.Entities.AppEntities.City", "FinishCity")
-                        .WithMany()
-                        .HasForeignKey("FinishCityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClientId");
 
                     b.HasOne("ApplicationCore.Entities.AppEntities.Location", "Location")
                         .WithMany()
@@ -683,34 +767,28 @@ namespace Infrastructure.Migrations
 
                     b.HasOne("ApplicationCore.Entities.AppEntities.Package", "Package")
                         .WithMany()
-                        .HasForeignKey("PackageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PackageId");
 
-                    b.HasOne("ApplicationCore.Entities.AppEntities.City", "StartCity")
+                    b.HasOne("ApplicationCore.Entities.AppEntities.RouteDate", "RouteDate")
                         .WithMany()
-                        .HasForeignKey("StartCityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RouteDateId");
 
                     b.Navigation("CarType");
 
                     b.Navigation("Client");
 
-                    b.Navigation("FinishCity");
-
                     b.Navigation("Location");
 
                     b.Navigation("Package");
 
-                    b.Navigation("StartCity");
+                    b.Navigation("RouteDate");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Driver", b =>
                 {
                     b.HasOne("ApplicationCore.Entities.AppEntities.Car", "Car")
                         .WithMany()
-                        .HasForeignKey("CarId1");
+                        .HasForeignKey("CarId");
 
                     b.Navigation("Car");
                 });
@@ -719,51 +797,49 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("ApplicationCore.Entities.AppEntities.Driver", "Driver")
                         .WithMany()
-                        .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DriverId");
 
                     b.HasOne("ApplicationCore.Entities.AppEntities.Kit", "Kit")
                         .WithMany()
-                        .HasForeignKey("KitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("KitId");
 
                     b.Navigation("Driver");
 
                     b.Navigation("Kit");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Kit", b =>
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.LocationDate", b =>
                 {
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Driver", null)
-                        .WithMany("Kits")
-                        .HasForeignKey("DriverId");
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+
+                    b.HasOne("ApplicationCore.Entities.AppEntities.RouteTrip", "RouteTrip")
+                        .WithMany()
+                        .HasForeignKey("RouteTripId");
+
+                    b.Navigation("Location");
+
+                    b.Navigation("RouteTrip");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Order", b =>
                 {
                     b.HasOne("ApplicationCore.Entities.AppEntities.ClientPackage", "ClientPackage")
                         .WithMany()
-                        .HasForeignKey("ClientPackageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClientPackageId");
 
-                    b.HasOne("ApplicationCore.Entities.AppEntities.DriverKit", "DriverKit")
+                    b.HasOne("ApplicationCore.Entities.AppEntities.RouteTrip", "RouteTrip")
                         .WithMany()
-                        .HasForeignKey("DriverKitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RouteTripId");
 
                     b.HasOne("ApplicationCore.Entities.AppEntities.Status", "Status")
                         .WithMany()
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StatusId");
 
                     b.Navigation("ClientPackage");
 
-                    b.Navigation("DriverKit");
+                    b.Navigation("RouteTrip");
 
                     b.Navigation("Status");
                 });
@@ -787,42 +863,48 @@ namespace Infrastructure.Migrations
                     b.Navigation("StartCity");
                 });
 
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.RouteDate", b =>
+                {
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Route", "Route")
+                        .WithMany()
+                        .HasForeignKey("RouteId");
+
+                    b.Navigation("Route");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.RoutePrice", b =>
+                {
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Route", "Route")
+                        .WithMany()
+                        .HasForeignKey("RouteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Route");
+                });
+
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.RouteTrip", b =>
                 {
                     b.HasOne("ApplicationCore.Entities.AppEntities.Driver", "Driver")
                         .WithMany()
-                        .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DriverId");
 
-                    b.HasOne("ApplicationCore.Entities.AppEntities.City", "FinishCity")
+                    b.HasOne("ApplicationCore.Entities.AppEntities.RouteDate", "RouteDate")
                         .WithMany()
-                        .HasForeignKey("FinishCityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId");
-
-                    b.HasOne("ApplicationCore.Entities.AppEntities.City", "StartCity")
-                        .WithMany()
-                        .HasForeignKey("StartCityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RouteDateId");
 
                     b.Navigation("Driver");
 
-                    b.Navigation("FinishCity");
-
-                    b.Navigation("Location");
-
-                    b.Navigation("StartCity");
+                    b.Navigation("RouteDate");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Driver", b =>
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.WaitingList", b =>
                 {
-                    b.Navigation("Kits");
+                    b.HasOne("ApplicationCore.Entities.AppEntities.ClientPackage", "ClientPackage")
+                        .WithMany()
+                        .HasForeignKey("ClientPackageId");
+
+                    b.Navigation("ClientPackage");
                 });
 #pragma warning restore 612, 618
         }
