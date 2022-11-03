@@ -6,39 +6,13 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Config
 {
-    public static class AuthOptions
+    public class AuthOptions
     {
-        private const int LifeTimeTokenInMinute = 20;
-        public const int LifeTimeRefreshTokenInYear = 1;
-        private const string Issuer = "DeliveryApp";
-        private const string Audience = "AuthClient";
-
-
-        public static TokenValidationParameters ValidationParameters(byte[] key, bool validateLifetime)
-        {
-            return  new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = Issuer,
-                ValidateAudience = true,
-                ValidAudience = Audience,      
-                ValidateLifetime = validateLifetime,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuerSigningKey = true,
-                ClockSkew = TimeSpan.Zero
-            };
-        }
-
-        public static JwtSecurityToken SecurityToken(List<Claim> claims, byte[] key)
-        {
-            return new JwtSecurityToken(
-                Issuer,
-                Audience,
-                notBefore: DateTime.UtcNow,
-                claims: claims,
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256),
-                expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(LifeTimeTokenInMinute)));
-        }
+        public const string JwtSettings = "JwtSettings";
+        public string Issuer { get; set; }
+        public string Audience { get; set; }
+        public int LifeTimeTokenInMinute { get; set; }
+        public int LifeTimeRefreshTokenInYear { get; set; }
+        public string SecretKey { get; set; }
     }
 }

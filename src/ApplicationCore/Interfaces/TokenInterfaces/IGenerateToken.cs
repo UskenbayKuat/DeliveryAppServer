@@ -6,6 +6,7 @@ namespace ApplicationCore.Interfaces.TokenInterfaces
     {
         public string CreateRefreshToken();
         public string CreateAccessToken(User user);
+        public int LifeTimeRefreshTokenInYear { get; }
 
     }
 }
