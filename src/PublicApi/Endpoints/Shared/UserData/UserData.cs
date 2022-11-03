@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces.SharedInterfaces;
 using Ardalis.ApiEndpoints;
-using Microsoft.AspNetCore.Authorization;
+using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
-using PublicApi.Services;
 
 namespace PublicApi.Endpoints.Shared.UserData
 {
@@ -17,12 +16,10 @@ namespace PublicApi.Endpoints.Shared.UserData
     public class UserData : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
         private readonly IUserData _userData;
-        private readonly UserService _userService;
 
-        public UserData(IUserData userData, UserService userService)
+        public UserData(IUserData userData)
         {
             _userData = userData;
-            _userService = userService;
         }
         
         [HttpPost("api/userData")]
@@ -30,7 +27,7 @@ namespace PublicApi.Endpoints.Shared.UserData
         {
             try
             {
-                return await _userData.SendUser(_userService.GetUserId(HttpContext), cancellationToken);
+                return await _userData.SendUser((string)HttpContext.Items["UserId"], cancellationToken);
             }        
             catch(NotExistUserException ex)
             {
