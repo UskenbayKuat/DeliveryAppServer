@@ -5,20 +5,21 @@ using ApplicationCore.Interfaces.DriverInterfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using ApplicationCore.Interfaces.SharedInterfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
+using Infrastructure.Config;
 using Infrastructure.Services;
 using Infrastructure.Services.ClientService;
 using Infrastructure.Services.DriverService;
 using Infrastructure.Services.RegisterServices;
 using Infrastructure.Services.Shared;
 using Infrastructure.Services.TokenServices;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PublicApi.Services;
 
 namespace PublicApi.Extensions
 {
     public static class AppServices
     {
-        public static void GetServices(this IServiceCollection services)
+        public static void GetServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IValidation, ValidationService>();
             services.AddTransient<IGenerateToken, TokenService>();
@@ -31,7 +32,9 @@ namespace PublicApi.Extensions
             services.AddTransient<ICreateCar, CreateCarService>();
             services.AddTransient<IDeliveryAppData<DriverAppDataInfo>, DriverAppDataService>();
             services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
-            services.AddTransient<UserService>();
+            services.AddTransient<IUserData, UserDataService>();
+            services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.JwtSettings));
+
         }
     }
 }
