@@ -22,17 +22,17 @@ namespace Infrastructure.Services.Shared
             _dbIdentity = dbIdentity;
         }
 
-        public Task<ActionResult> SendUser(string userId, CancellationToken cancellationToken)
+        public async Task<ActionResult> SendUser(string userId, CancellationToken cancellationToken)
         {
-            var user = _dbIdentity.Users.First(u => u.Id == userId);
+            var user = await _dbIdentity.Users.FirstAsync(u => u.Id == userId, cancellationToken);
             if (user.IsDriver)
             {
                 var driver = _db.Drivers.Include(d => d.Car).First(d => d.UserId == userId);
-                return Task.FromResult<ActionResult>(new ObjectResult(driver));
+                return new ObjectResult(driver);
             }
             
             var client = _db.Clients.First(c => c.UserId == userId);
-            return Task.FromResult<ActionResult>(new OkObjectResult(client));
+            return new OkObjectResult(client);
         }
     }
 }

@@ -69,7 +69,7 @@ namespace Infrastructure.Services.RegisterServices
                 info.Surname = user.Surname;
             }
             user.RefreshToken = _generateToken.CreateRefreshToken();
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddYears(AuthOptions.LifeTimeRefreshTokenInYear);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddYears(_generateToken.LifeTimeRefreshTokenInYear);
             _identityDb.Users.Update(user);
             await _identityDb.SaveChangesAsync(cancellationToken);
 
