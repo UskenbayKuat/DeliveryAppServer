@@ -15,50 +15,41 @@ namespace PublicApi.Hub
 {
     public class Notification : Microsoft.AspNetCore.SignalR.Hub
     {
-        private int count = 0;
         private readonly AppDbContext _db;
 
         public Notification(AppDbContext db)
         {
             _db = db;
         }
-
-        public async Task Confirm(string hubId)
-        {
-            await Clients.All.SendAsync("Receive", $"Пришло {count}");
-
-        }
+        
         public async Task ReceiveDriverInfo(string hubId, string routeTripId, string latitude, string longitude)
         {
-            var routeId = Convert.ToInt32(routeTripId);
-            var l1 = Convert.ToDouble(latitude, System.Globalization.CultureInfo.InvariantCulture);
-            var l2 = Convert.ToDouble(longitude, System.Globalization.CultureInfo.InvariantCulture);
-            Location location = new()
+            var routeTrip = await _db.RouteTrips.FirstOrDefaultAsync(r => r.Id == Convert.ToInt32(routeTripId));
+            var location = new Location()
             {
-                Latitude = l1,
-                Longitude = l2
+                Latitude = Convert.ToDouble(latitude, System.Globalization.CultureInfo.InvariantCulture),
+                Longitude = Convert.ToDouble(longitude, System.Globalization.CultureInfo.InvariantCulture)
             };
-            var routeTrip = await _db.RouteTrips.FirstOrDefaultAsync(r => r.Id == routeId);
 
-            _db.Locations.Add(location);
-            
+            var locationDate = new LocationDate
+            {
+                Location = location,
+                RouteTrip = routeTrip,
+                LocationDateTime = DateTime.Now
+            };
             routeTrip.HubId = hubId;
-            //routeTrip.Location = location;
+            _db.Locations.Add(location);
+            _db.LocationDate.Add(locationDate);
             _db.RouteTrips.Update(routeTrip);
             await _db.SaveChangesAsync();
-            Console.WriteLine($"{hubId}");
         }     
         public async Task ReceiveClientInfo(string hubId, string clientPackageId, string latitude, string longitude)
         {
-            count = new Random().Next(0, 30);
-            var cpId = Convert.ToInt32(clientPackageId);
-            var clientPackage = await _db.ClientPackages.FirstOrDefaultAsync(c => c.Id == cpId);
-            var l1 = Convert.ToDouble(latitude, System.Globalization.CultureInfo.InvariantCulture);
-            var l2 = Convert.ToDouble(longitude, System.Globalization.CultureInfo.InvariantCulture);
+            var clientPackage = await _db.ClientPackages.FirstOrDefaultAsync(c => c.Id == Convert.ToInt32(clientPackageId));
             Location location = new()
             {
-                Latitude = l1,
-                Longitude = l2
+                Latitude = Convert.ToDouble(latitude, System.Globalization.CultureInfo.InvariantCulture),
+                Longitude = Convert.ToDouble(longitude, System.Globalization.CultureInfo.InvariantCulture)
             };
             _db.Locations.Add(location);
             
@@ -77,7 +68,7 @@ namespace PublicApi.Hub
                 WriteIndented = true
             };
             var jsonClientPackage = JsonSerializer.Serialize(clientPackage, options);
-            await Clients.All.SendAsync("SendClientPackage", $"Пришло {count}");
+            await Clients.All.SendAsync("SendClientPackage", $"Пришло ");
         }
         public async Task UpdateLocation(string hubId, string driverId, string latitude, string longitude)
         {
