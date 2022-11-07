@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Infrastructure.Migrations
+namespace Infrastructure.Migrations.AppDb
 {
-    public partial class InitialModel : Migration
+    public partial class InitialAppDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -32,26 +32,6 @@ namespace Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CarColors", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Cars",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DriverId = table.Column<int>(type: "integer", nullable: false),
-                    CarBrandId = table.Column<int>(type: "integer", nullable: false),
-                    CarTypeId = table.Column<int>(type: "integer", nullable: false),
-                    CarColorId = table.Column<int>(type: "integer", nullable: false),
-                    ProductionYear = table.Column<int>(type: "integer", nullable: false),
-                    RegistrationCertificate = table.Column<string>(type: "text", nullable: true),
-                    LicensePlate = table.Column<string>(type: "text", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Cars", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -86,13 +66,26 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    IsValid = table.Column<bool>(type: "boolean", nullable: false)
+                    UserId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Clients", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Kits",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    IsUnlimited = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Kits", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -140,29 +133,38 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Drivers",
+                name: "Cars",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: true),
-                    IdentityCardFaceScanPath = table.Column<string>(type: "text", nullable: true),
-                    IdentityCardBackScanPath = table.Column<string>(type: "text", nullable: true),
-                    DrivingLicenceScanPath = table.Column<string>(type: "text", nullable: true),
-                    DriverPhoto = table.Column<string>(type: "text", nullable: true),
-                    CarId = table.Column<int>(type: "integer", nullable: true),
-                    CarId1 = table.Column<int>(type: "integer", nullable: true),
-                    Rating = table.Column<double>(type: "double precision", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    IsValid = table.Column<bool>(type: "boolean", nullable: false)
+                    ProductionYear = table.Column<int>(type: "integer", nullable: false),
+                    RegistrationCertificate = table.Column<string>(type: "text", nullable: true),
+                    CarNumber = table.Column<string>(type: "text", nullable: true),
+                    CarBrandId = table.Column<int>(type: "integer", nullable: true),
+                    CarTypeId = table.Column<int>(type: "integer", nullable: true),
+                    CarColorId = table.Column<int>(type: "integer", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Drivers", x => x.Id);
+                    table.PrimaryKey("PK_Cars", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Drivers_Cars_CarId1",
-                        column: x => x.CarId1,
-                        principalTable: "Cars",
+                        name: "FK_Cars_CarBrands_CarBrandId",
+                        column: x => x.CarBrandId,
+                        principalTable: "CarBrands",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Cars_CarColors_CarColorId",
+                        column: x => x.CarColorId,
+                        principalTable: "CarColors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Cars_CarTypes_CarTypeId",
+                        column: x => x.CarTypeId,
+                        principalTable: "CarTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -174,8 +176,7 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     StartCityId = table.Column<int>(type: "integer", nullable: false),
-                    FinishCityId = table.Column<int>(type: "integer", nullable: false),
-                    Price = table.Column<decimal>(type: "numeric", nullable: false)
+                    FinishCityId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -195,21 +196,112 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Drivers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    IdentificationNumber = table.Column<string>(type: "text", nullable: true),
+                    IdentificationSeries = table.Column<string>(type: "text", nullable: true),
+                    IdentityCardCreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DriverLicenceScanPath = table.Column<string>(type: "text", nullable: true),
+                    IdentityCardPhotoPath = table.Column<string>(type: "text", nullable: true),
+                    CarId = table.Column<int>(type: "integer", nullable: true),
+                    Rating = table.Column<double>(type: "double precision", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Drivers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Drivers_Cars_CarId",
+                        column: x => x.CarId,
+                        principalTable: "Cars",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RouteDate",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RouteId = table.Column<int>(type: "integer", nullable: true),
+                    CreateDateTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RouteDate", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RouteDate_Routes_RouteId",
+                        column: x => x.RouteId,
+                        principalTable: "Routes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RoutePrice",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RouteId = table.Column<int>(type: "integer", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RoutePrice", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RoutePrice_Routes_RouteId",
+                        column: x => x.RouteId,
+                        principalTable: "Routes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DriversKits",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DriverId = table.Column<int>(type: "integer", nullable: true),
+                    KitId = table.Column<int>(type: "integer", nullable: true),
+                    PurchaseDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DriversKits", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DriversKits_Drivers_DriverId",
+                        column: x => x.DriverId,
+                        principalTable: "Drivers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_DriversKits_Kits_KitId",
+                        column: x => x.KitId,
+                        principalTable: "Kits",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ClientPackages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ClientId = table.Column<int>(type: "integer", nullable: false),
-                    StartCityId = table.Column<int>(type: "integer", nullable: false),
-                    FinishCityId = table.Column<int>(type: "integer", nullable: false),
-                    PackageId = table.Column<int>(type: "integer", nullable: false),
-                    DateTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    CarTypeId = table.Column<int>(type: "integer", nullable: false),
+                    CarTypeId = table.Column<int>(type: "integer", nullable: true),
+                    ClientId = table.Column<int>(type: "integer", nullable: true),
+                    PackageId = table.Column<int>(type: "integer", nullable: true),
                     IsSingle = table.Column<bool>(type: "boolean", nullable: false),
                     Price = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    HubId = table.Column<string>(type: "text", nullable: true),
                     LocationId = table.Column<int>(type: "integer", nullable: true),
-                    HubId = table.Column<string>(type: "text", nullable: true)
+                    RouteDateId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -219,25 +311,13 @@ namespace Infrastructure.Migrations
                         column: x => x.CarTypeId,
                         principalTable: "CarTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ClientPackages_Cities_FinishCityId",
-                        column: x => x.FinishCityId,
-                        principalTable: "Cities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ClientPackages_Cities_StartCityId",
-                        column: x => x.StartCityId,
-                        principalTable: "Cities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ClientPackages_Clients_ClientId",
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ClientPackages_Locations_LocationId",
                         column: x => x.LocationId,
@@ -249,27 +329,11 @@ namespace Infrastructure.Migrations
                         column: x => x.PackageId,
                         principalTable: "Packages",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Kits",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Quantity = table.Column<int>(type: "integer", nullable: false),
-                    IsUnlimited = table.Column<bool>(type: "boolean", nullable: false),
-                    DriverId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Kits", x => x.Id);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Kits_Drivers_DriverId",
-                        column: x => x.DriverId,
-                        principalTable: "Drivers",
+                        name: "FK_ClientPackages_RouteDate_RouteDateId",
+                        column: x => x.RouteDateId,
+                        principalTable: "RouteDate",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -280,67 +344,71 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    StartCityId = table.Column<int>(type: "integer", nullable: false),
-                    FinishCityId = table.Column<int>(type: "integer", nullable: false),
-                    TripTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    DriverId = table.Column<int>(type: "integer", nullable: false),
-                    LocationId = table.Column<int>(type: "integer", nullable: true),
-                    HubId = table.Column<string>(type: "text", nullable: true)
+                    HubId = table.Column<string>(type: "text", nullable: true),
+                    DriverId = table.Column<int>(type: "integer", nullable: true),
+                    RouteDateId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RouteTrips", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RouteTrips_Cities_FinishCityId",
-                        column: x => x.FinishCityId,
-                        principalTable: "Cities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RouteTrips_Cities_StartCityId",
-                        column: x => x.StartCityId,
-                        principalTable: "Cities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_RouteTrips_Drivers_DriverId",
                         column: x => x.DriverId,
                         principalTable: "Drivers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RouteTrips_Locations_LocationId",
-                        column: x => x.LocationId,
-                        principalTable: "Locations",
+                        name: "FK_RouteTrips_RouteDate_RouteDateId",
+                        column: x => x.RouteDateId,
+                        principalTable: "RouteDate",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DriversKits",
+                name: "WaitingList",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DriverId = table.Column<int>(type: "integer", nullable: false),
-                    KitId = table.Column<int>(type: "integer", nullable: false),
-                    PurchaseDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    ClientPackageId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DriversKits", x => x.Id);
+                    table.PrimaryKey("PK_WaitingList", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DriversKits_Drivers_DriverId",
-                        column: x => x.DriverId,
-                        principalTable: "Drivers",
+                        name: "FK_WaitingList_ClientPackages_ClientPackageId",
+                        column: x => x.ClientPackageId,
+                        principalTable: "ClientPackages",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LocationDate",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    LocationId = table.Column<int>(type: "integer", nullable: true),
+                    RouteTripId = table.Column<int>(type: "integer", nullable: true),
+                    LocationDateTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LocationDate", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DriversKits_Kits_KitId",
-                        column: x => x.KitId,
-                        principalTable: "Kits",
+                        name: "FK_LocationDate_Locations_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Locations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_LocationDate_RouteTrips_RouteTripId",
+                        column: x => x.RouteTripId,
+                        principalTable: "RouteTrips",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -349,13 +417,12 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DriverKitId = table.Column<int>(type: "integer", nullable: false),
-                    ClientPackageId = table.Column<int>(type: "integer", nullable: false),
-                    StatusId = table.Column<int>(type: "integer", nullable: false),
+                    ClientPackageId = table.Column<int>(type: "integer", nullable: true),
+                    RouteTripId = table.Column<int>(type: "integer", nullable: true),
+                    StatusId = table.Column<int>(type: "integer", nullable: true),
                     OrderDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    OrderStartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CompletionDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    DelayDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CancellationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     OrderCost = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
@@ -368,19 +435,19 @@ namespace Infrastructure.Migrations
                         column: x => x.ClientPackageId,
                         principalTable: "ClientPackages",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Orders_DriversKits_DriverKitId",
-                        column: x => x.DriverKitId,
-                        principalTable: "DriversKits",
+                        name: "FK_Orders_RouteTrips_RouteTripId",
+                        column: x => x.RouteTripId,
+                        principalTable: "RouteTrips",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Orders_Statuses_StatusId",
                         column: x => x.StatusId,
                         principalTable: "Statuses",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
@@ -436,27 +503,55 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "Kits",
-                columns: new[] { "Id", "DriverId", "IsUnlimited", "Name", "Quantity" },
+                columns: new[] { "Id", "IsUnlimited", "Name", "Quantity" },
                 values: new object[,]
                 {
-                    { 3, null, false, "Premium", 15 },
-                    { 1, null, false, "Light", 5 },
-                    { 2, null, false, "Standard ", 10 },
-                    { 4, null, true, "Unlimited", 999999 }
+                    { 3, false, "Premium", 15 },
+                    { 1, false, "Light", 5 },
+                    { 2, false, "Standard ", 10 },
+                    { 4, true, "Unlimited", 999999 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Routes",
-                columns: new[] { "Id", "FinishCityId", "Price", "StartCityId" },
+                columns: new[] { "Id", "FinishCityId", "StartCityId" },
                 values: new object[,]
                 {
-                    { 1, 2, 1000m, 1 },
-                    { 3, 1, 1000m, 2 },
-                    { 2, 3, 2000m, 1 },
-                    { 4, 1, 2000m, 3 },
-                    { 5, 3, 2000m, 2 },
-                    { 6, 2, 2000m, 3 }
+                    { 1, 2, 1 },
+                    { 3, 1, 2 },
+                    { 2, 3, 1 },
+                    { 4, 1, 3 },
+                    { 5, 3, 2 },
+                    { 6, 2, 3 }
                 });
+
+            migrationBuilder.InsertData(
+                table: "RoutePrice",
+                columns: new[] { "Id", "Price", "RouteId" },
+                values: new object[,]
+                {
+                    { 1, 1000m, 1 },
+                    { 3, 1000m, 3 },
+                    { 2, 2000m, 2 },
+                    { 4, 2000m, 4 },
+                    { 5, 2000m, 5 },
+                    { 6, 2000m, 6 }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cars_CarBrandId",
+                table: "Cars",
+                column: "CarBrandId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cars_CarColorId",
+                table: "Cars",
+                column: "CarColorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cars_CarTypeId",
+                table: "Cars",
+                column: "CarTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientPackages_CarTypeId",
@@ -469,11 +564,6 @@ namespace Infrastructure.Migrations
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientPackages_FinishCityId",
-                table: "ClientPackages",
-                column: "FinishCityId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ClientPackages_LocationId",
                 table: "ClientPackages",
                 column: "LocationId");
@@ -484,14 +574,14 @@ namespace Infrastructure.Migrations
                 column: "PackageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientPackages_StartCityId",
+                name: "IX_ClientPackages_RouteDateId",
                 table: "ClientPackages",
-                column: "StartCityId");
+                column: "RouteDateId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Drivers_CarId1",
+                name: "IX_Drivers_CarId",
                 table: "Drivers",
-                column: "CarId1");
+                column: "CarId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DriversKits_DriverId",
@@ -504,9 +594,14 @@ namespace Infrastructure.Migrations
                 column: "KitId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Kits_DriverId",
-                table: "Kits",
-                column: "DriverId");
+                name: "IX_LocationDate_LocationId",
+                table: "LocationDate",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LocationDate_RouteTripId",
+                table: "LocationDate",
+                column: "RouteTripId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_ClientPackageId",
@@ -514,14 +609,24 @@ namespace Infrastructure.Migrations
                 column: "ClientPackageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_DriverKitId",
+                name: "IX_Orders_RouteTripId",
                 table: "Orders",
-                column: "DriverKitId");
+                column: "RouteTripId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_StatusId",
                 table: "Orders",
                 column: "StatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RouteDate_RouteId",
+                table: "RouteDate",
+                column: "RouteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RoutePrice_RouteId",
+                table: "RoutePrice",
+                column: "RouteId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Routes_FinishCityId",
@@ -539,52 +644,47 @@ namespace Infrastructure.Migrations
                 column: "DriverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteTrips_FinishCityId",
+                name: "IX_RouteTrips_RouteDateId",
                 table: "RouteTrips",
-                column: "FinishCityId");
+                column: "RouteDateId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteTrips_LocationId",
-                table: "RouteTrips",
-                column: "LocationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RouteTrips_StartCityId",
-                table: "RouteTrips",
-                column: "StartCityId");
+                name: "IX_WaitingList_ClientPackageId",
+                table: "WaitingList",
+                column: "ClientPackageId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CarBrands");
+                name: "DriversKits");
 
             migrationBuilder.DropTable(
-                name: "CarColors");
+                name: "LocationDate");
 
             migrationBuilder.DropTable(
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Routes");
+                name: "RoutePrice");
+
+            migrationBuilder.DropTable(
+                name: "WaitingList");
+
+            migrationBuilder.DropTable(
+                name: "Kits");
 
             migrationBuilder.DropTable(
                 name: "RouteTrips");
 
             migrationBuilder.DropTable(
-                name: "ClientPackages");
-
-            migrationBuilder.DropTable(
-                name: "DriversKits");
-
-            migrationBuilder.DropTable(
                 name: "Statuses");
 
             migrationBuilder.DropTable(
-                name: "CarTypes");
+                name: "ClientPackages");
 
             migrationBuilder.DropTable(
-                name: "Cities");
+                name: "Drivers");
 
             migrationBuilder.DropTable(
                 name: "Clients");
@@ -596,13 +696,25 @@ namespace Infrastructure.Migrations
                 name: "Packages");
 
             migrationBuilder.DropTable(
-                name: "Kits");
-
-            migrationBuilder.DropTable(
-                name: "Drivers");
+                name: "RouteDate");
 
             migrationBuilder.DropTable(
                 name: "Cars");
+
+            migrationBuilder.DropTable(
+                name: "Routes");
+
+            migrationBuilder.DropTable(
+                name: "CarBrands");
+
+            migrationBuilder.DropTable(
+                name: "CarColors");
+
+            migrationBuilder.DropTable(
+                name: "CarTypes");
+
+            migrationBuilder.DropTable(
+                name: "Cities");
         }
     }
 }

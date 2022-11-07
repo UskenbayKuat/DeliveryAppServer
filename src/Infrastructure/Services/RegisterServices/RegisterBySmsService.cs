@@ -8,12 +8,12 @@ namespace Infrastructure.Services.RegisterServices
 {
     public class RegisterBySmsService : IRegistration
     {
-        public Task<ActionResult> SendTokenAsync(RegistrationToken token)
+        public Task<ActionResult> SendTokenAsync(RegistrationInfo info)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<ConfirmRegistrationInfo> Confirm(ConfirmRegistrationInfo info, CancellationToken cancellationToken)
+        public Task<ActionResult> Confirm(ConfirmRegistrationInfo info, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
         }

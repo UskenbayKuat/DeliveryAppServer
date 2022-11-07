@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Enums;
 
 namespace ApplicationCore.Entities.ApiEntities
 {
     public class CreateCarInfo
     {
-        public int DriverId { get; set; }
         public int CarBrandId { get; set; }
         public int CarTypeId { get; set; }
         public int CarColorId { get; set; }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,26 +22,35 @@ namespace Infrastructure.Services.DriverService
 
         public async Task<ActionResult> CreateAutoAsync(CreateCarInfo info, string userId, CancellationToken token)
         {
-            var driver = _db.Drivers.Include(d => d.Car).First(d => d.UserId == userId);
-            if (driver.CarId is not null || info is null)
+            try
             {
-                return new BadRequestObjectResult("Car added");
-            } 
-            var car = new Car
+                var driver = _db.Drivers.Include(d => d.Car).First(d => d.UserId == userId);
+                var carBrand = await _db.CarBrands.FirstAsync(b => b.Id == info.CarBrandId, token);
+                var carColor = await _db.CarColors.FirstAsync(b => b.Id == info.CarColorId, token);
+                var carType = await _db.CarTypes.FirstAsync(b => b.Id == info.CarTypeId, token);
+                if (driver.Car is not null)
+                {
+                    return new BadRequestObjectResult("Car is already added");
+                } 
+                var car = new Car
+                {
+                    CarBrand = carBrand,
+                    CarColor = carColor,
+                    CarType = carType,
+                    CarNumber = info.LicensePlate,
+                    ProductionYear = info.ProductionYear,
+                    RegistrationCertificate = info.RegistrationCertificate
+                };
+                driver.Car= car;
+                await _db.Cars.AddAsync(car, token); 
+                _db.Drivers.Update(driver);
+                await _db.SaveChangesAsync(token);
+                return new OkObjectResult(car);
+            }
+            catch
             {
-                DriverId = driver.Id,
-                CarBrandId = info.CarBrandId,
-                CarColorId = info.CarColorId,
-                CarTypeId = info.CarTypeId,
-                LicensePlate = info.LicensePlate,
-                ProductionYear = info.ProductionYear,
-                RegistrationCertificate = info.RegistrationCertificate
-            };
-            _db.Cars.Add(car);       
-            driver.CarId = _db.Entry(car).Property(c => c.Id).CurrentValue;
-            _db.Drivers.Update(driver);
-            await _db.SaveChangesAsync(token);
-            return new OkObjectResult(car);
+                return new BadRequestResult();
+            }
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Infrastructure.Services.ClientService
                 return await Task.FromResult<ActionResult>(new BadRequestResult());
             }
 
-            var package = new Package()
+            var package = new Package
             {
                 Height = info.Package.Height,
                 Length = info.Package.Length,
@@ -37,25 +37,26 @@ namespace Infrastructure.Services.ClientService
             };
             await _db.Packages.AddAsync(package, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
-            var carType = await _db.CarTypes.FirstOrDefaultAsync(c => c.Id == info.CarType.Id, cancellationToken);
-            var startCity = await _db.Cities.FirstOrDefaultAsync(c => c.Id == info.StartCity.Id, cancellationToken);
-            var finishCity = await _db.Cities.FirstOrDefaultAsync(c => c.Id == info.FinishCity.Id, cancellationToken);
-            var clientPackage = new ClientPackage()
+            var carType = await _db.CarTypes.FirstOrDefaultAsync(c => c.Id == info.CarTypeId, cancellationToken);
+            
+            var route = await _db.Routes.
+                FirstOrDefaultAsync(r => r.StartCityId == info.StartCityId 
+                                         && r.FinishCityId == info.FinishCityId, cancellationToken);
+            var routeDate = new RouteDate
+            {
+                Route = route,
+                CreateDateTime = info.DateTime
+            };
+            var clientPackage = new ClientPackage
             {
                 Client = client,
-                ClientId = client.Id,
                 Package = package,
-                PackageId = package.Id,
-                StartCity = startCity,
-                StartCityId = startCity.Id,
-                FinishCity = finishCity,
-                FinishCityId = finishCity.Id,
                 CarType = carType,
-                CarTypeId = carType.Id,
-                DateTime = info.DateTime,
                 IsSingle = info.IsSingle,
-                Price = info.Price
+                Price = info.Price,
+                RouteDate = routeDate
             };
+            await _db.RouteDate.AddAsync(routeDate, cancellationToken);
             await _db.ClientPackages.AddAsync(clientPackage, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
 

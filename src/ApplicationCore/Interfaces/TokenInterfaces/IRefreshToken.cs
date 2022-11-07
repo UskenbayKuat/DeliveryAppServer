@@ -6,6 +6,6 @@ namespace ApplicationCore.Interfaces.TokenInterfaces
 {
     public interface IRefreshToken
     {
-        public Task<string> RefreshTokenAsync(RefreshTokenInfo tokenInfo);
+        public Task<ActionResult> RefreshTokenAsync(RefreshTokenInfo tokenInfo);
     }
 }    

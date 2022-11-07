@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Infrastructure.Migrations.AppIdentityDb
+namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppIdentityDbContext))]
     partial class AppIdentityDbContextModelSnapshot : ModelSnapshot
@@ -38,7 +38,13 @@ namespace Infrastructure.Migrations.AppIdentityDb
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDriver")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsValid")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("LockoutEnabled")
@@ -77,9 +83,6 @@ namespace Infrastructure.Migrations.AppIdentityDb
                         .HasColumnType("text");
 
                     b.Property<string>("Surname")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Token")
                         .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")

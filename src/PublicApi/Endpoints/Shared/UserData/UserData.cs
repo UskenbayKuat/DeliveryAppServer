@@ -1,10 +1,13 @@
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces.SharedInterfaces;
 using Ardalis.ApiEndpoints;
-using Microsoft.AspNetCore.Authorization;
+using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PublicApi.Endpoints.Shared.UserData
@@ -20,17 +23,27 @@ namespace PublicApi.Endpoints.Shared.UserData
         }
         
         [HttpPost("api/userData")]
-        public override Task<ActionResult> HandleAsync(CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             try
             {
-                var claimsIdentity = HttpContext.User.Identity as ClaimsIdentity;
-                var userId = claimsIdentity.Claims.First(c => c.Type == ClaimTypes.UserData).Value;
-                return  _userData.SendUser(userId, cancellationToken);
+                return await _userData.SendUser((string)HttpContext.Items["UserId"], cancellationToken);
+            }        
+            catch(NotExistUserException ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+            }        
+            catch(HttpRequestException ex) when(ex.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return new BadRequestObjectResult(ex.Message);
+            }
+            catch(WebException ex) when(ex.Status == WebExceptionStatus.Timeout)
+            {
+                return new BadRequestObjectResult(ex.Message);
             }
             catch
             {
-                return Task.FromResult<ActionResult>(new BadRequestObjectResult("User not found"));
+                return new BadRequestObjectResult("User not found");
             }
         }
     }

@@ -10,7 +10,7 @@ using PublicApi.Endpoints.Clients.CalculateOrder;
 
 namespace PublicApi.Endpoints.Clients.ConfirmOrder
 {
-    public class ConfirmOrder : EndpointBaseAsync.WithRequest<ConfirmOrderCommand>.WithActionResult<ConfirmOrderResult>
+    public class ConfirmOrder : EndpointBaseAsync.WithRequest<ConfirmOrderCommand>.WithActionResult
     {
         private readonly IClientPackage _clientPackage;
         private readonly IMapper _mapper;
@@ -22,7 +22,7 @@ namespace PublicApi.Endpoints.Clients.ConfirmOrder
         }
 
         [HttpPost("api/client/confirmOrder")]
-        public override async Task<ActionResult<ConfirmOrderResult>> HandleAsync([FromBody]ConfirmOrderCommand request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult> HandleAsync([FromBody]ConfirmOrderCommand request, CancellationToken cancellationToken = new CancellationToken())
         {
             return await _clientPackage.CreateClientPackage(_mapper.Map<ClientPackageInfo>(request), cancellationToken);
         }

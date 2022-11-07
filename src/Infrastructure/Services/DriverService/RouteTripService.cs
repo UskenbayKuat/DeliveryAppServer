@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.ApiEntities;
@@ -6,6 +7,7 @@ using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.DriverService
 {
@@ -17,26 +19,33 @@ namespace Infrastructure.Services.DriverService
         {
             _db = db;
         }
-        public async Task<ActionResult> CreateRouteTrip(RouteInfo info, CancellationToken cancellationToken)
+        public async Task<ActionResult> CreateRouteTrip(RouteInfo info, string userId, CancellationToken cancellationToken)
         {
-            var startRoute = _db.Cities.FirstOrDefault(r => r.Id == info.StartCityId);
-            var finishRoute = _db.Cities.FirstOrDefault(r => r.Id == info.FinishCityId);
-            if (startRoute is null || finishRoute is null)
+            try
             {
-                return await Task.FromResult<ActionResult>(new BadRequestResult());
+                var driver = _db.Drivers.FirstOrDefault(d => d.UserId == userId);
+                var route = await _db.Routes.
+                    FirstAsync(r => r.StartCityId == info.StartCityId &&
+                                    r.FinishCityId == info.FinishCityId, cancellationToken);
+                var routeDate = new RouteDate
+                {
+                    Route = route,
+                    CreateDateTime = info.TripTime
+                };
+                var trip = new RouteTrip
+                {
+                    RouteDate = routeDate,
+                    Driver = driver
+                };
+                await _db.RouteTrips.AddAsync(trip, cancellationToken);
+                await _db.RouteDate.AddAsync(routeDate, cancellationToken);
+                await _db.SaveChangesAsync(cancellationToken);
+                return new OkObjectResult(trip);
             }
-            var trip = new RouteTrip()
+            catch
             {
-                StartCity = startRoute,
-                StartCityId = startRoute.Id,
-                FinishCity = finishRoute,
-                FinishCityId = finishRoute.Id,
-                TripTime = info.TripTime,
-                DriverId = info.DriverId,
-            };
-            await _db.RouteTrips.AddAsync(trip,cancellationToken);
-            await _db.SaveChangesAsync(cancellationToken);
-            return await Task.FromResult<ActionResult>(new OkObjectResult(trip));
+                return new BadRequestResult();
+            }
         }
     }
 }

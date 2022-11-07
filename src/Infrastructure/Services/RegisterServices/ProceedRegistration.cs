@@ -15,53 +15,49 @@ namespace Infrastructure.Services.RegisterServices
     {
         private readonly AppDbContext _db;
         private readonly AppIdentityDbContext _identityDb;
-        private readonly IMapper _mapper;
-        
-        public ProceedRegistrationService(AppDbContext db, IMapper mapper, AppIdentityDbContext identityDb)
+
+        public ProceedRegistrationService(AppDbContext db, AppIdentityDbContext identityDb)
         {
             _db = db;
-            _mapper = mapper;
             _identityDb = identityDb;
         }
 
         public async Task<ActionResult> ProceedRegistration(ProceedRegistrationInfo info, CancellationToken cancellationToken)
         {
             var user = _identityDb.Users.FirstOrDefault(u => u.PhoneNumber == info.PhoneNumber && u.IsDriver == info.IsDriver);
-            if (user == null)
+            if (user is null)
             {
                 return new BadRequestResult();
             }
             user.Name = info.Name;
             user.Surname = info.Surname;
+            user.IsValid = true;
             await _identityDb.SaveChangesAsync(cancellationToken);
             
             if (user.IsDriver)
             {
-                var driver = new Driver()
+                var driver = new Driver
                 {
                     UserId = user.Id,
-                    IdentityCardBackScanPath = info.IdentityCardBackScanPath,
-                    IdentityCardFaceScanPath = info.IdentityCardFaceScanPath,
-                    DrivingLicenceScanPath = info.DrivingLicenceScanPath,
-                    DriverPhoto = info.DriverPhoto,
-                    IsValid = true
+                    IdentificationNumber = info.IdentificationNumber,
+                    IdentificationSeries = info.IdentificationSeries,
+                    IdentityCardPhotoPath = info.IdentityCardPhotoPath,
+                    DriverLicenceScanPath = info.DriverLicenceScanPath,
+                    IdentityCardCreateDate = info.IdentityCardCreateDate
                 };
                 await _db.Drivers.AddAsync(driver, cancellationToken);
                 await _db.SaveChangesAsync(cancellationToken);
-                info.Id = driver.Id;
             }
             else
             {
-                var client = new Client()
+                var client = new Client
                 {
                     UserId = user.Id,
-                    IsValid = true
                 };
                 await _db.Clients.AddAsync(client, cancellationToken);
                 await _db.SaveChangesAsync(cancellationToken);
-                info.Id = client.Id;
             }
-            return new OkObjectResult(info);
+            return new OkObjectResult(new {name = user.Name, surname = user.Surname});
         }
         
     }

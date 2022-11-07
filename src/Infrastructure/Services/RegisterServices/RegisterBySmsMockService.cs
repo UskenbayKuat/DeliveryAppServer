@@ -16,30 +16,26 @@ namespace Infrastructure.Services.RegisterServices
 {
     public class RegisterBySmsMockService : IRegistration
     {
-        private readonly IMapper _mapper;
         private readonly IGenerateToken _generateToken;
         private readonly AppIdentityDbContext _identityDb;
         private readonly AppDbContext _db;
 
-        public RegisterBySmsMockService(IMapper mapper, AppIdentityDbContext identityDb, AppDbContext db, IGenerateToken generateToken)
+        public RegisterBySmsMockService(AppIdentityDbContext identityDb, AppDbContext db, IGenerateToken generateToken)
         {
-            _mapper = mapper;
             _identityDb = identityDb;
             _db = db;
             _generateToken = generateToken;
         }
 
-        public async Task<ActionResult> SendTokenAsync(RegistrationToken token) => 
-            await RandomSms(token);
+        public async Task<ActionResult> SendTokenAsync(RegistrationInfo info) => 
+            await RandomSms(info);
 
-        private Task<ActionResult> RandomSms(RegistrationToken token) =>
-            Task.FromResult<ActionResult>(new OkObjectResult(token));
+        private Task<ActionResult> RandomSms(RegistrationInfo info) =>
+            Task.FromResult<ActionResult>(new OkObjectResult(info));
         
-        public async Task<ConfirmRegistrationInfo> Confirm(ConfirmRegistrationInfo info, CancellationToken cancellationToken)
+        public async Task<ActionResult> Confirm(ConfirmRegistrationInfo info, CancellationToken cancellationToken)
         {
-             bool checkIsValid = false;
-            int checkId = default;
-            var user = await _identityDb.Users.FirstOrDefaultAsync(
+             var user = await _identityDb.Users.FirstOrDefaultAsync(
                 u => u.PhoneNumber == info.PhoneNumber && u.IsDriver == info.IsDriver, cancellationToken);
             if (user is null)
             {
@@ -58,8 +54,7 @@ namespace Infrastructure.Services.RegisterServices
                     var driver = await _db.Drivers.FirstOrDefaultAsync(d => d.UserId == user.Id, cancellationToken);
                     if (driver != null)
                     {
-                        checkId = driver.Id;
-                        checkIsValid = driver.IsValid;
+                        info.IsValid = user.IsValid;
                     }
                 }
                 else
@@ -67,24 +62,20 @@ namespace Infrastructure.Services.RegisterServices
                     var client = await _db.Clients.FirstOrDefaultAsync(c => c.UserId == user.Id, cancellationToken);
                     if (client != null)
                     {
-                        checkId = client.Id;
-                        checkIsValid = client.IsValid;
+                        info.IsValid = user.IsValid;
                     }
                 }
+                info.Name = user.Name;
+                info.Surname = user.Surname;
             }
             user.RefreshToken = _generateToken.CreateRefreshToken();
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddYears(AuthOptions.LifeTimeRefreshTokenInYear);
-            user.Token = _generateToken.CreateAccessToken(user);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddYears(_generateToken.LifeTimeRefreshTokenInYear);
             _identityDb.Users.Update(user);
             await _identityDb.SaveChangesAsync(cancellationToken);
-            info.Name = user.Name;
-            info.Surname = user.Surname;
-            info.UserId = user.Id;
-            info.IsValid = checkIsValid;
-            info.Id = checkId;
-            info.AccessToken = user.Token;
+
+            info.AccessToken = _generateToken.CreateAccessToken(user);
             info.RefreshToken = user.RefreshToken;
-            return info;
+            return new OkObjectResult(info);
         }
     }
 }

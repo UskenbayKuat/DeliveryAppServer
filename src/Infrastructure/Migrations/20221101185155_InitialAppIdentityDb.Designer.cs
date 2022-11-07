@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Infrastructure.Migrations.AppIdentityDb
+namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppIdentityDbContext))]
-    [Migration("20221002110912_InitialIdentityModel")]
-    partial class InitialIdentityModel
+    [Migration("20221101185155_InitialAppIdentityDb")]
+    partial class InitialAppIdentityDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -40,7 +40,13 @@ namespace Infrastructure.Migrations.AppIdentityDb
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDriver")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsValid")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("LockoutEnabled")
@@ -79,9 +85,6 @@ namespace Infrastructure.Migrations.AppIdentityDb
                         .HasColumnType("text");
 
                     b.Property<string>("Surname")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Token")
                         .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")

@@ -1,15 +1,17 @@
-﻿namespace ApplicationCore.Entities.ApiEntities
+﻿using System;
+
+namespace ApplicationCore.Entities.ApiEntities
 {
     public class ProceedRegistrationInfo
     {
         public string PhoneNumber { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
-        public string IdentityCardFaceScanPath { get; set; }
-        public string IdentityCardBackScanPath { get; set; }
-        public string DrivingLicenceScanPath { get; set; }
-        public string DriverPhoto { get; set; }
+        public string IdentificationNumber { get; set; }
+        public string IdentificationSeries { get; set; }
+        public DateTime IdentityCardCreateDate { get; set; }
+        public string DriverLicenceScanPath { get; set; }
+        public string IdentityCardPhotoPath { get; set; }
         public bool IsDriver { get; set; }
-        public int Id { get; set; }
     }
 }

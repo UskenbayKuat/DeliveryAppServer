@@ -5,6 +5,7 @@ using ApplicationCore.Entities.ApiEntities;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.ClientService
 {
@@ -52,8 +53,10 @@ namespace Infrastructure.Services.ClientService
 
         private decimal SetRoutePrice(ClientPackageInfo info)
         {
-            var route = _db.Routes.FirstOrDefault(r => r.StartCityId == info.StartCity.Id && r.FinishCityId == info.FinishCity.Id);
-            return route?.Price ?? 0;
+            var routePrice = _db.RoutePrice.Include(r => r.Route)
+                .FirstOrDefault(r => r.Route.StartCityId == info.StartCityId &&
+                                     r.Route.FinishCityId == info.FinishCityId);
+            return routePrice?.Price ?? 0;
         } 
     }
 }

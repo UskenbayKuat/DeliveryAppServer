@@ -11,27 +11,40 @@ using ApplicationCore.Entities.ApiEntities;
 using ApplicationCore.Interfaces.TokenInterfaces;
 using Infrastructure.Config;
 using Infrastructure.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Services.TokenServices
 {
     public class TokenService : IGenerateToken, IRefreshToken
     {
         private readonly AppIdentityDbContext _identityDb;
-        private byte[] Key { get; }
-
-        public TokenService(IConfiguration config, AppIdentityDbContext identityDb)
+        private readonly AuthOptions _options;
+        public int LifeTimeRefreshTokenInYear { get; }
+        public TokenService(AppIdentityDbContext identityDb, IOptions<AuthOptions> options)
         {
             _identityDb = identityDb;
-            Key = Encoding.ASCII.GetBytes(config.GetSection("JwtSettings:SecretKey").Value);
+            _options = options.Value;
+            LifeTimeRefreshTokenInYear = _options.LifeTimeRefreshTokenInYear;
         }
 
-        public string CreateAccessToken(User user)
-        {
-            var claimList = new List<Claim> { new(ClaimTypes.UserData, user.Id) };
-            return new JwtSecurityTokenHandler()
-                .WriteToken(AuthOptions.SecurityToken(claimList, Key));
-        }
+        public string CreateAccessToken(User user) => 
+            new JwtSecurityTokenHandler()
+                .WriteToken(
+                    new JwtSecurityToken(
+                        _options.Issuer,
+                        _options.Audience,
+                        notBefore: DateTime.UtcNow,
+                        claims: new List<Claim> { new(ClaimTypes.UserData, user.Id) },
+                        signingCredentials: new SigningCredentials(
+                            new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.SecretKey)),
+                            SecurityAlgorithms.HmacSha256),
+                        expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(_options.LifeTimeTokenInMinute)))
+                );
 
         public string CreateRefreshToken()
         {
@@ -41,32 +54,18 @@ namespace Infrastructure.Services.TokenServices
             return Convert.ToBase64String(randomNumber);
         }
 
-        public async Task<string> RefreshTokenAsync(RefreshTokenInfo tokenInfo)
+        public async Task<ActionResult> RefreshTokenAsync(RefreshTokenInfo tokenInfo)
         {
-    //        var phoneNumber = GetPhoneNumberFromToken(tokenInfo.AccessToken);
-            var user = _identityDb.Users.First(u => u.RefreshToken == tokenInfo.RefreshToken &&
-                                                    u.RefreshTokenExpiryTime >= DateTime.Now);
-            user.Token = CreateAccessToken(user);
-            _identityDb.Users.Update(user);
-            await _identityDb.SaveChangesAsync();
-            return user.Token;
+            try
+            {
+                var user = await _identityDb.Users.FirstAsync(u => u.RefreshToken == tokenInfo.RefreshToken &&
+                                                        u.RefreshTokenExpiryTime >= DateTime.Now);
+                return new OkObjectResult(CreateAccessToken(user));
+            }
+            catch
+            {
+                return new BadRequestResult();
+            }
         }
-        
-        //check accessToken
-        // private string GetPhoneNumberFromToken(string token)
-        // {
-        //     try
-        //     {
-        //         var tokenHandler = new JwtSecurityTokenHandler();
-        //         tokenHandler.ValidateToken(token, AuthOptions.ValidationParameters(Key, false),
-        //             out SecurityToken validatedToken);
-        //         var jwtToken = (JwtSecurityToken)validatedToken;
-        //         return jwtToken.Claims.First(x => x.Type == "PhoneNumber").Value;
-        //     }
-        //     catch (Exception)
-        //     {
-        //         return string.Empty;
-        //     }
-        // }
     }
 }
