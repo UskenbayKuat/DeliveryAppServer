@@ -19,9 +19,9 @@ namespace Infrastructure.Services.ClientService
             _db = db;
         }
         
-        public async Task<ActionResult> CreateClientPackage(ClientPackageInfo info, CancellationToken cancellationToken)
+        public async Task<ActionResult> CreateClientPackage(ClientPackageInfo info, string userId, CancellationToken cancellationToken)
         {
-            var client = await _db.Clients.FirstOrDefaultAsync(c => c.Id == info.ClientId, cancellationToken);
+            var client = await _db.Clients.FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
             if (client is null)
             {
                 return await Task.FromResult<ActionResult>(new BadRequestResult());

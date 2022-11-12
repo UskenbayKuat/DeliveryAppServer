@@ -43,7 +43,7 @@ namespace PublicApi.Hub
             _db.RouteTrips.Update(routeTrip);
             await _db.SaveChangesAsync();
         }     
-        public async Task ReceiveClientInfo(string hubId, string clientPackageId, string latitude, string longitude)
+        /*public async Task ReceiveClientInfo(string hubId, string clientPackageId, string latitude, string longitude)
         {
             var clientPackage = await _db.ClientPackages.FirstOrDefaultAsync(c => c.Id == Convert.ToInt32(clientPackageId));
             Location location = new()
@@ -69,7 +69,7 @@ namespace PublicApi.Hub
             };
             var jsonClientPackage = JsonSerializer.Serialize(clientPackage, options);
             await Clients.All.SendAsync("SendClientPackage", $"Пришло ");
-        }
+        }*/
         public async Task UpdateLocation(string hubId, string driverId, string latitude, string longitude)
         {
             var driver = await _db.Drivers.FirstOrDefaultAsync(r => r.Id == int.Parse(driverId));

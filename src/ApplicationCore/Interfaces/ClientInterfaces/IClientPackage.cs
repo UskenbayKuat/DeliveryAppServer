@@ -7,6 +7,6 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
 {
     public interface IClientPackage
     {
-        public Task<ActionResult> CreateClientPackage(ClientPackageInfo info, CancellationToken cancellationToken);
+        public Task<ActionResult> CreateClientPackage(ClientPackageInfo info, string userId, CancellationToken cancellationToken);
     }
 }
