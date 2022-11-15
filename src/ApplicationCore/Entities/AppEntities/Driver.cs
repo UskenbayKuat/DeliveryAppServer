@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using ApplicationCore.Entities.AppEntities.Cars;
 
 namespace ApplicationCore.Entities.AppEntities
 {

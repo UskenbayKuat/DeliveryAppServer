@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ApplicationCore.Entities.AppEntities
+namespace ApplicationCore.Entities.AppEntities.Routes
 {
     public class RoutePrice : BaseEntity
     {

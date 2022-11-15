@@ -32,6 +32,7 @@ namespace PublicApi
                 options.SuppressInferBindingSourcesForParameters = true;
             });
 
+            #region Swagger
             services.AddSwaggerGen(option =>
             {
                 option.SwaggerDoc("v1", new OpenApiInfo { Title = "PublicApi", Version = "v1" });
@@ -59,6 +60,8 @@ namespace PublicApi
                     }
                 }); 
             });
+            #endregion
+            
             services.AddSignalR();
             services.AddAutoMapper(typeof(Startup));
         }

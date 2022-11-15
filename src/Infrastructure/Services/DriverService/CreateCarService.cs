@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.ApiEntities;
 using ApplicationCore.Entities.AppEntities;
+using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Mvc;

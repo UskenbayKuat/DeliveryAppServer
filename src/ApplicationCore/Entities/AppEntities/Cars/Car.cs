@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using ApplicationCore.Enums;
-
-namespace ApplicationCore.Entities.AppEntities
+﻿namespace ApplicationCore.Entities.AppEntities.Cars
 {
     public class Car : BaseEntity
     {

@@ -1,4 +1,7 @@
 ﻿using ApplicationCore.Entities.AppEntities;
+using ApplicationCore.Entities.AppEntities.Cars;
+using ApplicationCore.Entities.AppEntities.Locations;
+using ApplicationCore.Entities.AppEntities.Routes;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.DataAccess
@@ -38,6 +41,9 @@ namespace Infrastructure.DataAccess
         //kits
         public DbSet<Kit> Kits { get; set; }
         public DbSet<DriverKit> DriversKits { get; set; }
+        
+        //chat hub
+        public DbSet<ChatHub> ChatHubs { get; set; }
 
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)

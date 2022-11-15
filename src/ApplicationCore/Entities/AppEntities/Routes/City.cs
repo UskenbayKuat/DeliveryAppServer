@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Entities.AppEntities
+﻿namespace ApplicationCore.Entities.AppEntities.Routes
 {
     public class City : BaseEntity
     {
