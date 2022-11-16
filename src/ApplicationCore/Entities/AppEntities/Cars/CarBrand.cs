@@ -2,6 +2,12 @@
 {
     public class CarBrand : BaseEntity
     {
-        public string Name { get; set; }
+        public CarBrand(int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
+        public string Name { get; }
     }
 }

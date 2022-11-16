@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.ApiEntities;
@@ -22,46 +23,25 @@ namespace Infrastructure.Services.ClientService
         
         public async Task<ActionResult> CreateClientPackage(ClientPackageInfo info, string userId, CancellationToken cancellationToken)
         {
-            var client = await _db.Clients.FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
-            if (client is null)
+            try
+            {
+                var client = await _db.Clients.FirstAsync(c => c.UserId == userId, cancellationToken);
+                var carType = await _db.CarTypes.FirstAsync(c => c.Id == info.CarTypeId, cancellationToken);
+                var route = await _db.Routes.
+                    FirstAsync(r => r.StartCityId == info.StartCityId 
+                                             && r.FinishCityId == info.FinishCityId, cancellationToken);
+                var clientPackage = new ClientPackage(info.IsSingle, info.Price)
+                    .AddClientPackageData(carType,client, info.Package, null, new RouteDate(info.DateTime).AddRoute(route));
+                
+                await _db.ClientPackages.AddAsync(clientPackage, cancellationToken);
+                await _db.SaveChangesAsync(cancellationToken);
+
+                return await Task.FromResult<ActionResult>(new OkObjectResult(clientPackage));
+            }
+            catch
             {
                 return await Task.FromResult<ActionResult>(new BadRequestResult());
             }
-
-            var package = new Package
-            {
-                Height = info.Package.Height,
-                Length = info.Package.Length,
-                Weight = info.Package.Weight,
-                Width = info.Package.Width,
-                Name = info.Package.Name
-            };
-            await _db.Packages.AddAsync(package, cancellationToken);
-            await _db.SaveChangesAsync(cancellationToken);
-            var carType = await _db.CarTypes.FirstOrDefaultAsync(c => c.Id == info.CarTypeId, cancellationToken);
-            
-            var route = await _db.Routes.
-                FirstOrDefaultAsync(r => r.StartCityId == info.StartCityId 
-                                         && r.FinishCityId == info.FinishCityId, cancellationToken);
-            var routeDate = new RouteDate
-            {
-                Route = route,
-                CreateDateTime = info.DateTime
-            };
-            var clientPackage = new ClientPackage
-            {
-                Client = client,
-                Package = package,
-                CarType = carType,
-                IsSingle = info.IsSingle,
-                Price = info.Price,
-                RouteDate = routeDate
-            };
-            await _db.RouteDate.AddAsync(routeDate, cancellationToken);
-            await _db.ClientPackages.AddAsync(clientPackage, cancellationToken);
-            await _db.SaveChangesAsync(cancellationToken);
-
-            return await Task.FromResult<ActionResult>(new OkObjectResult(clientPackage));
         }
     }
 }

@@ -34,15 +34,8 @@ namespace Web.Controllers
         {
             if(ModelState.IsValid)
             {
-                User user = new User
-                {
-                    UserName = model.Login,
-                    Email = model.Email,
-                    PhoneNumber = model.PhoneNumber,
-                    Name = "Admin",
-                    Surname = "Adminov"
-                };
-                
+                User user = new User(model.Login, model.PhoneNumber, model.Email, "Admin", "Adminov");
+
                 var result = await _userManager.CreateAsync(user, model.Password);
                
                 if (result.Succeeded)

@@ -33,7 +33,7 @@ namespace PublicApi.Endpoints.Drivers.CreateRouteTrip
                 return BadRequest();
             }
             return await _routeTrip.CreateRouteTrip(_mapper.Map<RouteInfo>(request),
-                (string)HttpContext.Items["UserId"], cancellationToken);
+                HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         }
     }
 }

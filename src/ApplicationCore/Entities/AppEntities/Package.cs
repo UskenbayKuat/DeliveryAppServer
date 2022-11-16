@@ -2,10 +2,19 @@
 {
     public class Package : BaseEntity
     {
-        public string Name { get; set; }
-        public double Length { get; set; }
-        public double Width { get; set; }
-        public double Height { get; set; }
-        public double Weight { get; set; }
+        public Package(string name, double length, double width, double height, double weight)
+        {
+            Name = name;
+            Length = length;
+            Width = width;
+            Height = height;
+            Weight = weight;
+        }
+
+        public string Name { get; private set;}
+        public double Length { get; private set;}
+        public double Width { get; private set;}
+        public double Height { get; private set;}
+        public double Weight { get; private set;}
     }
 }

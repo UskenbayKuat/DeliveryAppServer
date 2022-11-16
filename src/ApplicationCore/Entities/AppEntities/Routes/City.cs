@@ -2,6 +2,17 @@
 {
     public class City : BaseEntity
     {
-        public string Name { get; set; }
+        public City(int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
+        public string Name { get; private set; }
+
+        public void UpdateName(string name)
+        {
+            Name = name;
+        }
     }
 }

@@ -24,22 +24,13 @@ namespace Infrastructure.Services.DriverService
         {
             try
             {
-                var driver = _db.Drivers.FirstOrDefault(d => d.UserId == userId);
-                var route = await _db.Routes.
-                    FirstAsync(r => r.StartCityId == info.StartCityId &&
-                                    r.FinishCityId == info.FinishCityId, cancellationToken);
-                var routeDate = new RouteDate
-                {
-                    Route = route,
-                    CreateDateTime = info.TripTime
-                };
-                var trip = new RouteTrip
-                {
-                    RouteDate = routeDate,
-                    Driver = driver
-                };
+                var driver = await _db.Drivers.FirstAsync(d => d.UserId == userId, cancellationToken);
+                var route = await _db.Routes.FirstAsync(r => 
+                                                                r.StartCityId == info.StartCityId &&
+                                                                r.FinishCityId == info.FinishCityId, cancellationToken);
+                var trip = new RouteTrip().AddRouteTripData(driver, new RouteDate(info.TripTime).AddRoute(route));
+                
                 await _db.RouteTrips.AddAsync(trip, cancellationToken);
-                await _db.RouteDate.AddAsync(routeDate, cancellationToken);
                 await _db.SaveChangesAsync(cancellationToken);
                 return new OkObjectResult(trip);
             }

@@ -27,7 +27,7 @@ namespace PublicApi.Endpoints.Drivers.CreateCar
             CancellationToken cancellationToken = new CancellationToken())
         {
                 return await _createCar.CreateAutoAsync(_mapper.Map<CreateCarInfo>(request),
-                    (string)HttpContext.Items["UserId"], cancellationToken);
+                    HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         }
     }
 }

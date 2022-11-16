@@ -24,7 +24,7 @@ namespace PublicApi.Endpoints.Clients.ConfirmOrder
         [HttpPost("api/client/confirmOrder")]
         public override async Task<ActionResult> HandleAsync([FromBody]ConfirmOrderCommand request, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _clientPackage.CreateClientPackage(_mapper.Map<ClientPackageInfo>(request), (string)HttpContext.Items["UserId"], cancellationToken);
+            return await _clientPackage.CreateClientPackage(_mapper.Map<ClientPackageInfo>(request), HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         }
     }
 }

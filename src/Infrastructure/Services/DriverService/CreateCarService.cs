@@ -29,24 +29,11 @@ namespace Infrastructure.Services.DriverService
                 var carBrand = await _db.CarBrands.FirstAsync(b => b.Id == info.CarBrandId, token);
                 var carColor = await _db.CarColors.FirstAsync(b => b.Id == info.CarColorId, token);
                 var carType = await _db.CarTypes.FirstAsync(b => b.Id == info.CarTypeId, token);
-                if (driver.Car is not null)
-                {
-                    return new BadRequestObjectResult("Car is already added");
-                } 
-                var car = new Car
-                {
-                    CarBrand = carBrand,
-                    CarColor = carColor,
-                    CarType = carType,
-                    CarNumber = info.LicensePlate,
-                    ProductionYear = info.ProductionYear,
-                    RegistrationCertificate = info.RegistrationCertificate
-                };
-                driver.Car= car;
-                await _db.Cars.AddAsync(car, token); 
+
+               driver.AddCarr(new Car(info.ProductionYear, info.RegistrationCertificate, info.LicensePlate).AddCarOption(carBrand, carType, carColor));
                 _db.Drivers.Update(driver);
                 await _db.SaveChangesAsync(token);
-                return new OkObjectResult(car);
+                return new OkObjectResult(new{driver.Car});
             }
             catch
             {

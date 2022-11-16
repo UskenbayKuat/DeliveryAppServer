@@ -41,7 +41,7 @@ namespace Infrastructure.DataAccess
         //kits
         public DbSet<Kit> Kits { get; set; }
         public DbSet<DriverKit> DriversKits { get; set; }
-        
+
         //chat hub
         public DbSet<ChatHub> ChatHubs { get; set; }
 
@@ -56,63 +56,70 @@ namespace Infrastructure.DataAccess
             modelBuilder.Entity<Order>().Property(o => o.OrderCost).HasPrecision(18, 2);
 
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<CarType>().HasData(
-                new CarType { Id = 1, Name = "Седан" },
-                new CarType { Id = 2, Name = "Минивэн" },
-                new CarType { Id = 3, Name = "Фургон" }
-            );
-
+            
+            #region Routes
+            
             modelBuilder.Entity<City>().HasData(
-                new City { Id = 1, Name = "Алматы" },
-                new City { Id = 2, Name = "Шымкент" },
-                new City { Id = 3, Name = "Нур-Султан" }
-            );
-
-            modelBuilder.Entity<Kit>().HasData(
-                new Kit { Id = 1, Name = "Light", Quantity = 5, IsUnlimited = false },
-                new Kit { Id = 2, Name = "Standard ", Quantity = 10, IsUnlimited = false },
-                new Kit { Id = 3, Name = "Premium", Quantity = 15, IsUnlimited = false },
-                new Kit { Id = 4, Name = "Unlimited", Quantity = 999999, IsUnlimited = true }
-            );
-
-
-            modelBuilder.Entity<RoutePrice>().HasData(
-                new RoutePrice { Id = 1, RouteId = 1, Price = 1000 },
-                new RoutePrice { Id = 2, RouteId = 2, Price = 2000 },
-                new RoutePrice { Id = 3, RouteId = 3, Price = 1000 },
-                new RoutePrice { Id = 4, RouteId = 4, Price = 2000 },
-                new RoutePrice { Id = 5, RouteId = 5, Price = 2000 },
-                new RoutePrice { Id = 6, RouteId = 6, Price = 2000 }
+                new City(1, "Алматы"),
+                new City(2, "Шымкент"),
+                new City(3, "Астана")
             );
             modelBuilder.Entity<Route>().HasData(
-                new Route { Id = 1, StartCityId = 1 , FinishCityId = 2  },
-                new Route { Id = 2, StartCityId = 1 , FinishCityId = 3  },
-                new Route { Id = 3, StartCityId = 2 , FinishCityId = 1  },
-                new Route { Id = 4, StartCityId = 3 , FinishCityId = 1  },
-                new Route { Id = 5, StartCityId = 2 , FinishCityId = 3  },
-                new Route { Id = 6, StartCityId = 3 , FinishCityId = 2  }
+                new Route(1, 1, 2),
+                new Route(2, 1, 3),
+                new Route(3, 2, 1),
+                new Route(4, 3, 1),
+                new Route(5, 2, 3),
+                new Route(6, 3, 2)
             );
+            modelBuilder.Entity<RoutePrice>().HasData(
+                new RoutePrice(1, 1, 1000),
+                new RoutePrice(2, 2, 2000),
+                new RoutePrice(3, 3, 1000),
+                new RoutePrice(4, 4, 2000),
+                new RoutePrice(5, 5, 2000),
+                new RoutePrice(6, 6, 2000)
+            );
+            
+            #endregion
+            
+            #region Cars
+            
+            modelBuilder.Entity<CarType>().HasData(
+                new CarType(1, "Седан"),
+                new CarType(2, "Минивэн"),
+                new CarType(3, "Фургон")
+            );
+            
             modelBuilder.Entity<CarBrand>().HasData(
-                new CarBrand { Id = 1, Name = "BMW" },
-                new CarBrand { Id = 2, Name = "Mercedes" },
-                new CarBrand { Id = 3, Name = "Audi" },
-                new CarBrand { Id = 4, Name = "Toyota" },
-                new CarBrand { Id = 5, Name = "Subaru" },
-                new CarBrand { Id = 6, Name = "Mitsubishi" },
-                new CarBrand { Id = 7, Name = "Ford" },
-                new CarBrand { Id = 8, Name = "Daweoo" },
-                new CarBrand { Id = 9, Name = "Lada" }
+                new CarBrand(1, "BMW"),
+                new CarBrand(2, "Mercedes"),
+                new CarBrand(3, "Audi"),
+                new CarBrand(4, "Toyota"),
+                new CarBrand(5, "Subaru"),
+                new CarBrand(6, "Mitsubishi"),
+                new CarBrand(7, "Ford"),
+                new CarBrand(8, "Daweoo"),
+                new CarBrand(9, "Lada")
             );
             modelBuilder.Entity<CarColor>().HasData(
-                new CarColor { Id = 1, Name = "Черный" },
-                new CarColor { Id = 2, Name = "Белый" },
-                new CarColor { Id = 3, Name = "Серый" },
-                new CarColor { Id = 4, Name = "Красный" },
-                new CarColor { Id = 5, Name = "Бордовый" },
-                new CarColor { Id = 6, Name = "Зеленый" },
-                new CarColor { Id = 7, Name = "Синий" },
-                new CarColor { Id = 8, Name = "Фиолетовый" }
+                new CarColor(1, "Черный"),
+                new CarColor(2, "Белый"),
+                new CarColor(3, "Серый"),
+                new CarColor(4, "Красный"),
+                new CarColor(5, "Бордовый"),
+                new CarColor(6, "Зеленый"),
+                new CarColor(7, "Синий"),
+                new CarColor(8, "Фиолетовый")
+            );
+            
+            #endregion
+            
+            modelBuilder.Entity<Kit>().HasData(
+                new Kit(1, "Light", 5, false),
+                new Kit(2, "Standard ", 10, false),
+                new Kit(3, "Premium", 15, false),
+                new Kit(4, "Unlimited", 999999, true)
             );
         }
     }

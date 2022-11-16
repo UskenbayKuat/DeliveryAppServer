@@ -4,14 +4,40 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ApplicationCore.Entities
 {
-    public class User : IdentityUser
+    public sealed class User : IdentityUser
     {
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public bool IsDriver { get; set; }
-        public bool IsValid { get; set; }
-        public bool IsDeleted { get; set; }
-        public string RefreshToken { get; set; }
-        public DateTime? RefreshTokenExpiryTime { get; set; } 
+        public string Name { get; private set; }
+        public string Surname { get;private set; }
+        public bool IsDriver { get;private set; }
+        public bool IsValid { get;private set; }
+        public bool IsDeleted { get;private set; }
+        public string RefreshToken { get;private set; }
+        public DateTime? RefreshTokenExpiryTime { get;private set; }
+
+        public User(string userName, string phoneNumber, string  email, string name, string surname)
+        {
+            UserName = userName;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            Name = name;
+            Surname = surname;
+        }
+        public User(string phoneNumber, bool  isDriver)
+        {
+            PhoneNumber = phoneNumber;
+            IsDriver = isDriver;
+        }
+        public void AddRefreshToken(string refreshToken, DateTime refreshTokenExpiryTime)
+        {
+            RefreshToken = refreshToken;
+            RefreshTokenExpiryTime = refreshTokenExpiryTime;
+        }
+        public User AddFullName(string name, string surname)
+        {
+            Name = name;
+            Surname = surname;
+            IsValid = true;
+            return this;
+        }
     }
 }

@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations.AppDb
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221115065730_InitialAppDb")]
+    [Migration("20221116191307_InitialAppDb")]
     partial class InitialAppDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -263,6 +263,9 @@ namespace Infrastructure.Migrations.AppDb
                     b.Property<int?>("LocationId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("PackageId")
                         .HasColumnType("integer");
 
@@ -280,6 +283,8 @@ namespace Infrastructure.Migrations.AppDb
                     b.HasIndex("ClientId");
 
                     b.HasIndex("LocationId");
+
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("PackageId");
 
@@ -455,9 +460,6 @@ namespace Infrastructure.Migrations.AppDb
                     b.Property<DateTime?>("CancellationDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("ClientPackageId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime?>("CompletionDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -481,8 +483,6 @@ namespace Infrastructure.Migrations.AppDb
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ClientPackageId");
 
                     b.HasIndex("RouteTripId");
 
@@ -568,7 +568,7 @@ namespace Infrastructure.Migrations.AppDb
                         new
                         {
                             Id = 3,
-                            Name = "Нур-Султан"
+                            Name = "Астана"
                         });
                 });
 
@@ -777,6 +777,10 @@ namespace Infrastructure.Migrations.AppDb
                         .WithMany()
                         .HasForeignKey("LocationId");
 
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId");
+
                     b.HasOne("ApplicationCore.Entities.AppEntities.Package", "Package")
                         .WithMany()
                         .HasForeignKey("PackageId");
@@ -790,6 +794,8 @@ namespace Infrastructure.Migrations.AppDb
                     b.Navigation("Client");
 
                     b.Navigation("Location");
+
+                    b.Navigation("Order");
 
                     b.Navigation("Package");
 
@@ -837,10 +843,6 @@ namespace Infrastructure.Migrations.AppDb
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Order", b =>
                 {
-                    b.HasOne("ApplicationCore.Entities.AppEntities.ClientPackage", "ClientPackage")
-                        .WithMany()
-                        .HasForeignKey("ClientPackageId");
-
                     b.HasOne("ApplicationCore.Entities.AppEntities.RouteTrip", "RouteTrip")
                         .WithMany()
                         .HasForeignKey("RouteTripId");
@@ -848,8 +850,6 @@ namespace Infrastructure.Migrations.AppDb
                     b.HasOne("ApplicationCore.Entities.AppEntities.Status", "Status")
                         .WithMany()
                         .HasForeignKey("StatusId");
-
-                    b.Navigation("ClientPackage");
 
                     b.Navigation("RouteTrip");
 

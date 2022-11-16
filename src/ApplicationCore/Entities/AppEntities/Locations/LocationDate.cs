@@ -4,8 +4,19 @@ namespace ApplicationCore.Entities.AppEntities.Locations
 {
     public class LocationDate : BaseEntity
     {
-        public Location Location { get; set; }
-        public RouteTrip RouteTrip { get; set; }
-        public DateTime LocationDateTime { get; set; }
+        public LocationDate(DateTime locationDateTime)
+        {
+            LocationDateTime = locationDateTime;
+        }
+
+        public Location Location { get; private set;}
+        public RouteTrip RouteTrip { get;  private set;}
+        public DateTime LocationDateTime { get; private set;}
+
+        public void AddLocationAndRouteTrip(Location location, RouteTrip routeTrip)
+        {
+            Location = location;
+            RouteTrip = routeTrip;
+        }
     }
 }

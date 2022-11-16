@@ -4,9 +4,20 @@ namespace ApplicationCore.Entities.AppEntities.Routes
 {
     public class RoutePrice : BaseEntity
     {
-        [ForeignKey("Route")]
-        public int RouteId { get; set; }
-        public Route Route { get; set; }
-        public decimal Price { get; set; }
+        public RoutePrice(int id, int routeId, decimal price)
+        {
+            Id = id;
+            RouteId = routeId;
+            Price = price;
+        }
+        public int RouteId { get; private set; }
+
+        public Route Route { get; private set;}
+        public decimal Price { get; private set; }
+
+        public void UpdatePrice(decimal price)
+        {
+            Price = price;
+        }
     }
 }
