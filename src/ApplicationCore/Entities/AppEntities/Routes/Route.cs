@@ -4,12 +4,18 @@ namespace ApplicationCore.Entities.AppEntities.Routes
 {
     public class Route : BaseEntity
     {
-        [ForeignKey("StartCity")]
-        public int StartCityId { get; set; }
-        public City StartCity { get; set; }
+        public Route(int id, int startCityId, int finishCityId)
+        {
+            Id = id;
+            StartCityId = startCityId;
+            FinishCityId = finishCityId;
+        }
         
-        [ForeignKey("FinishCity")]
-        public int FinishCityId { get; set; }
-        public City FinishCity { get; set; }
+        public int StartCityId { get; private set; }
+
+        public City StartCity { get; private set;}
+        public int FinishCityId { get; private set; }
+        
+        public City FinishCity { get; private set;}
     }
 }

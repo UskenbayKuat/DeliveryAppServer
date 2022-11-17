@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.ApiEntities;
@@ -8,6 +9,7 @@ using AutoMapper;
 using Infrastructure.DataAccess;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.RegisterServices
 {
@@ -22,42 +24,30 @@ namespace Infrastructure.Services.RegisterServices
             _identityDb = identityDb;
         }
 
-        public async Task<ActionResult> ProceedRegistration(ProceedRegistrationInfo info, CancellationToken cancellationToken)
+        public async Task<ActionResult> ProceedRegistration(ProceedRegistrationInfo info, string userId, CancellationToken cancellationToken)
         {
-            var user = _identityDb.Users.FirstOrDefault(u => u.PhoneNumber == info.PhoneNumber && u.IsDriver == info.IsDriver);
-            if (user is null)
+            try
             {
-                return new BadRequestResult();
-            }
-            user.Name = info.Name;
-            user.Surname = info.Surname;
-            user.IsValid = true;
-            await _identityDb.SaveChangesAsync(cancellationToken);
-            
-            if (user.IsDriver)
-            {
-                var driver = new Driver
+                var user = (await _identityDb.Users.FirstAsync(u => u.Id == userId, cancellationToken)).AddFullName(info.Name, info.Surname);
+                if (user.IsDriver)
                 {
-                    UserId = user.Id,
-                    IdentificationNumber = info.IdentificationNumber,
-                    IdentificationSeries = info.IdentificationSeries,
-                    IdentityCardPhotoPath = info.IdentityCardPhotoPath,
-                    DriverLicenceScanPath = info.DriverLicenceScanPath,
-                    IdentityCardCreateDate = info.IdentityCardCreateDate
-                };
-                await _db.Drivers.AddAsync(driver, cancellationToken);
-                await _db.SaveChangesAsync(cancellationToken);
-            }
-            else
-            {
-                var client = new Client
+                    var driver = new Driver(user.Id, info.IdentificationNumber, info.IdentificationSeries,
+                        info.IdentityCardCreateDate, info.DriverLicenceScanPath, info.IdentityCardPhotoPath);
+                    await _db.Drivers.AddAsync(driver, cancellationToken);
+                }
+                else
                 {
-                    UserId = user.Id,
-                };
-                await _db.Clients.AddAsync(client, cancellationToken);
+                    await _db.Clients.AddAsync(new Client(user.Id), cancellationToken);
+                }
+                _identityDb.Users.Update(user);
+                await _identityDb.SaveChangesAsync(cancellationToken);
                 await _db.SaveChangesAsync(cancellationToken);
+                return new OkObjectResult(new {name = user.Name, surname = user.Surname});
             }
-            return new OkObjectResult(new {name = user.Name, surname = user.Surname});
+            catch
+            {
+                return new BadRequestObjectResult("User is not found");
+            }
         }
         
     }

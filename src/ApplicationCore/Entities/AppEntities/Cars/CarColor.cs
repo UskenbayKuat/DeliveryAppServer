@@ -2,6 +2,12 @@
 {
     public class CarColor : BaseEntity
     {
-        public string Name { get; set; }
+        public CarColor(int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
+        public string Name { get; private set;}
     }
 }

@@ -36,7 +36,7 @@ namespace PublicApi.Hub
             var chatHub = await _db.ChatHubs.FirstOrDefaultAsync(c => c.UserId == userId);
             if (chatHub is not null)
             {
-                chatHub.ConnectionId = Context.ConnectionId;
+                chatHub.UpdateConnectId(Context.ConnectionId);
                 _db.ChatHubs.Update(chatHub);
             }
             else
@@ -52,7 +52,7 @@ namespace PublicApi.Hub
             try
             {
                 var chatHub = await _db.ChatHubs.FirstAsync(c => c.ConnectionId == Context.ConnectionId);
-                chatHub.ConnectionId = string.Empty;
+                chatHub.RemoveConnectId();
                 _db.ChatHubs.Update(chatHub);
                 await _db.SaveChangesAsync();
                 return base.OnDisconnectedAsync(exception);

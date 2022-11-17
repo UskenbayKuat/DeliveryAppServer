@@ -7,6 +7,6 @@ namespace ApplicationCore.Interfaces.RegisterInterfaces
 {
     public interface IProceedRegistration
     {
-        public Task<ActionResult> ProceedRegistration(ProceedRegistrationInfo info, CancellationToken cancellationToken);
+        public Task<ActionResult> ProceedRegistration(ProceedRegistrationInfo info, string userId, CancellationToken cancellationToken);
     }
 }
