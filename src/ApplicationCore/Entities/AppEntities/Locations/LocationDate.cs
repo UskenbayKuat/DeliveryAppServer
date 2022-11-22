@@ -9,14 +9,9 @@ namespace ApplicationCore.Entities.AppEntities.Locations
             LocationDateTime = locationDateTime;
         }
 
-        public Location Location { get; private set;}
-        public RouteTrip RouteTrip { get;  private set;}
+        public Location Location { get; set;}
+        public RouteTrip RouteTrip { get; set;}
         public DateTime LocationDateTime { get; private set;}
-
-        public void AddLocationAndRouteTrip(Location location, RouteTrip routeTrip)
-        {
-            Location = location;
-            RouteTrip = routeTrip;
-        }
+        
     }
 }

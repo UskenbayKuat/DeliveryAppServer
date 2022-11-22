@@ -139,7 +139,7 @@ namespace Infrastructure.Migrations.AppDb
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    State = table.Column<int>(type: "integer", nullable: false)
+                    State = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -242,7 +242,7 @@ namespace Infrastructure.Migrations.AppDb
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     RouteId = table.Column<int>(type: "integer", nullable: true),
-                    CreateDateTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    DeliveryDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -309,7 +309,8 @@ namespace Infrastructure.Migrations.AppDb
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DriverId = table.Column<int>(type: "integer", nullable: true),
-                    RouteDateId = table.Column<int>(type: "integer", nullable: true)
+                    RouteDateId = table.Column<int>(type: "integer", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -444,6 +445,32 @@ namespace Infrastructure.Migrations.AppDb
                 });
 
             migrationBuilder.CreateTable(
+                name: "RefusalOrders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RouteTripId = table.Column<int>(type: "integer", nullable: true),
+                    ClientPackageId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefusalOrders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefusalOrders_ClientPackages_ClientPackageId",
+                        column: x => x.ClientPackageId,
+                        principalTable: "ClientPackages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RefusalOrders_RouteTrips_RouteTripId",
+                        column: x => x.RouteTripId,
+                        principalTable: "RouteTrips",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "WaitingList",
                 columns: table => new
                 {
@@ -484,9 +511,9 @@ namespace Infrastructure.Migrations.AppDb
                 values: new object[,]
                 {
                     { 8, "Фиолетовый" },
-                    { 7, "Синий" },
                     { 6, "Зеленый" },
                     { 5, "Бордовый" },
+                    { 7, "Синий" },
                     { 3, "Серый" },
                     { 2, "Белый" },
                     { 1, "Черный" },
@@ -508,9 +535,9 @@ namespace Infrastructure.Migrations.AppDb
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
+                    { 3, "Астана" },
                     { 2, "Шымкент" },
-                    { 1, "Алматы" },
-                    { 3, "Астана" }
+                    { 1, "Алматы" }
                 });
 
             migrationBuilder.InsertData(
@@ -518,10 +545,22 @@ namespace Infrastructure.Migrations.AppDb
                 columns: new[] { "Id", "IsUnlimited", "Name", "Quantity" },
                 values: new object[,]
                 {
-                    { 1, false, "Light", 5 },
-                    { 2, false, "Standard ", 10 },
                     { 3, false, "Premium", 15 },
+                    { 2, false, "Standard ", 10 },
+                    { 1, false, "Light", 5 },
                     { 4, true, "Unlimited", 999999 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Statuses",
+                columns: new[] { "Id", "State" },
+                values: new object[,]
+                {
+                    { 4, "Delayed" },
+                    { 1, "New" },
+                    { 2, "InProgress" },
+                    { 3, "Done" },
+                    { 5, "Canceled" }
                 });
 
             migrationBuilder.InsertData(
@@ -631,6 +670,16 @@ namespace Infrastructure.Migrations.AppDb
                 column: "StatusId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefusalOrders_ClientPackageId",
+                table: "RefusalOrders",
+                column: "ClientPackageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefusalOrders_RouteTripId",
+                table: "RefusalOrders",
+                column: "RouteTripId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RouteDate_RouteId",
                 table: "RouteDate",
                 column: "RouteId");
@@ -676,6 +725,9 @@ namespace Infrastructure.Migrations.AppDb
 
             migrationBuilder.DropTable(
                 name: "LocationDate");
+
+            migrationBuilder.DropTable(
+                name: "RefusalOrders");
 
             migrationBuilder.DropTable(
                 name: "RoutePrice");

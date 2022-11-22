@@ -6,18 +6,18 @@ namespace ApplicationCore.Entities.AppEntities
 {
     public class RouteTrip : BaseEntity
     {
-        public Driver Driver { get; private set;}
-        public RouteDate RouteDate { get; private set; }
-
-        public RouteTrip AddRouteTripData(Driver driver, RouteDate routeDate)
+        public RouteTrip()
         {
-            Driver = driver;
-            RouteDate = routeDate;
-            return this;
+            IsActive = true;
         }
-        public void UpdateRouteDate(RouteDate routeDate)
+
+        public Driver Driver { get; set;}
+        public RouteDate RouteDate { get; set; }
+        public bool IsActive { get; private set; }
+
+        public void ChangeStatusToNotActive()
         {
-            RouteDate = routeDate;
+            IsActive = false;
         }
     }
 }

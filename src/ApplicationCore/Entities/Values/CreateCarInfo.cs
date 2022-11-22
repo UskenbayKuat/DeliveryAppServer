@@ -1,8 +1,4 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using ApplicationCore.Entities.AppEntities;
-using ApplicationCore.Enums;
-
-namespace ApplicationCore.Entities.ApiEntities
+namespace ApplicationCore.Entities.Values
 {
     public class CreateCarInfo
     {

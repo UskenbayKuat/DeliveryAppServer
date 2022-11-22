@@ -1,7 +1,9 @@
-﻿using ApplicationCore.Entities.ApiEntities;
+﻿using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
+using ApplicationCore.Interfaces.HubInterfaces;
+using ApplicationCore.Interfaces.OrderInterfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using ApplicationCore.Interfaces.SharedInterfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
@@ -9,6 +11,8 @@ using Infrastructure.Config;
 using Infrastructure.Services;
 using Infrastructure.Services.ClientService;
 using Infrastructure.Services.DriverService;
+using Infrastructure.Services.HubServices;
+using Infrastructure.Services.OrderServices;
 using Infrastructure.Services.RegisterServices;
 using Infrastructure.Services.Shared;
 using Infrastructure.Services.TokenServices;
@@ -33,6 +37,8 @@ namespace PublicApi.Extensions
             services.AddTransient<IDeliveryAppData<DriverAppDataInfo>, DriverAppDataService>();
             services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
             services.AddTransient<IUserData, UserDataService>();
+            services.AddScoped<IHubConnect, HubConnectService>();
+            services.AddScoped<IOrder, OrderService>();
             services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.JwtSettings));
 
         }

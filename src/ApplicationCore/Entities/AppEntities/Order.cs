@@ -1,27 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ApplicationCore.Entities.AppEntities
 {
     public class Order : BaseEntity
     {
-        public Order ( DateTime orderDate, decimal orderCost)
+        public Order (DateTime orderDate)
         {
             OrderDate = orderDate;
-            OrderCost = orderCost;
         }
         
-        public RouteTrip RouteTrip { get; private set;}
-        public Status Status { get; private set; }
-        public DateTime OrderDate { get; private set;}
+        public RouteTrip RouteTrip { get; set;}
+        public Status Status { get; set; }
+        public DateTime OrderDate { get; private set;}  
         public DateTime? StartDate { get; set; }
         public DateTime? CompletionDate { get; private set; }
         public DateTime? CancellationDate { get; private set; }
         public decimal OrderCost { get; private set; }
         public bool IsDeleted { get; set; }
+        public List<ClientPackage> ClientPackages { get;  set; } = new();
+        
 
-        public void AddOrderDate(RouteTrip routeTrip, Status status)
+        public void UpdateStatus(Status status)
         {
-            RouteTrip = routeTrip;
             Status = status;
         }
 

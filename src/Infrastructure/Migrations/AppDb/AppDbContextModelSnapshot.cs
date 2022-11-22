@@ -516,6 +516,28 @@ namespace Infrastructure.Migrations.AppDb
                     b.ToTable("Packages");
                 });
 
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.RejectOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int?>("ClientPackageId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RouteTripId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientPackageId");
+
+                    b.HasIndex("RouteTripId");
+
+                    b.ToTable("RefusalOrders");
+                });
+
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.RouteTrip", b =>
                 {
                     b.Property<int>("Id")
@@ -525,6 +547,9 @@ namespace Infrastructure.Migrations.AppDb
 
                     b.Property<int?>("DriverId")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<int?>("RouteDateId")
                         .HasColumnType("integer");
@@ -637,7 +662,7 @@ namespace Infrastructure.Migrations.AppDb
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<DateTime>("CreateDateTime")
+                    b.Property<DateTime>("DeliveryDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("RouteId")
@@ -715,12 +740,39 @@ namespace Infrastructure.Migrations.AppDb
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("State")
-                        .HasColumnType("integer");
+                    b.Property<string>("State")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.ToTable("Statuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            State = "New"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            State = "InProgress"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            State = "Done"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            State = "Delayed"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            State = "Canceled"
+                        });
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.WaitingList", b =>
@@ -775,8 +827,8 @@ namespace Infrastructure.Migrations.AppDb
                         .WithMany()
                         .HasForeignKey("LocationId");
 
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Order", "Order")
-                        .WithMany()
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Order", null)
+                        .WithMany("ClientPackages")
                         .HasForeignKey("OrderId");
 
                     b.HasOne("ApplicationCore.Entities.AppEntities.Package", "Package")
@@ -792,8 +844,6 @@ namespace Infrastructure.Migrations.AppDb
                     b.Navigation("Client");
 
                     b.Navigation("Location");
-
-                    b.Navigation("Order");
 
                     b.Navigation("Package");
 
@@ -852,6 +902,21 @@ namespace Infrastructure.Migrations.AppDb
                     b.Navigation("RouteTrip");
 
                     b.Navigation("Status");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.RejectOrder", b =>
+                {
+                    b.HasOne("ApplicationCore.Entities.AppEntities.ClientPackage", "ClientPackage")
+                        .WithMany()
+                        .HasForeignKey("ClientPackageId");
+
+                    b.HasOne("ApplicationCore.Entities.AppEntities.RouteTrip", "RouteTrip")
+                        .WithMany()
+                        .HasForeignKey("RouteTripId");
+
+                    b.Navigation("ClientPackage");
+
+                    b.Navigation("RouteTrip");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.RouteTrip", b =>
@@ -915,6 +980,11 @@ namespace Infrastructure.Migrations.AppDb
                         .HasForeignKey("ClientPackageId");
 
                     b.Navigation("ClientPackage");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Order", b =>
+                {
+                    b.Navigation("ClientPackages");
                 });
 #pragma warning restore 612, 618
         }

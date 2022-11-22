@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.ApiEntities;
+using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Mvc;
@@ -38,17 +38,9 @@ namespace Infrastructure.Services.ClientService
 
         private decimal AddPerKilo(decimal price, double kilo)
         {
-            if (kilo <= 5)
-            {
-                return price;
-            }
-            
-            for (var i = 5; i <= kilo; i++)
-            {
-                price += 250;
-            }
-
-            return price;
+            return price <= 5 
+                ? price 
+                : price + 250 * (decimal)((int)kilo - 5);
         }
 
         private decimal SetRoutePrice(ClientPackageInfo info)

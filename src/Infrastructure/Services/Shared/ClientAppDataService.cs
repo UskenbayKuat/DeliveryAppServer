@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.ApiEntities;
+using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.SharedInterfaces;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Mvc;

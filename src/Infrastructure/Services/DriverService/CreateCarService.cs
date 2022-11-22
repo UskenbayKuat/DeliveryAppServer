@@ -2,9 +2,9 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.ApiEntities;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
+using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +30,7 @@ namespace Infrastructure.Services.DriverService
                 var carColor = await _db.CarColors.FirstAsync(b => b.Id == info.CarColorId, token);
                 var carType = await _db.CarTypes.FirstAsync(b => b.Id == info.CarTypeId, token);
 
-               driver.AddCarr(new Car(info.ProductionYear, info.RegistrationCertificate, info.LicensePlate).AddCarOption(carBrand, carType, carColor));
+               driver.Car = new Car(info.ProductionYear, info.RegistrationCertificate, info.LicensePlate) { CarBrand = carBrand, CarColor = carColor, CarType = carType};
                 _db.Drivers.Update(driver);
                 await _db.SaveChangesAsync(token);
                 return new OkObjectResult(new{driver.Car});

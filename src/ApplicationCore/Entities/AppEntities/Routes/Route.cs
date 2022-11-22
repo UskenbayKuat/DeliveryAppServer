@@ -13,9 +13,9 @@ namespace ApplicationCore.Entities.AppEntities.Routes
         
         public int StartCityId { get; private set; }
 
-        public City StartCity { get; private set;}
+        public City StartCity { get; set;}
         public int FinishCityId { get; private set; }
         
-        public City FinishCity { get; private set;}
+        public City FinishCity { get; set;}
     }
 }

@@ -8,14 +8,6 @@ namespace ApplicationCore.Entities.AppEntities
 {
     public class Driver : BaseEntity
     {
-        public string UserId { get;private set; }
-        public string IdentificationNumber { get;private set; }
-        public string IdentificationSeries { get; private set;}
-        public DateTime IdentityCardCreateDate { get; private set;}
-        public string DriverLicenceScanPath { get; private set;}
-        public string IdentityCardPhotoPath { get; private set;}
-        public Car Car { get; private set; }
-        public double Rating { get; set; }
         public Driver(string userId, string identificationNumber, string identificationSeries, DateTime identityCardCreateDate, string driverLicenceScanPath, string identityCardPhotoPath)
         {
             UserId = userId;
@@ -25,12 +17,28 @@ namespace ApplicationCore.Entities.AppEntities
             DriverLicenceScanPath = driverLicenceScanPath;
             IdentityCardPhotoPath = identityCardPhotoPath;
         }
+        public string UserId { get;private set; }
+        public string IdentificationNumber { get;private set; }
+        public string IdentificationSeries { get; private set;}
+        public DateTime IdentityCardCreateDate { get; private set;}
+        public string DriverLicenceScanPath { get; private set;}
+        public string IdentityCardPhotoPath { get; private set;}
+        private Car _car;
 
-        public void AddCarr(Car car)
+        public Car Car
         {
-            if (Car is not null)
-                throw new BadHttpRequestException("Car is already added");
-            Car = car;
+            get => _car;
+            set
+            {
+                if (_car is not null)
+                {
+                    throw new BadHttpRequestException("Car is already added");
+                }
+                _car = value;
+            }
         }
+
+        public double Rating { get; set; }
+
     }
 }

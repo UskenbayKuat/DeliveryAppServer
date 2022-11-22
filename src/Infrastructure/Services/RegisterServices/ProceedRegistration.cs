@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.ApiEntities;
 using ApplicationCore.Entities.AppEntities;
+using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using AutoMapper;
 using Infrastructure.DataAccess;

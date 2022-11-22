@@ -6,14 +6,6 @@ namespace ApplicationCore.Entities
 {
     public sealed class User : IdentityUser
     {
-        public string Name { get; private set; }
-        public string Surname { get;private set; }
-        public bool IsDriver { get;private set; }
-        public bool IsValid { get;private set; }
-        public bool IsDeleted { get;private set; }
-        public string RefreshToken { get;private set; }
-        public DateTime? RefreshTokenExpiryTime { get;private set; }
-
         public User(string userName, string phoneNumber, string  email, string name, string surname)
         {
             UserName = userName;
@@ -27,6 +19,16 @@ namespace ApplicationCore.Entities
             PhoneNumber = phoneNumber;
             IsDriver = isDriver;
         }
+        public string Name { get; private set; }
+        public string Surname { get;private set; }
+        public bool IsDriver { get;private set; }
+        public bool IsValid { get;private set; }
+        public bool IsDeleted { get;private set; }
+        public string RefreshToken { get;private set; }
+        public DateTime? RefreshTokenExpiryTime { get;private set; }
+
+
+
         public void AddRefreshToken(string refreshToken, DateTime refreshTokenExpiryTime)
         {
             RefreshToken = refreshToken;

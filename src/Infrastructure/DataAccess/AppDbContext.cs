@@ -2,6 +2,7 @@
 using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Routes;
+using ApplicationCore.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.DataAccess
@@ -37,6 +38,7 @@ namespace Infrastructure.DataAccess
         public DbSet<WaitingList> WaitingList { get; set; }
         public DbSet<Package> Packages { get; set; }
         public DbSet<Status> Statuses { get; set; }
+        public DbSet<RejectOrder>  RefusalOrders { get; set; }
 
         //kits
         public DbSet<Kit> Kits { get; set; }
@@ -120,6 +122,14 @@ namespace Infrastructure.DataAccess
                 new Kit(2, "Standard ", 10, false),
                 new Kit(3, "Premium", 15, false),
                 new Kit(4, "Unlimited", 999999, true)
+            );
+
+            modelBuilder.Entity<Status>().HasData(
+                new Status(1, State.New.ToString()),
+                new Status(2, State.InProgress.ToString()),
+                new Status(3, State.Done.ToString()),
+                new Status(4, State.Delayed.ToString()),
+                new Status(5, State.Canceled.ToString())
             );
         }
     }

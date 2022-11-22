@@ -4,18 +4,13 @@ namespace ApplicationCore.Entities.AppEntities.Routes
 {
     public class RouteDate : BaseEntity
     {
-        public RouteDate(DateTime createDateTime)
+        public RouteDate(DateTime deliveryDate)
         {
-            CreateDateTime = createDateTime;
+            DeliveryDate = deliveryDate;
         }
 
-        public Route Route { get; private set;}
-        public DateTime CreateDateTime { get; private set;}
-
-        public RouteDate AddRoute(Route route)
-        {
-            Route = route;
-            return this;
-        }
+        public Route Route { get; set;}
+        public DateTime DeliveryDate { get; private set;}
+        
     }
 }

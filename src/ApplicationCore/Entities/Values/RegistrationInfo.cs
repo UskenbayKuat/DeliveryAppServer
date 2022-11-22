@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Entities.ApiEntities
+﻿namespace ApplicationCore.Entities.Values
 {
     public class RegistrationInfo
     {

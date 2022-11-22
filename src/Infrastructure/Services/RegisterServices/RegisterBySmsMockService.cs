@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities;
-using ApplicationCore.Entities.ApiEntities;
+using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
 using AutoMapper;

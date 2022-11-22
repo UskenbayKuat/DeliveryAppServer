@@ -11,13 +11,15 @@ namespace ApplicationCore.Entities.AppEntities
             ConnectionId = connectionId;
         }
 
-        public void UpdateConnectId(string connectionId)
+        public ChatHub UpdateConnectId(string connectionId)
         {
             ConnectionId = connectionId;
+            return this;
         }
-        public void RemoveConnectId()
+        public ChatHub RemoveConnectId()
         {
             ConnectionId = string.Empty;
+            return this;
         }
     }
 }

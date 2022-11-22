@@ -4,14 +4,15 @@ namespace ApplicationCore.Entities.AppEntities
 {
     public class Status : BaseEntity
     {
-        public Status(State state)
+        public Status(int id, string state)
         {
+            Id = id;
             State = state;
         }
 
-        public State State { get; private set; }
+        public string State { get; private set; }
 
-        public void UpdateState(State state)
+        public void UpdateState(string state)
         {
             State = state;
         }
