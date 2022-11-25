@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Entities.AppEntities
+﻿namespace ApplicationCore.Entities.AppEntities.Orders
 {
     public class Package : BaseEntity
     {

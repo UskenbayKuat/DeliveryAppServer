@@ -1,5 +1,6 @@
 using System;
 using ApplicationCore.Entities.AppEntities;
+using ApplicationCore.Entities.AppEntities.Orders;
 
 namespace PublicApi.Endpoints.Clients.ConfirmOrder
 {

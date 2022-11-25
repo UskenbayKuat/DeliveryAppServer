@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
+using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Enums;
 using ApplicationCore.Interfaces.OrderInterfaces;
@@ -26,23 +27,23 @@ namespace Infrastructure.Services.OrderServices
             _identityDbContext = identityDbContext;
         }
 
-        public async Task<string> FindRouteTripAsync(OrderInfo orderInfo, CancellationToken cancellationToken)
+        public async Task<string> FindDriverConnectionIdAsync(ClientPackageInfoToDriver clientPackageInfoToDriver, CancellationToken cancellationToken)
         {
-            var routeTripList = _db.RouteTrips.Include(r => r.RouteDate)
+            var routeTripList = _db.RouteTrips.Include(r => r.RouteDate) // 1 - false, 2 - false, 3 -clientpackage
                 .Include(r => r.Driver)
                 .Include(r => r.RouteDate.Route)
-                .Where(r => r.RouteDate.Route.Id == orderInfo.Route.Id
-                            && r.IsActive == true && r.RouteDate.DeliveryDate.Day >= orderInfo.DateTime.Day).ToList();
+                .Where(r => r.RouteDate.Route.Id == clientPackageInfoToDriver.Route.Id
+                            && r.IsActive == true && r.RouteDate.DeliveryDate.Day >= clientPackageInfoToDriver.DateTime.Day).ToList();
             for (var i = 0; i < routeTripList.Count; i++)
             {
                 var chatHub = await _db.ChatHubs.FirstOrDefaultAsync(c => c.UserId == routeTripList[i].Driver.UserId,
                     cancellationToken);
                 if (!string.IsNullOrEmpty(chatHub.ConnectionId))
                 {
-                    var check = await _db.RefusalOrders.AnyAsync(
-                        r => r.RouteTrip.Id == routeTripList[i].Id && r.ClientPackage.Id == orderInfo.ClientPackageId,
+                    var checkRefusal = await _db.RejectedClientPackages.AnyAsync(
+                        r => r.RouteTrip.Id == routeTripList[i].Id && r.ClientPackage.Id == clientPackageInfoToDriver.ClientPackageId,
                         cancellationToken);
-                    if (!check)
+                    if (!checkRefusal) //false
                     {
                         return chatHub.ConnectionId;
                     }
@@ -50,16 +51,16 @@ namespace Infrastructure.Services.OrderServices
             }
 
             var clientPackage =
-                await _db.ClientPackages.FirstAsync(c => c.Id == orderInfo.ClientPackageId, cancellationToken);
+                await _db.ClientPackages.FirstAsync(c => c.Id == clientPackageInfoToDriver.ClientPackageId, cancellationToken);
             var waitingList = new WaitingList { ClientPackage = clientPackage };
             await _db.WaitingList.AddAsync(waitingList, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
             return string.Empty;
         }
 
-        public async Task<List<OrderInfo>> FindClientPackagesAsync(string userId)
+        public async Task<List<ClientPackageInfoToDriver>> FindClientPackagesAsync(string userId)
         {
-            var orderInfo = new List<OrderInfo>();
+            var orderInfo = new List<ClientPackageInfoToDriver>();
             var routeTrip = await _db.RouteTrips.Include(d => d.Driver)
                                 .Include(r => r.RouteDate)
                                 .Include(r => r.RouteDate.Route)
@@ -75,7 +76,7 @@ namespace Infrastructure.Services.OrderServices
                 .Include(w => w.ClientPackage.RouteDate.Route.FinishCity)
                 .Where(w =>
                     w.ClientPackage.RouteDate.Route.Id == routeTrip.RouteDate.Route.Id &&
-                    w.ClientPackage.RouteDate.DeliveryDate.Day == routeTrip.RouteDate.DeliveryDate.Day).ToList();
+                    w.ClientPackage.RouteDate.DeliveryDate.Day <= routeTrip.RouteDate.DeliveryDate.Day).ToList();
             if (waitingLists.Count <= 0)
             {
                 return orderInfo;
@@ -85,7 +86,7 @@ namespace Infrastructure.Services.OrderServices
                 var user = await _identityDbContext.Users.FirstOrDefaultAsync(u =>
                     u.Id == waitingLists[i].ClientPackage.Client.UserId) 
                            ?? throw new HubException();
-                orderInfo.Add(new OrderInfo
+                orderInfo.Add(new ClientPackageInfoToDriver
                 {
                     ClientPackageId = waitingLists[i].ClientPackage.Id,
                     Location = null,
@@ -136,17 +137,17 @@ namespace Infrastructure.Services.OrderServices
             }
         }
 
-        public async Task<string> RejectAsync(string userId, OrderInfo orderInfo,
+        public async Task<string> RejectAsync(string driverUserId, ClientPackageInfoToDriver clientPackageInfoToDriver,
             CancellationToken cancellationToken)
         {
             var clientPackage = await _db.ClientPackages.Include(c => c.Client)
-                .FirstAsync(c => c.Id == orderInfo.ClientPackageId, cancellationToken);
+                .FirstAsync(c => c.Id == clientPackageInfoToDriver.ClientPackageId, cancellationToken);
             var routeTrip = await _db.RouteTrips.Include(r => r.Driver)
-                .FirstAsync(r => r.Driver.UserId == userId && r.IsActive == true, cancellationToken);
-            var refusalOrder = new RejectOrder { ClientPackage = clientPackage, RouteTrip = routeTrip };
-            await _db.RefusalOrders.AddAsync(refusalOrder, cancellationToken);
+                .FirstAsync(r => r.Driver.UserId == driverUserId && r.IsActive == true, cancellationToken);
+            var refusalOrder = new RejectedClientPackage { ClientPackage = clientPackage, RouteTrip = routeTrip };
+            await _db.RejectedClientPackages.AddAsync(refusalOrder, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
-            return await FindRouteTripAsync(orderInfo, cancellationToken);
+            return await FindDriverConnectionIdAsync(clientPackageInfoToDriver, cancellationToken);
         }
     }
 }

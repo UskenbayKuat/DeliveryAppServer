@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using ApplicationCore.Entities.AppEntities.Cars;
+using ApplicationCore.Exceptions;
 using Microsoft.AspNetCore.Http;
 
 namespace ApplicationCore.Entities.AppEntities
@@ -32,7 +33,7 @@ namespace ApplicationCore.Entities.AppEntities
             {
                 if (_car is not null)
                 {
-                    throw new BadHttpRequestException("Car is already added");
+                    throw new CarExistsException("Car is already added");
                 }
                 _car = value;
             }

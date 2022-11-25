@@ -1,10 +1,11 @@
 using System;
 using ApplicationCore.Entities.AppEntities;
+using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 
 namespace ApplicationCore.Entities.Values
 {
-    public class OrderInfo
+    public class ClientPackageInfoToDriver
     {
         public int ClientPackageId { get; set; }
         public string PhoneNumber { get; set; }

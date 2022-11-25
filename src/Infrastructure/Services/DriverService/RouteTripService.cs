@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
+using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.DriverInterfaces;
@@ -31,7 +32,7 @@ namespace Infrastructure.Services.DriverService
                     .AnyAsync(r => r.Driver == driver && r.IsActive == true, cancellationToken);
             if (result)
             {
-                return new BadRequestObjectResult("Сначала закончите текущую маршрут");
+                return new BadRequestObjectResult("Сначала завершите текущий маршрут");
             }
             var route = await _db.Routes.FirstAsync(r =>
                 r.StartCityId == info.StartCityId &&

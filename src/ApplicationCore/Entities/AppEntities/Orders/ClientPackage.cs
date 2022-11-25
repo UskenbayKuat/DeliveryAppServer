@@ -1,10 +1,8 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using ApplicationCore.Entities.AppEntities.Cars;
+﻿using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Routes;
 
-namespace ApplicationCore.Entities.AppEntities
+namespace ApplicationCore.Entities.AppEntities.Orders
 {
     public class ClientPackage : BaseEntity
     {

@@ -8,6 +8,6 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
 {
     public interface IClientPackage
     {
-        public Task<OrderInfo> CreateAsync(ClientPackageInfo info, string clientUserId, CancellationToken cancellationToken);
+        public Task<ClientPackageInfoToDriver> CreateAsync(ClientPackageInfo info, string clientUserId, CancellationToken cancellationToken);
     }
 }

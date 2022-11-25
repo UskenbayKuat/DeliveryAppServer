@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
+using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.ClientInterfaces;
@@ -24,7 +25,7 @@ namespace Infrastructure.Services.ClientService
             _dbIdentityDbContext = dbIdentityDbContext;
         }
 
-        public async Task<OrderInfo> CreateAsync(ClientPackageInfo info, string clientUserId,
+        public async Task<ClientPackageInfoToDriver> CreateAsync(ClientPackageInfo info, string clientUserId,
             CancellationToken cancellationToken)
         {
             var user = await _dbIdentityDbContext.Users.FirstAsync(u => u.Id == clientUserId, cancellationToken);
@@ -43,7 +44,7 @@ namespace Infrastructure.Services.ClientService
             };
             await _db.ClientPackages.AddAsync(clientPackage, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
-            return new OrderInfo
+            return new ClientPackageInfoToDriver
             {
                 ClientPackageId = clientPackage.Id,
                 Location = null,

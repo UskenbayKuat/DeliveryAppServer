@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ApplicationCore.Entities.AppEntities
+namespace ApplicationCore.Entities.AppEntities.Orders
 {
     public class Order : BaseEntity
     {

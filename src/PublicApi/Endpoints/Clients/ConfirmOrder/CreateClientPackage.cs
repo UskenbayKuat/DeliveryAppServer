@@ -34,10 +34,10 @@ namespace PublicApi.Endpoints.Clients.ConfirmOrder
             try
             {
                 var orderInfo = await _clientPackage.CreateAsync(_mapper.Map<ClientPackageInfo>(request), HttpContext.Items["UserId"]?.ToString(), cancellationToken);
-                var driverConnectId = await _order.FindRouteTripAsync(orderInfo, cancellationToken);
+                var driverConnectId = await _order.FindDriverConnectionIdAsync(orderInfo, cancellationToken);
                 if (!string.IsNullOrEmpty(driverConnectId))
                     await _hubContext.Clients.Client(driverConnectId)
-                        .SendCoreAsync("SendClientInfoToDriver", new[] {  new List<OrderInfo>{orderInfo}}, cancellationToken);
+                        .SendCoreAsync("SendClientInfoToDriver", new[] {  new List<ClientPackageInfoToDriver>{orderInfo}}, cancellationToken);
                 return Ok(request);
             }
             catch

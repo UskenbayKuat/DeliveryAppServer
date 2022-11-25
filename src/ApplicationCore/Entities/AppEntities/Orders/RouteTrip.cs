@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using ApplicationCore.Entities.AppEntities.Routes;
+﻿using ApplicationCore.Entities.AppEntities.Routes;
 
-namespace ApplicationCore.Entities.AppEntities
+namespace ApplicationCore.Entities.AppEntities.Orders
 {
     public class RouteTrip : BaseEntity
     {

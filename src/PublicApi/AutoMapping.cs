@@ -25,7 +25,7 @@ namespace PublicApi
             CreateMap<CalculateOrderCommand, ClientPackageInfo>();
             CreateMap<ClientPackageCommand, ClientPackageInfo>();
             CreateMap<CreateCarCommand, CreateCarInfo>();
-            CreateMap<OrderCommand, OrderInfo>();
+            CreateMap<OrderCommand, ClientPackageInfoToDriver>();
 
             CreateMap<RefreshRequest, RefreshTokenInfo>()
                 .ForMember("RefreshToken", opt => opt.MapFrom(o => o.RefreshToken));

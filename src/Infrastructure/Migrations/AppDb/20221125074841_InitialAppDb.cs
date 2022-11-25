@@ -117,6 +117,19 @@ namespace Infrastructure.Migrations.AppDb
                 });
 
             migrationBuilder.CreateTable(
+                name: "MessagesForUser",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Description = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MessagesForUser", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Packages",
                 columns: table => new
                 {
@@ -445,7 +458,7 @@ namespace Infrastructure.Migrations.AppDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "RefusalOrders",
+                name: "RejectedClientPackages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -455,15 +468,15 @@ namespace Infrastructure.Migrations.AppDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RefusalOrders", x => x.Id);
+                    table.PrimaryKey("PK_RejectedClientPackages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RefusalOrders_ClientPackages_ClientPackageId",
+                        name: "FK_RejectedClientPackages_ClientPackages_ClientPackageId",
                         column: x => x.ClientPackageId,
                         principalTable: "ClientPackages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RefusalOrders_RouteTrips_RouteTripId",
+                        name: "FK_RejectedClientPackages_RouteTrips_RouteTripId",
                         column: x => x.RouteTripId,
                         principalTable: "RouteTrips",
                         principalColumn: "Id",
@@ -535,9 +548,9 @@ namespace Infrastructure.Migrations.AppDb
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
+                    { 1, "Алматы" },
                     { 3, "Астана" },
-                    { 2, "Шымкент" },
-                    { 1, "Алматы" }
+                    { 2, "Шымкент" }
                 });
 
             migrationBuilder.InsertData(
@@ -545,10 +558,10 @@ namespace Infrastructure.Migrations.AppDb
                 columns: new[] { "Id", "IsUnlimited", "Name", "Quantity" },
                 values: new object[,]
                 {
-                    { 3, false, "Premium", 15 },
-                    { 2, false, "Standard ", 10 },
                     { 1, false, "Light", 5 },
-                    { 4, true, "Unlimited", 999999 }
+                    { 4, true, "Unlimited", 999999 },
+                    { 2, false, "Standard ", 10 },
+                    { 3, false, "Premium", 15 }
                 });
 
             migrationBuilder.InsertData(
@@ -556,10 +569,10 @@ namespace Infrastructure.Migrations.AppDb
                 columns: new[] { "Id", "State" },
                 values: new object[,]
                 {
-                    { 4, "Delayed" },
                     { 1, "New" },
                     { 2, "InProgress" },
                     { 3, "Done" },
+                    { 4, "Delayed" },
                     { 5, "Canceled" }
                 });
 
@@ -670,13 +683,13 @@ namespace Infrastructure.Migrations.AppDb
                 column: "StatusId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RefusalOrders_ClientPackageId",
-                table: "RefusalOrders",
+                name: "IX_RejectedClientPackages_ClientPackageId",
+                table: "RejectedClientPackages",
                 column: "ClientPackageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RefusalOrders_RouteTripId",
-                table: "RefusalOrders",
+                name: "IX_RejectedClientPackages_RouteTripId",
+                table: "RejectedClientPackages",
                 column: "RouteTripId");
 
             migrationBuilder.CreateIndex(
@@ -727,7 +740,10 @@ namespace Infrastructure.Migrations.AppDb
                 name: "LocationDate");
 
             migrationBuilder.DropTable(
-                name: "RefusalOrders");
+                name: "MessagesForUser");
+
+            migrationBuilder.DropTable(
+                name: "RejectedClientPackages");
 
             migrationBuilder.DropTable(
                 name: "RoutePrice");

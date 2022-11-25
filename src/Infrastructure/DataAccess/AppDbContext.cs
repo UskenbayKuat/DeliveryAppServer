@@ -1,7 +1,9 @@
 ﻿using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Locations;
+using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
+using ApplicationCore.Entities.AppEntities.UIMessages;
 using ApplicationCore.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,7 +40,7 @@ namespace Infrastructure.DataAccess
         public DbSet<WaitingList> WaitingList { get; set; }
         public DbSet<Package> Packages { get; set; }
         public DbSet<Status> Statuses { get; set; }
-        public DbSet<RejectOrder>  RefusalOrders { get; set; }
+        public DbSet<RejectedClientPackage>  RejectedClientPackages { get; set; }
 
         //kits
         public DbSet<Kit> Kits { get; set; }
@@ -46,6 +48,7 @@ namespace Infrastructure.DataAccess
 
         //chat hub
         public DbSet<ChatHub> ChatHubs { get; set; }
+        public DbSet<MessageForUser> MessagesForUser { get; set; }
 
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)

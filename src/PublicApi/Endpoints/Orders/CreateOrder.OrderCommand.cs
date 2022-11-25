@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ApplicationCore.Entities.AppEntities;
+using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 
 namespace PublicApi.Endpoints.Orders
