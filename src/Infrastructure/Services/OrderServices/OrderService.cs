@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.OrderServices
 {
+    //For_Checking
     public class OrderService : IOrder
     {
         private readonly AppDbContext _db;
@@ -29,7 +30,7 @@ namespace Infrastructure.Services.OrderServices
 
         public async Task<string> FindDriverConnectionIdAsync(ClientPackageInfoToDriver clientPackageInfoToDriver, CancellationToken cancellationToken)
         {
-            var routeTripList = _db.RouteTrips.Include(r => r.RouteDate) // 1 - false, 2 - false, 3 -clientpackage
+            var routeTripList = _db.RouteTrips.Include(r => r.RouteDate)
                 .Include(r => r.Driver)
                 .Include(r => r.RouteDate.Route)
                 .Where(r => r.RouteDate.Route.Id == clientPackageInfoToDriver.Route.Id
@@ -43,7 +44,7 @@ namespace Infrastructure.Services.OrderServices
                     var checkRefusal = await _db.RejectedClientPackages.AnyAsync(
                         r => r.RouteTrip.Id == routeTripList[i].Id && r.ClientPackage.Id == clientPackageInfoToDriver.ClientPackageId,
                         cancellationToken);
-                    if (!checkRefusal) //false
+                    if (!checkRefusal)
                     {
                         return chatHub.ConnectionId;
                     }
