@@ -1,36 +1,29 @@
 using System.Threading.Tasks;
-using Infrastructure.DataAccess;
-using Infrastructure.Identity;
+using Infrastructure.AppData.DataAccess;
+using Infrastructure.AppData.Identity;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NLog;
+using PublicApi.Extensions;
 
 namespace PublicApi
 {
-    public class Program
+    public static class Program
     {
-        public static async Task Main(string[] args)
-        {
-            var host = CreateHostBuilder(args).Build();
-            
-            using (var scope = host.Services.CreateScope())
-            {
-                var scopedProvider = scope.ServiceProvider;
-                
-                var loggerFactory = scopedProvider.GetRequiredService<ILoggerFactory>();
-                var appDbContext = scopedProvider.GetRequiredService<AppDbContext>();
-                await AppDbContextSeed.SeedAsync(appDbContext, loggerFactory);
-                    
-                var appIdentityDbContext = scopedProvider.GetRequiredService<AppIdentityDbContext>();
-                await AppIdentityDbContextSeed.SeedAsync(appIdentityDbContext);
-            }
+        public static async Task Main(string[] args) =>
+            await CreateHostBuilder(args)
+                .Build()
+                .MigrateDbContext<AppDbContext>((context, provider) =>
+                {
+                    var logger = provider.GetService<ILogger<AppDbContextInitializer>>(); // ?? GetRequiredService
+                    AppDbContextInitializer.SeedAsync(context, logger);
+                })
+                .MigrateDbContext<AppIdentityDbContext>((_, _) => {})
+                .RunAsync();
 
-            host.Run();
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+        private static IWebHostBuilder CreateHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
     }
 }

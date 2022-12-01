@@ -19,11 +19,11 @@ namespace PublicApi
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            Dependencies.ConfigureServices(Configuration, services);
+
             services.GetServices(Configuration);
             services.AddControllers(options => { options.UseNamespaceRouteToken(); });
 

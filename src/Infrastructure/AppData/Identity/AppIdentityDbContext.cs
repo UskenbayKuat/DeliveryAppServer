@@ -3,7 +3,7 @@ using Ardalis.EFCore.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Identity
+namespace Infrastructure.AppData.Identity
 {
     public class AppIdentityDbContext: IdentityDbContext<User>
     {
