@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Infrastructure.Migrations.AppDb
+namespace Infrastructure.Migrations
 {
     public partial class InitialAppDb : Migration
     {
@@ -500,106 +500,6 @@ namespace Infrastructure.Migrations.AppDb
                         principalTable: "ClientPackages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.InsertData(
-                table: "CarBrands",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "BMW" },
-                    { 2, "Mercedes" },
-                    { 3, "Audi" },
-                    { 4, "Toyota" },
-                    { 5, "Subaru" },
-                    { 6, "Mitsubishi" },
-                    { 7, "Ford" },
-                    { 8, "Daweoo" },
-                    { 9, "Lada" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "CarColors",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 8, "Фиолетовый" },
-                    { 6, "Зеленый" },
-                    { 5, "Бордовый" },
-                    { 7, "Синий" },
-                    { 3, "Серый" },
-                    { 2, "Белый" },
-                    { 1, "Черный" },
-                    { 4, "Красный" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "CarTypes",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "Седан" },
-                    { 2, "Минивэн" },
-                    { 3, "Фургон" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Cities",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "Алматы" },
-                    { 3, "Астана" },
-                    { 2, "Шымкент" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Kits",
-                columns: new[] { "Id", "IsUnlimited", "Name", "Quantity" },
-                values: new object[,]
-                {
-                    { 1, false, "Light", 5 },
-                    { 4, true, "Unlimited", 999999 },
-                    { 2, false, "Standard ", 10 },
-                    { 3, false, "Premium", 15 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Statuses",
-                columns: new[] { "Id", "State" },
-                values: new object[,]
-                {
-                    { 1, "New" },
-                    { 2, "InProgress" },
-                    { 3, "Done" },
-                    { 4, "Delayed" },
-                    { 5, "Canceled" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Routes",
-                columns: new[] { "Id", "FinishCityId", "StartCityId" },
-                values: new object[,]
-                {
-                    { 1, 2, 1 },
-                    { 3, 1, 2 },
-                    { 2, 3, 1 },
-                    { 4, 1, 3 },
-                    { 5, 3, 2 },
-                    { 6, 2, 3 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "RoutePrice",
-                columns: new[] { "Id", "Price", "RouteId" },
-                values: new object[,]
-                {
-                    { 1, 1000m, 1 },
-                    { 3, 1000m, 3 },
-                    { 2, 2000m, 2 },
-                    { 4, 2000m, 4 },
-                    { 5, 2000m, 5 },
-                    { 6, 2000m, 6 }
                 });
 
             migrationBuilder.CreateIndex(
