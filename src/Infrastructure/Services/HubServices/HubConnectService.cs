@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Interfaces.HubInterfaces;
-using Infrastructure.DataAccess;
+using Infrastructure.AppData.DataAccess;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 

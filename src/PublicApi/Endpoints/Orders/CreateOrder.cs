@@ -21,7 +21,7 @@ namespace PublicApi.Endpoints.Orders
             _order = order;
             _hubContext = hubContext;
         }
-        [HttpPost("api/createOrder")]
+        [HttpPost("api/Order")]
         public override async Task<ActionResult> HandleAsync(OrderCommand request,
             CancellationToken cancellationToken = new CancellationToken())
         {

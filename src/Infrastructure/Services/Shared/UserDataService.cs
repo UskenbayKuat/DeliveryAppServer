@@ -4,8 +4,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces.SharedInterfaces;
-using Infrastructure.DataAccess;
-using Infrastructure.Identity;
+using Infrastructure.AppData.DataAccess;
+using Infrastructure.AppData.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
