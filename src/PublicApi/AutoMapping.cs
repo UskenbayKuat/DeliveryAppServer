@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Entities.AppEntities;
+using ApplicationCore.Entities.AppEntities.Orders;
 using AutoMapper;
 using ApplicationCore.Entities.Values;
 using PublicApi.Endpoints.Clients.CalculateOrder;
@@ -26,9 +27,34 @@ namespace PublicApi
             CreateMap<ClientPackageCommand, ClientPackageInfo>();
             CreateMap<CreateCarCommand, CreateCarInfo>();
             CreateMap<OrderCommand, ClientPackageInfoToDriver>();
-
+            CreateMap<ClientPackage, OrderInfo>().ForMember(o => o.OrderState, 
+                    o => o.MapFrom(c => c.Order.OrderState.ToString()))
+                .ForMember(o => o.Package, 
+                    o => o.MapFrom(c => c.Package))
+                .ForMember(o => o.Price, 
+                    o => o.MapFrom(c => c.Price))
+                .ForMember(o => o.IsSingle, 
+                    o => o.MapFrom(c => c.IsSingle))
+                .ForMember(o => o.Route, 
+                    o => o.MapFrom(c => c.Order.RouteTrip.Route))
+                .ForMember(o => o.DeliveryDate, 
+                    o => o.MapFrom(c => c.CreatedAt));;
+            CreateMap<ClientPackage, ClientPackageInfoToDriver>()
+                .ForMember(o => o.ClientPackageId, 
+                    o => o.MapFrom(c => c.Id))
+                .ForMember(o => o.Package, 
+                    o => o.MapFrom(c => c.Package))
+                .ForMember(o => o.Price, 
+                    o => o.MapFrom(c => c.Price))
+                .ForMember(o => o.IsSingle, 
+                    o => o.MapFrom(c => c.IsSingle))
+                .ForMember(o => o.Route, 
+                    o => o.MapFrom(c => c.Route))
+                .ForMember(o => o.DeliveryDate, 
+                    o => o.MapFrom(c => c.CreatedAt));
             CreateMap<RefreshRequest, RefreshTokenInfo>()
-                .ForMember("RefreshToken", opt => opt.MapFrom(o => o.RefreshToken));
-        }
+                .ForMember(o => o.RefreshToken, 
+                    o => o.MapFrom(r => r.RefreshToken));
+        }   
     }
 }
