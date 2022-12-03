@@ -5,7 +5,7 @@ using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
-using ApplicationCore.Enums;
+using ApplicationCore.Entities.Values.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -67,11 +67,6 @@ namespace Infrastructure.AppData.DataAccess
             if (!await context.Kits.AnyAsync())
             {
                 await context.Kits.AddRangeAsync(GetPreconfiguredKits());
-            }
-
-            if (!await context.Statuses.AnyAsync())
-            {
-                await context.Statuses.AddRangeAsync(GetPreconfiguredStatuses());
             }
             await context.SaveChangesAsync();
         }
@@ -149,15 +144,6 @@ namespace Infrastructure.AppData.DataAccess
                 new Kit(3, "Premium", 15, false),
                 new Kit(4, "Unlimited", 999999, true)
             };
-
-        private static IEnumerable<Status> GetPreconfiguredStatuses() =>
-            new List<Status>
-            {
-                new(1, State.New.ToString()),
-                new(2, State.InProgress.ToString()),
-                new(3, State.Done.ToString()),
-                new(4, State.Delayed.ToString()),
-                new(5, State.Canceled.ToString())
-            };
+        
     }
 }

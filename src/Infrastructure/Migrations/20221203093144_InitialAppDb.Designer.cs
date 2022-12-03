@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221130082123_InitialAppDb")]
+    [Migration("20221203093144_InitialAppDb")]
     partial class InitialAppDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -278,6 +278,9 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("ClientId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<bool>("IsSingle")
                         .HasColumnType("boolean");
 
@@ -294,7 +297,7 @@ namespace Infrastructure.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
 
-                    b.Property<int?>("RouteDateId")
+                    b.Property<int?>("RouteId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -309,7 +312,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("PackageId");
 
-                    b.HasIndex("RouteDateId");
+                    b.HasIndex("RouteId");
 
                     b.ToTable("ClientPackages");
                 });
@@ -337,20 +340,18 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int>("OrderState")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("RouteTripId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("StatusId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("RouteTripId");
-
-                    b.HasIndex("StatusId");
 
                     b.ToTable("Orders");
                 });
@@ -411,37 +412,25 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int?>("DriverId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("RouteDateId")
+                    b.Property<int?>("RouteId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DriverId");
 
-                    b.HasIndex("RouteDateId");
+                    b.HasIndex("RouteId");
 
                     b.ToTable("RouteTrips");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Status", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("State")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Statuses");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.WaitingList", b =>
@@ -496,26 +485,6 @@ namespace Infrastructure.Migrations
                     b.HasIndex("StartCityId");
 
                     b.ToTable("Routes");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Routes.RouteDate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<DateTime>("DeliveryDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int?>("RouteId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RouteId");
-
-                    b.ToTable("RouteDate");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Routes.RoutePrice", b =>
@@ -627,7 +596,7 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("LocationId");
 
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.Order", null)
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.Order", "Order")
                         .WithMany("ClientPackages")
                         .HasForeignKey("OrderId");
 
@@ -635,9 +604,9 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("PackageId");
 
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Routes.RouteDate", "RouteDate")
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Routes.Route", "Route")
                         .WithMany()
-                        .HasForeignKey("RouteDateId");
+                        .HasForeignKey("RouteId");
 
                     b.Navigation("CarType");
 
@@ -645,9 +614,11 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("Location");
 
+                    b.Navigation("Order");
+
                     b.Navigation("Package");
 
-                    b.Navigation("RouteDate");
+                    b.Navigation("Route");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Order", b =>
@@ -656,13 +627,7 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("RouteTripId");
 
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.Status", "Status")
-                        .WithMany()
-                        .HasForeignKey("StatusId");
-
                     b.Navigation("RouteTrip");
-
-                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.RejectedClientPackage", b =>
@@ -686,13 +651,13 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("DriverId");
 
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Routes.RouteDate", "RouteDate")
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Routes.Route", "Route")
                         .WithMany()
-                        .HasForeignKey("RouteDateId");
+                        .HasForeignKey("RouteId");
 
                     b.Navigation("Driver");
 
-                    b.Navigation("RouteDate");
+                    b.Navigation("Route");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.WaitingList", b =>
@@ -721,15 +686,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("FinishCity");
 
                     b.Navigation("StartCity");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Routes.RouteDate", b =>
-                {
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Routes.Route", "Route")
-                        .WithMany()
-                        .HasForeignKey("RouteId");
-
-                    b.Navigation("Route");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Routes.RoutePrice", b =>

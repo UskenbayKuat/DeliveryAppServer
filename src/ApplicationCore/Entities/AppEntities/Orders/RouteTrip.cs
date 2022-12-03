@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Entities.AppEntities.Routes;
+﻿using System;
+using ApplicationCore.Entities.AppEntities.Routes;
 
 namespace ApplicationCore.Entities.AppEntities.Orders
 {
@@ -6,16 +7,19 @@ namespace ApplicationCore.Entities.AppEntities.Orders
     {
         public RouteTrip()
         {
+            CreatedAt = DateTime.Now;
             IsActive = true;
         }
 
         public Driver Driver { get; set;}
-        public RouteDate RouteDate { get; set; }
+        public Route Route { get; set;}
+        public DateTime CreatedAt { get; private set; }
         public bool IsActive { get; private set; }
 
-        public void ChangeStatusToNotActive()
+        public RouteTrip ChangeStatusToNotActive()
         {
             IsActive = false;
+            return this;
         }
     }
 }

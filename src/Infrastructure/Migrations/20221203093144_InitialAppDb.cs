@@ -147,19 +147,6 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Statuses",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    State = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Statuses", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Cars",
                 columns: table => new
                 {
@@ -249,26 +236,6 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RouteDate",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RouteId = table.Column<int>(type: "integer", nullable: true),
-                    DeliveryDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RouteDate", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RouteDate_Routes_RouteId",
-                        column: x => x.RouteId,
-                        principalTable: "Routes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "RoutePrice",
                 columns: table => new
                 {
@@ -322,7 +289,8 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DriverId = table.Column<int>(type: "integer", nullable: true),
-                    RouteDateId = table.Column<int>(type: "integer", nullable: true),
+                    RouteId = table.Column<int>(type: "integer", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -335,9 +303,9 @@ namespace Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RouteTrips_RouteDate_RouteDateId",
-                        column: x => x.RouteDateId,
-                        principalTable: "RouteDate",
+                        name: "FK_RouteTrips_Routes_RouteId",
+                        column: x => x.RouteId,
+                        principalTable: "Routes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -376,7 +344,7 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     RouteTripId = table.Column<int>(type: "integer", nullable: true),
-                    StatusId = table.Column<int>(type: "integer", nullable: true),
+                    OrderState = table.Column<int>(type: "integer", nullable: false),
                     OrderDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CompletionDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -393,12 +361,6 @@ namespace Infrastructure.Migrations
                         principalTable: "RouteTrips",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Orders_Statuses_StatusId",
-                        column: x => x.StatusId,
-                        principalTable: "Statuses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -411,9 +373,10 @@ namespace Infrastructure.Migrations
                     ClientId = table.Column<int>(type: "integer", nullable: true),
                     PackageId = table.Column<int>(type: "integer", nullable: true),
                     IsSingle = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Price = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     LocationId = table.Column<int>(type: "integer", nullable: true),
-                    RouteDateId = table.Column<int>(type: "integer", nullable: true),
+                    RouteId = table.Column<int>(type: "integer", nullable: true),
                     OrderId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
@@ -450,9 +413,9 @@ namespace Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ClientPackages_RouteDate_RouteDateId",
-                        column: x => x.RouteDateId,
-                        principalTable: "RouteDate",
+                        name: "FK_ClientPackages_Routes_RouteId",
+                        column: x => x.RouteId,
+                        principalTable: "Routes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -543,9 +506,9 @@ namespace Infrastructure.Migrations
                 column: "PackageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientPackages_RouteDateId",
+                name: "IX_ClientPackages_RouteId",
                 table: "ClientPackages",
-                column: "RouteDateId");
+                column: "RouteId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Drivers_CarId",
@@ -578,11 +541,6 @@ namespace Infrastructure.Migrations
                 column: "RouteTripId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_StatusId",
-                table: "Orders",
-                column: "StatusId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RejectedClientPackages_ClientPackageId",
                 table: "RejectedClientPackages",
                 column: "ClientPackageId");
@@ -591,11 +549,6 @@ namespace Infrastructure.Migrations
                 name: "IX_RejectedClientPackages_RouteTripId",
                 table: "RejectedClientPackages",
                 column: "RouteTripId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RouteDate_RouteId",
-                table: "RouteDate",
-                column: "RouteId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoutePrice_RouteId",
@@ -618,9 +571,9 @@ namespace Infrastructure.Migrations
                 column: "DriverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteTrips_RouteDateId",
+                name: "IX_RouteTrips_RouteId",
                 table: "RouteTrips",
-                column: "RouteDateId");
+                column: "RouteId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WaitingList_ClientPackageId",
@@ -673,19 +626,16 @@ namespace Infrastructure.Migrations
                 name: "RouteTrips");
 
             migrationBuilder.DropTable(
-                name: "Statuses");
-
-            migrationBuilder.DropTable(
                 name: "Drivers");
 
             migrationBuilder.DropTable(
-                name: "RouteDate");
+                name: "Routes");
 
             migrationBuilder.DropTable(
                 name: "Cars");
 
             migrationBuilder.DropTable(
-                name: "Routes");
+                name: "Cities");
 
             migrationBuilder.DropTable(
                 name: "CarBrands");
@@ -695,9 +645,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "CarTypes");
-
-            migrationBuilder.DropTable(
-                name: "Cities");
         }
     }
 }

@@ -4,7 +4,6 @@ using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.AppEntities.UIMessages;
-using ApplicationCore.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.AppData.DataAccess
@@ -24,7 +23,6 @@ namespace Infrastructure.AppData.DataAccess
         //routes
         public DbSet<City> Cities { get; set; }
         public DbSet<Route> Routes { get; set; }
-        public DbSet<RouteDate> RouteDate { get; set; }
         public DbSet<RoutePrice> RoutePrice { get; set; }
 
         public DbSet<RouteTrip> RouteTrips { get; set; }
@@ -39,7 +37,6 @@ namespace Infrastructure.AppData.DataAccess
         public DbSet<ClientPackage> ClientPackages { get; set; }
         public DbSet<WaitingList> WaitingList { get; set; }
         public DbSet<Package> Packages { get; set; }
-        public DbSet<Status> Statuses { get; set; }
         public DbSet<RejectedClientPackage>  RejectedClientPackages { get; set; }
 
         //kits
