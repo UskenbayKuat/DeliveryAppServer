@@ -6,7 +6,7 @@ namespace ApplicationCore.Interfaces.HubInterfaces
 {
     public interface IHubMethod
     {
-        public Task SendClientInfoToDriver(List<ClientPackageInfoToDriver> orderInfos);
+        public Task SendClientInfoToDriver(List<ClientPackageInfo> orderInfos);
         public Task SendDriverInfoToClient(string message);
     }
 }

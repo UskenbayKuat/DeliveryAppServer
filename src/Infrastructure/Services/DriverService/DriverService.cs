@@ -28,12 +28,13 @@ namespace Infrastructure.Services.DriverService
             _mapper = mapper;
         }
 
-        public async Task<string> FindDriverConnectionIdAsync(ClientPackageInfoToDriver clientPackageInfoToDriver,
+        public async Task<string> FindDriverConnectionIdAsync(ClientPackageInfo clientPackageInfo,
             CancellationToken cancellationToken)
         {
             var routeTripList = await Trips()
-                .Where(r => r.Route.Id == clientPackageInfoToDriver.Route.Id 
-                            && r.CreatedAt.Day >= clientPackageInfoToDriver.DeliveryDate.Day)
+                .Where(r => r.Route.StartCity.Id == clientPackageInfo.StartCity.Id 
+                            && r.Route.FinishCity.Id == clientPackageInfo.FinishCity.Id
+                            && r.CreatedAt.Day >= clientPackageInfo.CreateAt.Day)
                 .ToListAsync(cancellationToken);
             
             foreach (var routeTrip in routeTripList)
@@ -41,24 +42,22 @@ namespace Infrastructure.Services.DriverService
                 var chatHub =
                     await _db.ChatHubs.FirstOrDefaultAsync(c => c.UserId == routeTrip.Driver.UserId,
                         cancellationToken);
-                if (!string.IsNullOrEmpty(chatHub?.ConnectionId))
-                {
-                    var checkRefusal = await _db.RejectedClientPackages
-                        .AnyAsync(r =>
-                            r.RouteTrip.Id == routeTrip.Id &&
-                            r.ClientPackage.Id == clientPackageInfoToDriver.ClientPackageId, cancellationToken);
-                    if (!checkRefusal) return chatHub.ConnectionId;
-                }
+                if (string.IsNullOrEmpty(chatHub?.ConnectionId)) continue;
+                var checkRefusal = await _db.RejectedClientPackages
+                    .AnyAsync(r =>
+                        r.RouteTrip.Id == routeTrip.Id &&
+                        r.ClientPackage.Id == clientPackageInfo.ClientPackageId, cancellationToken);
+                if (!checkRefusal) return chatHub.ConnectionId;
             }
-            var clientPackage = await ClientPackage(clientPackageInfoToDriver.ClientPackageId, cancellationToken);
+            var clientPackage = await ClientPackage(clientPackageInfo.ClientPackageId, cancellationToken);
             await _db.WaitingList.AddAsync(new WaitingList { ClientPackage = clientPackage }, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
             return string.Empty;
         }
 
-        public async Task<List<ClientPackageInfoToDriver>> FindClientPackagesAsync(string userId)
+        public async Task<List<ClientPackageInfo>> FindClientPackagesAsync(string userId)
         {
-            var clientPackageInfoToDrivers = new List<ClientPackageInfoToDriver>();
+            var clientPackageInfos = new List<ClientPackageInfo>();
             var routeTrip = await Trips().FirstAsync(r => r.Driver.UserId == userId)
                             ?? throw new HubException();
             var waitingLists = await WaitingLists(routeTrip.Route.Id, routeTrip.CreatedAt).ToListAsync();
@@ -70,19 +69,19 @@ namespace Infrastructure.Services.DriverService
             {
                 var user = await _identityDbContext.Users.FirstOrDefaultAsync(u =>
                     u.Id == waitingList.ClientPackage.Client.UserId);
-                var clientPackageInfoToDriver = _mapper.Map<ClientPackageInfoToDriver>(waitingList.ClientPackage);
-                clientPackageInfoToDriver.SetClientData(user.Name, user.Surname, user.PhoneNumber);
-                clientPackageInfoToDrivers.Add(clientPackageInfoToDriver);
+                var clientPackageInfo = _mapper.Map<ClientPackageInfo>(waitingList.ClientPackage);
+                clientPackageInfo.SetClientData(user.Name, user.Surname, user.PhoneNumber);
+                clientPackageInfos.Add(clientPackageInfo);
             }
 
-            return clientPackageInfoToDrivers;
+            return clientPackageInfos;
         }
 
         public async Task<string> RejectNextFindDriverConnectionIdAsync(string driverUserId,
-            ClientPackageInfoToDriver clientPackageInfoToDriver,
+            ClientPackageInfo clientPackageInfo,
             CancellationToken cancellationToken)
         {
-            var clientPackage = await ClientPackage(clientPackageInfoToDriver.ClientPackageId, cancellationToken);
+            var clientPackage = await ClientPackage(clientPackageInfo.ClientPackageId, cancellationToken);
             var routeTrip = await Trips() .FirstAsync(r => r.Driver.UserId == driverUserId, cancellationToken);
             await _db.RejectedClientPackages
                 .AddAsync(new RejectedClientPackage
@@ -91,7 +90,7 @@ namespace Infrastructure.Services.DriverService
                     RouteTrip = routeTrip
                 }, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
-            return await FindDriverConnectionIdAsync(clientPackageInfoToDriver, cancellationToken);
+            return await FindDriverConnectionIdAsync(clientPackageInfo, cancellationToken);
         }
         
         

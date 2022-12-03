@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,28 +29,43 @@ namespace Infrastructure.Services.ClientService
             _mapper = mapper;
         }
 
-        public async Task<ClientPackageInfoToDriver> CreateAsync(ClientPackageInfo info, string clientUserId,
+        public async Task<ClientPackageInfo> CreateAsync(ClientPackageInfo info, string clientUserId,
             CancellationToken cancellationToken)
         {
             var user = await _dbIdentityDbContext.Users.FirstAsync(u => u.Id == clientUserId, cancellationToken);
             var client = await _db.Clients.FirstAsync(c => c.UserId == clientUserId, cancellationToken);
-            var carType = await _db.CarTypes.FirstAsync(c => c.Id == info.CarTypeId, cancellationToken);
             var route = await _db.Routes.Include(r => r.StartCity)
                 .Include(r => r.FinishCity)
-                .FirstAsync(r => r.StartCityId == info.StartCityId  && r.FinishCityId == info.FinishCityId, cancellationToken);
+                .FirstAsync(r => 
+                    r.StartCityId == info.StartCity.Id  && 
+                    r.FinishCityId == info.FinishCity.Id, cancellationToken);
 
             var clientPackage = new ClientPackage(info.IsSingle, info.Price)
             {
                 Client = client,
                 Package = info.Package,
-                CarType = carType,  
+                CarType = info.CarType,  
                 Route = route
             };
             await _db.ClientPackages.AddAsync(clientPackage, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
-            return _mapper.Map<ClientPackageInfoToDriver>(clientPackage)
+            return _mapper.Map<ClientPackageInfo>(clientPackage)
                 .SetClientData(user.Name, user.Surname, user.PhoneNumber);
         }
 
+        public async Task<ActionResult> GetWaitingClientPackage(string clientUserId,CancellationToken cancellationToken)
+        {
+            var clientPackageInfos = new List<ClientPackageInfo>();
+            var user = await _dbIdentityDbContext.Users.FirstAsync(u => u.Id == clientUserId, cancellationToken);
+            await _db.WaitingList
+                .Include(w => w.ClientPackage.Route.StartCity)
+                .Include(w => w.ClientPackage.Route.FinishCity)
+                .Include(w => w.ClientPackage.Package)
+                .Include(w => w.ClientPackage)
+                .Where(c => c.ClientPackage.Client.UserId == user.Id)
+                .ForEachAsync(waitingList => clientPackageInfos.Add(_mapper.Map<ClientPackageInfo>(waitingList.ClientPackage)
+                    .SetClientData(user.Name, user.Surname, user.PhoneNumber)), cancellationToken);
+            return new OkObjectResult(clientPackageInfos);
+        }
     }
 }

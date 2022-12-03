@@ -3,7 +3,7 @@ using ApplicationCore.Entities.AppEntities.Orders;
 using AutoMapper;
 using ApplicationCore.Entities.Values;
 using PublicApi.Endpoints.Clients.CalculateOrder;
-using PublicApi.Endpoints.Clients.ConfirmOrder;
+using PublicApi.Endpoints.Clients.ClientPackage;
 using PublicApi.Endpoints.Drivers.CreateCar;
 using PublicApi.Endpoints.Drivers.CreateRouteTrip;
 using PublicApi.Endpoints.Orders;
@@ -26,7 +26,7 @@ namespace PublicApi
             CreateMap<CalculateOrderCommand, ClientPackageInfo>();
             CreateMap<ClientPackageCommand, ClientPackageInfo>();
             CreateMap<CreateCarCommand, CreateCarInfo>();
-            CreateMap<OrderCommand, ClientPackageInfoToDriver>();
+            CreateMap<OrderCommand, ClientPackageInfo>();
             CreateMap<ClientPackage, OrderInfo>().ForMember(o => o.OrderState, 
                     o => o.MapFrom(c => c.Order.OrderState.ToString()))
                 .ForMember(o => o.Package, 
@@ -35,11 +35,13 @@ namespace PublicApi
                     o => o.MapFrom(c => c.Price))
                 .ForMember(o => o.IsSingle, 
                     o => o.MapFrom(c => c.IsSingle))
-                .ForMember(o => o.Route, 
-                    o => o.MapFrom(c => c.Order.RouteTrip.Route))
-                .ForMember(o => o.DeliveryDate, 
+                .ForMember(o => o.StartCity, 
+                    o => o.MapFrom(c => c.Route.StartCity))
+                .ForMember(o => o.FinishCity, 
+                    o => o.MapFrom(c => c.Route.FinishCity))
+                .ForMember(o => o.CreatedAt, 
                     o => o.MapFrom(c => c.CreatedAt));;
-            CreateMap<ClientPackage, ClientPackageInfoToDriver>()
+            CreateMap<ClientPackage, ClientPackageInfo>()
                 .ForMember(o => o.ClientPackageId, 
                     o => o.MapFrom(c => c.Id))
                 .ForMember(o => o.Package, 
@@ -48,9 +50,11 @@ namespace PublicApi
                     o => o.MapFrom(c => c.Price))
                 .ForMember(o => o.IsSingle, 
                     o => o.MapFrom(c => c.IsSingle))
-                .ForMember(o => o.Route, 
-                    o => o.MapFrom(c => c.Route))
-                .ForMember(o => o.DeliveryDate, 
+                .ForMember(o => o.StartCity, 
+                    o => o.MapFrom(c => c.Route.StartCity))
+                .ForMember(o => o.FinishCity, 
+                    o => o.MapFrom(c => c.Route.FinishCity))
+                .ForMember(o => o.CreateAt, 
                     o => o.MapFrom(c => c.CreatedAt));
             CreateMap<RefreshRequest, RefreshTokenInfo>()
                 .ForMember(o => o.RefreshToken, 

@@ -34,11 +34,11 @@ namespace PublicApi.Endpoints.Orders
         {
             try
             {
-                var clientPackageInfoToDriver = _mapper.Map<ClientPackageInfoToDriver>(request);
-                var driverConnectId =  await _driverService.RejectNextFindDriverConnectionIdAsync(HttpContext.Items["UserId"]?.ToString(), clientPackageInfoToDriver, cancellationToken);
+                var clientPackageInfo = _mapper.Map<ClientPackageInfo>(request);
+                var driverConnectId =  await _driverService.RejectNextFindDriverConnectionIdAsync(HttpContext.Items["UserId"]?.ToString(), clientPackageInfo, cancellationToken);
                 if (!string.IsNullOrEmpty(driverConnectId))
                     await _hubContext.Clients.User(driverConnectId)
-                        .SendCoreAsync("SendClientInfoToDriver", new[] { new List<ClientPackageInfoToDriver>{clientPackageInfoToDriver} }, cancellationToken);
+                        .SendCoreAsync("SendClientInfoToDriver", new[] { new List<ClientPackageInfo>{clientPackageInfo} }, cancellationToken);
                 return Ok();
             }
             catch

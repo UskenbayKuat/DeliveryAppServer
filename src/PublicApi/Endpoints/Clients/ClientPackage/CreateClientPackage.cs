@@ -1,18 +1,16 @@
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
-using ApplicationCore.Interfaces.OrderInterfaces;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PublicApi.Hub;
 
-namespace PublicApi.Endpoints.Clients.ConfirmOrder
+namespace PublicApi.Endpoints.Clients.ClientPackage
 {
     public class CreateClientPackage : EndpointBaseAsync.WithRequest<ClientPackageCommand>.WithActionResult
     {
@@ -38,7 +36,7 @@ namespace PublicApi.Endpoints.Clients.ConfirmOrder
                 var driverConnectId = await _driverService.FindDriverConnectionIdAsync(orderInfo, cancellationToken);
                 if (!string.IsNullOrEmpty(driverConnectId))
                     await _hubContext.Clients.Client(driverConnectId)
-                        .SendCoreAsync("SendClientInfoToDriver", new[] {  new List<ClientPackageInfoToDriver>{orderInfo}}, cancellationToken);
+                        .SendCoreAsync("SendClientInfoToDriver", new[] {  new List<ClientPackageInfo>{orderInfo}}, cancellationToken);
                 return Ok(request);
             }
             catch

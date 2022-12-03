@@ -68,9 +68,8 @@ namespace Infrastructure.Services.OrderServices
         
         private async Task<List<ClientPackage>> ClientPackages(string userClientId, CancellationToken cancellationToken) => await _db.ClientPackages
             .Include(c => c.Order.RouteTrip.Driver)
-            .Include(c => c.Order.RouteTrip.Route)
-            .Include(c => c.Order.RouteTrip.Route.StartCity)
-            .Include(c => c.Order.RouteTrip.Route.FinishCity)
+            .Include(c => c.Route.StartCity)
+            .Include(c => c.Route.FinishCity)
             .Include(c => c.Order)
             .Include(c => c.Package)
             .Where(c => c.Client.UserId == userClientId && c.Order.RouteTrip.IsActive).ToListAsync(cancellationToken);

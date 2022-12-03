@@ -7,9 +7,9 @@ namespace ApplicationCore.Interfaces.DriverInterfaces
 {
     public interface IDriver
     {       
-        public Task<List<ClientPackageInfoToDriver>> FindClientPackagesAsync(string userId);
-        public Task<string> RejectNextFindDriverConnectionIdAsync(string driverUserId, ClientPackageInfoToDriver clientPackageInfoToDriver, CancellationToken cancellationToken);
-        public Task<string> FindDriverConnectionIdAsync(ClientPackageInfoToDriver clientPackageInfoToDriver, CancellationToken cancellationToken);
+        public Task<List<ClientPackageInfo>> FindClientPackagesAsync(string userId);
+        public Task<string> RejectNextFindDriverConnectionIdAsync(string driverUserId, ClientPackageInfo clientPackageInfo, CancellationToken cancellationToken);
+        public Task<string> FindDriverConnectionIdAsync(ClientPackageInfo clientPackageInfo, CancellationToken cancellationToken);
         
     }
 }

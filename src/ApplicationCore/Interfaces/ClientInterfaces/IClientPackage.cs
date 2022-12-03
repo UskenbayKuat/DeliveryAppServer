@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
@@ -8,6 +9,7 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
 {
     public interface IClientPackage
     {
-        public Task<ClientPackageInfoToDriver> CreateAsync(ClientPackageInfo info, string clientUserId, CancellationToken cancellationToken);
+        public Task<ClientPackageInfo> CreateAsync(ClientPackageInfo info, string clientUserId, CancellationToken cancellationToken);
+        public Task<ActionResult> GetWaitingClientPackage(string clientUserId, CancellationToken cancellationToken);
     }
 }
