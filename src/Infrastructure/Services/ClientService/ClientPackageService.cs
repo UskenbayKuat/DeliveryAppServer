@@ -34,6 +34,7 @@ namespace Infrastructure.Services.ClientService
         {
             var user = await _dbIdentityDbContext.Users.FirstAsync(u => u.Id == clientUserId, cancellationToken);
             var client = await _db.Clients.FirstAsync(c => c.UserId == clientUserId, cancellationToken);
+            var carType = await _db.CarTypes.FirstAsync(c => c.Id == info.CarType.Id, cancellationToken);
             var route = await _db.Routes.Include(r => r.StartCity)
                 .Include(r => r.FinishCity)
                 .FirstAsync(r => 
@@ -44,14 +45,14 @@ namespace Infrastructure.Services.ClientService
             {
                 Client = client,
                 Package = info.Package,
-                CarType = info.CarType,  
+                CarType = carType,  
                 Route = route
             };
             await _db.ClientPackages.AddAsync(clientPackage, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
             return _mapper.Map<ClientPackageInfo>(clientPackage)
                 .SetClientData(user.Name, user.Surname, user.PhoneNumber);
-        }
+            }
 
         public async Task<ActionResult> GetWaitingClientPackage(string clientUserId,CancellationToken cancellationToken)
         {
