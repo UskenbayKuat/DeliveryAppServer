@@ -43,6 +43,7 @@ namespace PublicApi.Extensions
             services.AddTransient<IUserData, UserDataService>();
             services.AddScoped<IHubConnect, HubConnectService>();
             services.AddScoped<IOrder, OrderService>();
+            services.AddScoped<IDriver, DriverService>();
             services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.JwtSettings));
             services.ConfigureDbContextServices(configuration);
         }

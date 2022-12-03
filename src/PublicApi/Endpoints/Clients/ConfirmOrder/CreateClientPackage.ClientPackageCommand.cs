@@ -6,7 +6,6 @@ namespace PublicApi.Endpoints.Clients.ConfirmOrder
 {
     public class ClientPackageCommand
     {
-        public int ClientId { get; set; }
         public int StartCityId { get; set; }
         public int FinishCityId { get; set; }
         public Package Package { get; set; }

@@ -7,6 +7,7 @@ using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.ClientInterfaces;
+using AutoMapper;
 using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,11 +19,13 @@ namespace Infrastructure.Services.ClientService
     {
         private readonly AppDbContext _db;
         private readonly AppIdentityDbContext _dbIdentityDbContext;
+        private readonly IMapper _mapper;
 
-        public ClientPackageService(AppDbContext db, AppIdentityDbContext dbIdentityDbContext)
+        public ClientPackageService(AppDbContext db, AppIdentityDbContext dbIdentityDbContext, IMapper mapper)
         {
             _db = db;
             _dbIdentityDbContext = dbIdentityDbContext;
+            _mapper = mapper;
         }
 
         public async Task<ClientPackageInfoToDriver> CreateAsync(ClientPackageInfo info, string clientUserId,
@@ -40,22 +43,12 @@ namespace Infrastructure.Services.ClientService
                 Client = client,
                 Package = info.Package,
                 CarType = carType,  
-                RouteDate = new RouteDate(info.DateTime) { Route = route }
+                Route = route
             };
             await _db.ClientPackages.AddAsync(clientPackage, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
-            return new ClientPackageInfoToDriver
-            {
-                ClientPackageId = clientPackage.Id,
-                Location = null,
-                Package = clientPackage.Package,
-                Price = clientPackage.Price,
-                FullName = user.Surname + " " + user.Name,
-                PhoneNumber = user.PhoneNumber,
-                IsSingle = clientPackage.IsSingle,
-                Route = route,
-                DateTime = clientPackage.RouteDate.DeliveryDate
-            };
+            return _mapper.Map<ClientPackageInfoToDriver>(clientPackage)
+                .SetClientData(user.Name, user.Surname, user.PhoneNumber);
         }
 
     }

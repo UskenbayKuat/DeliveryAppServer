@@ -1,5 +1,3 @@
-using ApplicationCore.Enums;
-
 namespace PublicApi.Endpoints.Drivers.CreateCar
 {
     public class CreateCarCommand
