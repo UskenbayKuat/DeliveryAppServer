@@ -26,7 +26,12 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         public Route Route { get; set;}
 
         public Order Order { get;  set;}
-        
+        public OnDriverReview OnDriverReview { get; set; }
 
+        public ClientPackage SetOnReview(bool onReview)
+        {
+            OnDriverReview.OnReview = onReview;
+            return this;
+        }
     }
 }

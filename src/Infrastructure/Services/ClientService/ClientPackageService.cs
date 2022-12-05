@@ -46,7 +46,8 @@ namespace Infrastructure.Services.ClientService
                 Client = client,
                 Package = info.Package,
                 CarType = carType,  
-                Route = route
+                Route = route,
+                OnDriverReview = new OnDriverReview()
             };
             await _db.ClientPackages.AddAsync(clientPackage, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);

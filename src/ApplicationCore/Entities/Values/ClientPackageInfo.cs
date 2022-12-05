@@ -21,7 +21,7 @@ namespace ApplicationCore.Entities.Values
         public string ClientName { get; set; }
         public string ClientSurname { get; set; } 
         public string Location  { get; set; }
-
+        
         public ClientPackageInfo SetClientData(string name, string surname, string phoneNumber = "")
         {
             ClientName = name;
