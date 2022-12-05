@@ -7,7 +7,7 @@ using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using PublicApi.Hub;
+using PublicApi.HubNotification;
 
 namespace PublicApi.Endpoints.Orders
 {

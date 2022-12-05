@@ -8,7 +8,7 @@ using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using PublicApi.Hub;
+using PublicApi.HubNotification;
 
 namespace PublicApi.Endpoints.Clients.ClientPackage
 {
@@ -32,11 +32,11 @@ namespace PublicApi.Endpoints.Clients.ClientPackage
         {
             try
             {
-                var orderInfo = await _clientPackage.CreateAsync(_mapper.Map<ClientPackageInfo>(request), HttpContext.Items["UserId"]?.ToString(), cancellationToken);
-                var driverConnectId = await _driverService.FindDriverConnectionIdAsync(orderInfo, cancellationToken);
+                var clientPackageInfo = await _clientPackage.CreateAsync(_mapper.Map<ClientPackageInfo>(request), HttpContext.Items["UserId"]?.ToString(), cancellationToken);
+                var driverConnectId = await _driverService.FindDriverConnectionIdAsync(clientPackageInfo, cancellationToken);
                 if (!string.IsNullOrEmpty(driverConnectId))
                     await _hubContext.Clients.Client(driverConnectId)
-                        .SendCoreAsync("SendClientInfoToDriver", new[] {  new List<ClientPackageInfo>{orderInfo}}, cancellationToken);
+                        .SendCoreAsync("SendClientInfoToDriver", new[] {  new List<ClientPackageInfo>{clientPackageInfo}}, cancellationToken);
                 return Ok(request);
             }
             catch

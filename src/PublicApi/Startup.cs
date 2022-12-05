@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PublicApi.Extensions;
-using PublicApi.Hub;
+using PublicApi.HubNotification;
 
 namespace PublicApi
 {

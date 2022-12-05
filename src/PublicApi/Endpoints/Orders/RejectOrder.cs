@@ -10,7 +10,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
-using PublicApi.Hub;
+using PublicApi.HubNotification;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace PublicApi.Endpoints.Orders
