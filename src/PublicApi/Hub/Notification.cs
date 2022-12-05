@@ -8,12 +8,11 @@ using System.Text.Unicode;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Locations;
-using ApplicationCore.Enums;
+using ApplicationCore.Interfaces.DriverInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
 using ApplicationCore.Interfaces.OrderInterfaces;
+using Infrastructure.AppData.DataAccess;
 using Infrastructure.Config.Attributes;
-using Infrastructure.DataAccess;
-using Infrastructure.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -25,16 +24,16 @@ namespace PublicApi.Hub
     {
         private readonly AppDbContext _db;
         private readonly IHubConnect _hubConnect;
-        private readonly IOrder _order;
+        private readonly IDriver _driverService;
 
-        public Notification(AppDbContext db, IHubConnect hubConnect, IOrder order)
+        public Notification(AppDbContext db, IHubConnect hubConnect, IDriver driverService)
         {
             _db = db;
             _hubConnect = hubConnect;
-            _order = order;
+            _driverService = driverService;
         }
         public async Task ReceiveDriverInfo(Location location) =>
-            await Clients.All.SendClientInfoToDriver(await _order.FindClientPackagesAsync(Context.GetHttpContext().Items["UserId"]?.ToString()));
+            await Clients.All.SendClientInfoToDriver(await _driverService.FindClientPackagesAsync(Context.GetHttpContext().Items["UserId"]?.ToString()));
 
 
         public override async Task<Task> OnConnectedAsync()

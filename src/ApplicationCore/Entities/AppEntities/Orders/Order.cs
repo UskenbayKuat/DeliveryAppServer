@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ApplicationCore.Entities.Values.Enums;
 
 namespace ApplicationCore.Entities.AppEntities.Orders
 {
@@ -8,10 +9,11 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         public Order (DateTime orderDate)
         {
             OrderDate = orderDate;
+            OrderState = OrderState.New;
         }
         
         public RouteTrip RouteTrip { get; set;}
-        public Status Status { get; set; }
+        public OrderState OrderState { get; set; }
         public DateTime OrderDate { get; private set;}  
         public DateTime? StartDate { get; set; }
         public DateTime? CompletionDate { get; private set; }
@@ -21,9 +23,9 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         public List<ClientPackage> ClientPackages { get;  set; } = new();
         
 
-        public void UpdateStatus(Status status)
+        public void UpdateStatus(OrderState status)
         {
-            Status = status;
+            OrderState = status;
         }
 
         public void UpdateCompletionDate(DateTime dateTime)

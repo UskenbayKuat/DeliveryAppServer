@@ -6,9 +6,9 @@ using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
 using AutoMapper;
+using Infrastructure.AppData.DataAccess;
+using Infrastructure.AppData.Identity;
 using Infrastructure.Config;
-using Infrastructure.DataAccess;
-using Infrastructure.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

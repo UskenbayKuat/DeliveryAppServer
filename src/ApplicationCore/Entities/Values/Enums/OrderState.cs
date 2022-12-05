@@ -1,6 +1,6 @@
-﻿namespace ApplicationCore.Enums
+﻿namespace ApplicationCore.Entities.Values.Enums
 {
-    public enum State
+    public enum OrderState
     {
         New = 1,
         InProgress = 2,

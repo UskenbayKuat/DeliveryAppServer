@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.Values;
+using ApplicationCore.Interfaces.DriverInterfaces;
 using ApplicationCore.Interfaces.OrderInterfaces;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
@@ -16,13 +17,13 @@ namespace PublicApi.Endpoints.Orders
 {
     public class RejectOrder : EndpointBaseAsync.WithRequest<OrderCommand>.WithActionResult
     {
-        private readonly IOrder _order;
+        private readonly IDriver _driverService;
         private readonly IHubContext<Notification> _hubContext;
         private readonly IMapper _mapper;
 
-        public RejectOrder(IOrder order, IHubContext<Notification> hubContext, IMapper mapper)
+        public RejectOrder(IDriver driverService, IHubContext<Notification> hubContext, IMapper mapper)
         {
-            _order = order;
+            _driverService = driverService;
             _hubContext = hubContext;
             _mapper = mapper;
         }
@@ -33,11 +34,11 @@ namespace PublicApi.Endpoints.Orders
         {
             try
             {
-                var orderInfo = _mapper.Map<ClientPackageInfoToDriver>(request);
-                var driverConnectId =  await _order.RejectAsync(HttpContext.Items["UserId"]?.ToString(), orderInfo, cancellationToken);
+                var clientPackageInfo = _mapper.Map<ClientPackageInfo>(request);
+                var driverConnectId =  await _driverService.RejectNextFindDriverConnectionIdAsync(HttpContext.Items["UserId"]?.ToString(), clientPackageInfo, cancellationToken);
                 if (!string.IsNullOrEmpty(driverConnectId))
                     await _hubContext.Clients.User(driverConnectId)
-                        .SendCoreAsync("SendClientInfoToDriver", new[] { new List<ClientPackageInfoToDriver>{orderInfo} }, cancellationToken);
+                        .SendCoreAsync("SendClientInfoToDriver", new[] { new List<ClientPackageInfo>{clientPackageInfo} }, cancellationToken);
                 return Ok();
             }
             catch

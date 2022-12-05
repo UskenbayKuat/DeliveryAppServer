@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.ClientInterfaces;
-using Infrastructure.DataAccess;
+using Infrastructure.AppData.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,8 +46,8 @@ namespace Infrastructure.Services.ClientService
         private decimal SetRoutePrice(ClientPackageInfo info)
         {
             var routePrice = _db.RoutePrice.Include(r => r.Route)
-                .FirstOrDefault(r => r.Route.StartCityId == info.StartCityId &&
-                                     r.Route.FinishCityId == info.FinishCityId);
+                .FirstOrDefault(r => r.Route.StartCityId == info.StartCity.Id &&
+                                     r.Route.FinishCityId == info.FinishCity.Id);
             return routePrice?.Price ?? 0;
         } 
     }

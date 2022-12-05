@@ -21,13 +21,14 @@ namespace PublicApi.Endpoints.Orders
             _order = order;
             _hubContext = hubContext;
         }
-        [HttpPost("api/createOrder")]
+        [HttpPost("api/Order")]
         public override async Task<ActionResult> HandleAsync(OrderCommand request,
             CancellationToken cancellationToken = new CancellationToken())
         {
             var clientConnectId =await _order.CreateAsync(HttpContext.Items["UserId"]?.ToString() , request.ClientPackageId);
-            await _hubContext.Clients.User(clientConnectId)
-                .SendCoreAsync("SendDriverInfoToClient", new[] { "Ваш заказ принята" }, cancellationToken);
+            if (!string.IsNullOrEmpty(clientConnectId))
+                await _hubContext.Clients.User(clientConnectId)
+                    .SendCoreAsync("SendDriverInfoToClient", new[] { "Ваш заказ принята" }, cancellationToken);
             return Ok();
         }
     }

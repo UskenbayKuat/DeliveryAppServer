@@ -7,8 +7,8 @@ using ApplicationCore.Entities.Values;
 using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using AutoMapper;
-using Infrastructure.DataAccess;
-using Infrastructure.Identity;
+using Infrastructure.AppData.DataAccess;
+using Infrastructure.AppData.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

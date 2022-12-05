@@ -1,31 +1,30 @@
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Interfaces.OrderInterfaces;
+using ApplicationCore.Interfaces.DriverInterfaces;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PublicApi.Hub;
 
-namespace PublicApi.Endpoints.Clients.ConfirmOrder
+namespace PublicApi.Endpoints.Clients.ClientPackage
 {
     public class CreateClientPackage : EndpointBaseAsync.WithRequest<ClientPackageCommand>.WithActionResult
     {
         private readonly IClientPackage _clientPackage;
-        private readonly IOrder _order;
+        private readonly IDriver _driverService;
         private readonly IMapper _mapper;
         private readonly IHubContext<Notification> _hubContext;
 
-        public CreateClientPackage(IClientPackage clientPackage, IMapper mapper, IHubContext<Notification> hubContext, IOrder order)
+        public CreateClientPackage(IClientPackage clientPackage, IMapper mapper, IHubContext<Notification> hubContext, IDriver driverService)
         {
             _clientPackage = clientPackage;
             _mapper = mapper;
             _hubContext = hubContext;
-            _order = order;
+            _driverService = driverService;
         }
 
         [HttpPost("api/client/confirmClientPackage")]
@@ -34,10 +33,10 @@ namespace PublicApi.Endpoints.Clients.ConfirmOrder
             try
             {
                 var orderInfo = await _clientPackage.CreateAsync(_mapper.Map<ClientPackageInfo>(request), HttpContext.Items["UserId"]?.ToString(), cancellationToken);
-                var driverConnectId = await _order.FindDriverConnectionIdAsync(orderInfo, cancellationToken);
+                var driverConnectId = await _driverService.FindDriverConnectionIdAsync(orderInfo, cancellationToken);
                 if (!string.IsNullOrEmpty(driverConnectId))
                     await _hubContext.Clients.Client(driverConnectId)
-                        .SendCoreAsync("SendClientInfoToDriver", new[] {  new List<ClientPackageInfoToDriver>{orderInfo}}, cancellationToken);
+                        .SendCoreAsync("SendClientInfoToDriver", new[] {  new List<ClientPackageInfo>{orderInfo}}, cancellationToken);
                 return Ok(request);
             }
             catch
