@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221206091305_InitialAppDb")]
+    [Migration("20221206174723_InitialAppDb")]
     partial class InitialAppDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -472,7 +472,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ClientPackageId");
 
-                    b.ToTable("WaitingList");
+                    b.ToTable("WaitingClientPackages");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Routes.City", b =>

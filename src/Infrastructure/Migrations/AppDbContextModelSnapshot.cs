@@ -470,7 +470,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ClientPackageId");
 
-                    b.ToTable("WaitingList");
+                    b.ToTable("WaitingClientPackages");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Routes.City", b =>

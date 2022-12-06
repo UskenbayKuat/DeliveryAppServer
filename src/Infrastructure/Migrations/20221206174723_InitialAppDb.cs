@@ -474,7 +474,7 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "WaitingList",
+                name: "WaitingClientPackages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -483,9 +483,9 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WaitingList", x => x.Id);
+                    table.PrimaryKey("PK_WaitingClientPackages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WaitingList_ClientPackages_ClientPackageId",
+                        name: "FK_WaitingClientPackages_ClientPackages_ClientPackageId",
                         column: x => x.ClientPackageId,
                         principalTable: "ClientPackages",
                         principalColumn: "Id",
@@ -613,8 +613,8 @@ namespace Infrastructure.Migrations
                 column: "RouteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WaitingList_ClientPackageId",
-                table: "WaitingList",
+                name: "IX_WaitingClientPackages_ClientPackageId",
+                table: "WaitingClientPackages",
                 column: "ClientPackageId");
         }
 
@@ -639,7 +639,7 @@ namespace Infrastructure.Migrations
                 name: "RoutePrice");
 
             migrationBuilder.DropTable(
-                name: "WaitingList");
+                name: "WaitingClientPackages");
 
             migrationBuilder.DropTable(
                 name: "Kits");
