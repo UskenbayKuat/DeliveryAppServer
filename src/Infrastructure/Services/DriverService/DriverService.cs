@@ -60,7 +60,7 @@ namespace Infrastructure.Services.DriverService
                 }
             }
             var clientPackage = await ClientPackage(clientPackageInfo.ClientPackageId, cancellationToken);
-            await _db.WaitingList.AddAsync(new WaitingClientPackage { ClientPackage = clientPackage.SetOnReview(false) }, cancellationToken);
+            await _db.WaitingClientPackages.AddAsync(new WaitingClientPackage { ClientPackage = clientPackage.SetOnReview(false) }, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
             return string.Empty;
         }
@@ -72,7 +72,7 @@ namespace Infrastructure.Services.DriverService
                             ?? throw new HubException();
             var waitingClientPackages = await WaitingClientPackages(routeTrip.Route.Id, routeTrip.CreatedAt)
                 .Where(cp=>cp.ClientPackage.OnDriverReview.OnReview == false).ToListAsync();
-            _db.WaitingList.RemoveRange(waitingClientPackages);
+            _db.WaitingClientPackages.RemoveRange(waitingClientPackages);
             // if (waitingLists.Count <= 0) TODO ?? need to check without working(delete)
             // {
             //     return clientPackageInfoToDrivers;
@@ -140,7 +140,7 @@ namespace Infrastructure.Services.DriverService
             .Include(r => r.Route)
             .Where(r => r.IsActive);
 
-        private IQueryable<WaitingClientPackage> WaitingClientPackages(int id, DateTime deliveryDate) => _db.WaitingList
+        private IQueryable<WaitingClientPackage> WaitingClientPackages(int id, DateTime deliveryDate) => _db.WaitingClientPackages
             .Include(w => w.ClientPackage.Client)
             .Include(w => w.ClientPackage.Package)
             .Include(w => w.ClientPackage.Route.StartCity)

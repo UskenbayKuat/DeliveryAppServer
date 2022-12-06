@@ -8,19 +8,19 @@ using Microsoft.AspNetCore.Mvc;
 namespace PublicApi.Endpoints.Clients.ClientPackage
 {
     [Authorize]
-    public class GetClientPackage : EndpointBaseAsync.WithoutRequest.WithActionResult
+    public class GetOnReviewClientPackage : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
         private readonly IClientPackage _clientPackage;
 
-        public GetClientPackage(IClientPackage clientPackage)
+        public GetOnReviewClientPackage(IClientPackage clientPackage)
         {
             _clientPackage = clientPackage;
         }
 
-        [HttpPost("api/WaitingClientPackage")]
+        [HttpPost("api/clients/OnReviewClientPackage")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
-            return await _clientPackage.GetWaitingClientPackage(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
+            return await _clientPackage.GetOnReviewClientPackage(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         }
     }
 }

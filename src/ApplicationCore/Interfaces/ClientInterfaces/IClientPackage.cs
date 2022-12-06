@@ -11,5 +11,6 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
     {
         public Task<ClientPackageInfo> CreateAsync(ClientPackageInfo info, string clientUserId, CancellationToken cancellationToken);
         public Task<ActionResult> GetWaitingClientPackage(string clientUserId, CancellationToken cancellationToken);
+        public Task<ActionResult> GetOnReviewClientPackage(string clientUserId, CancellationToken cancellationToken);
     }
 }

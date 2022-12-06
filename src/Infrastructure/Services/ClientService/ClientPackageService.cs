@@ -58,14 +58,28 @@ namespace Infrastructure.Services.ClientService
         public async Task<ActionResult> GetWaitingClientPackage(string clientUserId,CancellationToken cancellationToken)
         {
             var clientPackageInfos = new List<ClientPackageInfo>();
-            var user = await _dbIdentityDbContext.Users.FirstAsync(u => u.Id == clientUserId, cancellationToken);
-            await _db.WaitingList
+            var user = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u => u.Id == clientUserId, cancellationToken);
+            await _db.WaitingClientPackages
                 .Include(w => w.ClientPackage.Route.StartCity)
                 .Include(w => w.ClientPackage.Route.FinishCity)
                 .Include(w => w.ClientPackage.Package)
                 .Include(w => w.ClientPackage)
-                .Where(c => c.ClientPackage.Client.UserId == user.Id)
+                .Where(w => w.ClientPackage.Client.UserId == clientUserId)
                 .ForEachAsync(waitingList => clientPackageInfos.Add(_mapper.Map<ClientPackageInfo>(waitingList.ClientPackage)
+                    .SetClientData(user.Name, user.Surname, user.PhoneNumber)), cancellationToken);
+            return new OkObjectResult(clientPackageInfos);
+        }
+
+        public async Task<ActionResult> GetOnReviewClientPackage(string clientUserId, CancellationToken cancellationToken)
+        {
+            var clientPackageInfos = new List<ClientPackageInfo>();
+            var user = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u => u.Id == clientUserId, cancellationToken);
+            await _db.ClientPackages
+                .Include(c => c.Route.StartCity)
+                .Include(c => c.Route.FinishCity)
+                .Include(c => c.Package)
+                .Where(c => c.Client.UserId == clientUserId && c.OnDriverReview.OnReview)
+                .ForEachAsync(ClientPackages => clientPackageInfos.Add(_mapper.Map<ClientPackageInfo>(ClientPackages)
                     .SetClientData(user.Name, user.Surname, user.PhoneNumber)), cancellationToken);
             return new OkObjectResult(clientPackageInfos);
         }

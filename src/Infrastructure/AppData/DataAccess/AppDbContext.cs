@@ -35,7 +35,7 @@ namespace Infrastructure.AppData.DataAccess
         //orders
         public DbSet<Order> Orders { get; set; }
         public DbSet<ClientPackage> ClientPackages { get; set; }
-        public DbSet<WaitingClientPackage> WaitingList { get; set; }
+        public DbSet<WaitingClientPackage> WaitingClientPackages { get; set; }
         public DbSet<Package> Packages { get; set; }
         public DbSet<RejectedClientPackage>  RejectedClientPackages { get; set; }
         public DbSet<OnDriverReview> OnDriverReviews { get; set; }
