@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221206174723_InitialAppDb")]
+    [Migration("20221208185837_InitialAppDb")]
     partial class InitialAppDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -278,6 +278,9 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("ClientId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("ClientPackageState")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
@@ -285,9 +288,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<int?>("LocationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("OnDriverReviewId")
                         .HasColumnType("integer");
 
                     b.Property<int?>("OrderId")
@@ -311,8 +311,6 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("LocationId");
 
-                    b.HasIndex("OnDriverReviewId");
-
                     b.HasIndex("OrderId");
 
                     b.HasIndex("PackageId");
@@ -320,26 +318,6 @@ namespace Infrastructure.Migrations
                     b.HasIndex("RouteId");
 
                     b.ToTable("ClientPackages");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.OnDriverReview", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<bool>("OnReview")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("RouteTripId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RouteTripId");
-
-                    b.ToTable("OnDriverReviews");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Order", b =>
@@ -621,10 +599,6 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("LocationId");
 
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.OnDriverReview", "OnDriverReview")
-                        .WithMany()
-                        .HasForeignKey("OnDriverReviewId");
-
                     b.HasOne("ApplicationCore.Entities.AppEntities.Orders.Order", "Order")
                         .WithMany("ClientPackages")
                         .HasForeignKey("OrderId");
@@ -643,22 +617,11 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("Location");
 
-                    b.Navigation("OnDriverReview");
-
                     b.Navigation("Order");
 
                     b.Navigation("Package");
 
                     b.Navigation("Route");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.OnDriverReview", b =>
-                {
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.RouteTrip", "RouteTrip")
-                        .WithMany()
-                        .HasForeignKey("RouteTripId");
-
-                    b.Navigation("RouteTrip");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Order", b =>

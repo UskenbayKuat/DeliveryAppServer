@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values;
+using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using AutoMapper;
 using Infrastructure.AppData.DataAccess;
@@ -35,19 +37,19 @@ namespace Infrastructure.Services.ClientService
             var user = await _dbIdentityDbContext.Users.FirstAsync(u => u.Id == clientUserId, cancellationToken);
             var client = await _db.Clients.FirstAsync(c => c.UserId == clientUserId, cancellationToken);
             var carType = await _db.CarTypes.FirstAsync(c => c.Id == info.CarType.Id, cancellationToken);
-            var route = await _db.Routes.Include(r => r.StartCity)
+            var route = await _db.Routes
+                .Include(r => r.StartCity)
                 .Include(r => r.FinishCity)
                 .FirstAsync(r => 
-                    r.StartCityId == info.StartCity.Id  && 
-                    r.FinishCityId == info.FinishCity.Id, cancellationToken);
+                    r.StartCity.Id == info.StartCity.Id  && 
+                    r.FinishCity.Id == info.FinishCity.Id, cancellationToken);
 
             var clientPackage = new ClientPackage(info.IsSingle, info.Price)
             {
                 Client = client,
                 Package = info.Package,
                 CarType = carType,  
-                Route = route,
-                OnDriverReview = new OnDriverReview()
+                Route = route
             };
             await _db.ClientPackages.AddAsync(clientPackage, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
@@ -55,7 +57,7 @@ namespace Infrastructure.Services.ClientService
                 .SetClientData(user.Name, user.Surname, user.PhoneNumber);
             }
 
-        public async Task<ActionResult> GetWaitingClientPackage(string clientUserId,CancellationToken cancellationToken)
+        public async Task<ActionResult> GetWaitingClientPackageAsync(string clientUserId,CancellationToken cancellationToken)
         {
             var clientPackageInfos = new List<ClientPackageInfo>();
             var user = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u => u.Id == clientUserId, cancellationToken);
@@ -64,13 +66,14 @@ namespace Infrastructure.Services.ClientService
                 .Include(w => w.ClientPackage.Route.StartCity)
                 .Include(w => w.ClientPackage.Route.FinishCity)
                 .Include(w => w.ClientPackage.Package)
+                .Include(w => w.ClientPackage.CarType)
                 .Where(w => w.ClientPackage.Client.UserId == clientUserId)
-                .ForEachAsync(WaitingList => clientPackageInfos.Add(_mapper.Map<ClientPackageInfo>(WaitingList.ClientPackage)
+                .ForEachAsync(w => clientPackageInfos.Add(_mapper.Map<ClientPackageInfo>(w.ClientPackage)
                     .SetClientData(user.Name, user.Surname, user.PhoneNumber)), cancellationToken);
             return new OkObjectResult(clientPackageInfos);
         }
 
-        public async Task<ActionResult> GetOnReviewClientPackage(string clientUserId, CancellationToken cancellationToken)
+        public async Task<ActionResult> GetOnReviewClientPackageAsync(string clientUserId, CancellationToken cancellationToken)
         {
             var clientPackageInfos = new List<ClientPackageInfo>();
             var user = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u => u.Id == clientUserId, cancellationToken);
@@ -78,8 +81,9 @@ namespace Infrastructure.Services.ClientService
                 .Include(c => c.Route.StartCity)
                 .Include(c => c.Route.FinishCity)
                 .Include(c => c.Package)
-                .Where(c => c.Client.UserId == clientUserId && c.OnDriverReview.OnReview)
-                .ForEachAsync(ClientPackages => clientPackageInfos.Add(_mapper.Map<ClientPackageInfo>(ClientPackages)
+                .Include(c => c.CarType)
+                .Where(c => c.Client.UserId == clientUserId && c.ClientPackageState == ClientPackageState.OnReview)
+                .ForEachAsync(cp => clientPackageInfos.Add(_mapper.Map<ClientPackageInfo>(cp)
                     .SetClientData(user.Name, user.Surname, user.PhoneNumber)), cancellationToken);
             return new OkObjectResult(clientPackageInfos);
         }

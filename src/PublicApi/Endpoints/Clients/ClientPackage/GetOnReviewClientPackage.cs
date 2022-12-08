@@ -20,7 +20,7 @@ namespace PublicApi.Endpoints.Clients.ClientPackage
         [HttpPost("api/clients/OnReviewClientPackage")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
-            return await _clientPackage.GetOnReviewClientPackage(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
+            return await _clientPackage.GetOnReviewClientPackageAsync(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         }
     }
 }

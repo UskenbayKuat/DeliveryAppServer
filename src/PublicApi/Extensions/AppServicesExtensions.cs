@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Entities.Values;
+﻿using ApplicationCore;
+using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
@@ -29,6 +30,11 @@ namespace PublicApi.Extensions
     {
         public static void GetServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddSingleton<OnReviewData>();
+            services.AddTransient<IClientPackage, ClientPackageService>();
+            services.AddTransient<IDriver, DriverService>();
+            services.AddTransient<IHubConnect, HubConnectService>();
+            services.AddTransient<IOrder, OrderService>();
             services.AddTransient<IValidation, ValidationService>();
             services.AddTransient<IGenerateToken, TokenService>();
             services.AddTransient<IRefreshToken, TokenService>();
@@ -36,14 +42,10 @@ namespace PublicApi.Extensions
             services.AddTransient<IRegistration, RegisterBySmsMockService>();
             services.AddTransient<IProceedRegistration, ProceedRegistrationService>();
             services.AddTransient<ICalculate, CalculatePriceService>();
-            services.AddTransient<IClientPackage, ClientPackageService>();
             services.AddTransient<ICreateCar, CreateCarService>();
             services.AddTransient<IDeliveryAppData<DriverAppDataInfo>, DriverAppDataService>();
             services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
             services.AddTransient<IUserData, UserDataService>();
-            services.AddScoped<IHubConnect, HubConnectService>();
-            services.AddScoped<IOrder, OrderService>();
-            services.AddScoped<IDriver, DriverService>();
             services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.JwtSettings));
             services.ConfigureDbContextServices(configuration);
         }

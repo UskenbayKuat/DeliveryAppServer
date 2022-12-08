@@ -60,7 +60,7 @@ namespace Infrastructure.Services.TokenServices
             {
                 var user = await _identityDb.Users.FirstAsync(u => u.RefreshToken == tokenInfo.RefreshToken &&
                                                         u.RefreshTokenExpiryTime >= DateTime.Now);
-                return new OkObjectResult(CreateAccessToken(user));
+                return new OkObjectResult(new {AccessToken = CreateAccessToken(user)});
             }
             catch
             {

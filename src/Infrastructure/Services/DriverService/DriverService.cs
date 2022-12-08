@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
+using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using AutoMapper;
 using Infrastructure.AppData.DataAccess;
@@ -19,13 +21,16 @@ namespace Infrastructure.Services.DriverService
     {
         private readonly AppDbContext _db;
         private readonly AppIdentityDbContext _identityDbContext;
-        private readonly IMapper _mapper;
+        private readonly IMapper _mapper;        
+        private readonly OnReviewData _onReviewData;
 
-        public DriverService(AppDbContext db, AppIdentityDbContext identityDbContext, IMapper mapper)
+
+        public DriverService(AppDbContext db, AppIdentityDbContext identityDbContext, IMapper mapper, OnReviewData onReviewData)
         {
             _db = db;
             _identityDbContext = identityDbContext;
             _mapper = mapper;
+            _onReviewData = onReviewData;
         }
 
         public async Task<string> FindDriverConnectionIdAsync(ClientPackageInfo clientPackageInfo,
@@ -36,78 +41,53 @@ namespace Infrastructure.Services.DriverService
                             && r.Route.FinishCity.Id == clientPackageInfo.FinishCity.Id
                             && r.CreatedAt.Day >= clientPackageInfo.CreateAt.Day)
                 .ToListAsync(cancellationToken);
-            
+            var clientPackage = await ClientPackageAsync(clientPackageInfo.ClientPackageId, cancellationToken);
             foreach (var routeTrip in routeTripList)
             {
-                var chatHub =
-                    await _db.ChatHubs.FirstOrDefaultAsync(c => c.UserId == routeTrip.Driver.UserId,
-                        cancellationToken);
+                var chatHub = await _db.ChatHubs.FirstOrDefaultAsync(c => c.UserId == routeTrip.Driver.UserId, cancellationToken);
                 if (string.IsNullOrEmpty(chatHub?.ConnectionId)) continue;
-                var checkRefusal = await _db.RejectedClientPackages
-                    .AnyAsync(r =>
-                        r.RouteTrip.Id == routeTrip.Id &&
-                        r.ClientPackage.Id == clientPackageInfo.ClientPackageId, cancellationToken);
-                if(!checkRefusal)
+                if (await CheckRejectedAsync(routeTrip.Id, clientPackageInfo.ClientPackageId)) continue;
+                await UpDateClientPackageStateAsync(clientPackage, ClientPackageState.OnReview);
+                if (_onReviewData.ReviewDictionary.ContainsKey(routeTrip.Id))
                 {
-                    var tempClientPackage = await _db.ClientPackages
-                        .Include(cp=>cp.OnDriverReview)
-                        .FirstOrDefaultAsync(cp =>
-                        cp.Id == clientPackageInfo.ClientPackageId, cancellationToken: cancellationToken);
-                    tempClientPackage.OnDriverReview.RouteTrip = routeTrip;
-                    _db.ClientPackages.Update(tempClientPackage);
-                    await _db.SaveChangesAsync(cancellationToken);
-                    return chatHub.ConnectionId;
+                    _onReviewData.ReviewDictionary.GetValueOrDefault(routeTrip.Id)?.Add(clientPackageInfo);
                 }
+                else
+                {
+                    _onReviewData.ReviewDictionary.Add(routeTrip.Id, new List<ClientPackageInfo> {clientPackageInfo});
+                }
+                return chatHub.ConnectionId;
             }
-            var clientPackage = await ClientPackage(clientPackageInfo.ClientPackageId, cancellationToken);
-            await _db.WaitingClientPackages.AddAsync(new WaitingClientPackage { ClientPackage = clientPackage.SetOnReview(false) }, cancellationToken);
+            await _db.WaitingClientPackages.AddAsync(new WaitingClientPackage { ClientPackage = clientPackage.ChangeState(ClientPackageState.PendingForReview) }, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
             return string.Empty;
         }
 
-        public async Task<List<ClientPackageInfo>> FindClientPackagesAsync(string userDriverId)
+        public async Task<List<ClientPackageInfo>> FindClientPackagesAsync(string driverUserId)
         {
             var clientPackagesInfo = new List<ClientPackageInfo>();
-            var routeTrip = await Trips().FirstAsync(r => r.Driver.UserId == userDriverId)
-                            ?? throw new HubException();
+            var routeTrip = await Trip(driverUserId) ?? throw new HubException();
             var waitingClientPackages = await WaitingClientPackages(routeTrip.Route.Id, routeTrip.CreatedAt)
-                .Where(cp=>cp.ClientPackage.OnDriverReview.OnReview == false).ToListAsync();
+                .Where(cp=>cp.ClientPackage.ClientPackageState == ClientPackageState.PendingForReview).ToListAsync();
             _db.WaitingClientPackages.RemoveRange(waitingClientPackages);
-            // if (waitingLists.Count <= 0) TODO ?? need to check without working(delete)
-            // {
-            //     return clientPackageInfoToDrivers;
-            // }
-            foreach(var waitingClientPackage in waitingClientPackages)
+            foreach(var clientPackage in waitingClientPackages.Select(w => w.ClientPackage))
             {
-                waitingClientPackage.ClientPackage.SetOnReview(true);
-                waitingClientPackage.ClientPackage.OnDriverReview.RouteTrip = routeTrip;
-                _db.ClientPackages.Update(waitingClientPackage.ClientPackage);
-                var user = await _identityDbContext.Users.FirstOrDefaultAsync(u =>
-                    u.Id == waitingClientPackage.ClientPackage.Client.UserId);
-                var clientPackageInfo = _mapper.Map<ClientPackageInfo>(waitingClientPackage.ClientPackage);
-                clientPackageInfo.SetClientData(user.Name, user.Surname, user.PhoneNumber);
-                clientPackagesInfo.Add(clientPackageInfo);
+                await UpDateClientPackageStateAsync(clientPackage, ClientPackageState.OnReview);
+                var user = await _identityDbContext.Users.FirstOrDefaultAsync(u =>u.Id == clientPackage.Client.UserId);
+                clientPackagesInfo.Add(_mapper.Map<ClientPackageInfo>(clientPackage).SetClientData(user.Name, user.Surname, user.PhoneNumber));
             }
-            await _db.SaveChangesAsync();
+            _onReviewData.ReviewDictionary.Add(routeTrip.Id, clientPackagesInfo);
             return clientPackagesInfo;
         }
         
-        public async Task<ActionResult> SendClientPackagesToDriverAsync(string userDriverId)
+        public async Task<ActionResult> SendClientPackagesToDriverAsync(string driverUserId)
         {
             try
             {
-                var clientPackagesInfo = new List<ClientPackageInfo>();
-                var routeTrip = await Trips().FirstOrDefaultAsync(r => r.Driver.UserId == userDriverId)
-                                ?? throw new NullReferenceException("Для проверки заказов создайте поездку");
-                await _db.ClientPackages
-                    .Include(cp=>cp.Route.StartCity)
-                    .Include(cp=>cp.Route.FinishCity)
-                    .Include(cp=>cp.Package)
-                    .Where(cp => cp.OnDriverReview.OnReview && cp.OnDriverReview.RouteTrip.Id == routeTrip.Id)
-                    .ForEachAsync(cp=>clientPackagesInfo.Add(_mapper.Map<ClientPackageInfo>(cp)));
-                return new OkObjectResult(clientPackagesInfo);
+                var routeTrip = await Trip(driverUserId) ?? throw new NullReferenceException("Для проверки заказов создайте поездку");
+                return new OkObjectResult(_onReviewData.ReviewDictionary.GetValueOrDefault(routeTrip.Id));
             }
-            catch (Exception ex)
+            catch (NullReferenceException ex)
             {
                 return new BadRequestObjectResult(ex.Message);
             }
@@ -117,8 +97,8 @@ namespace Infrastructure.Services.DriverService
             ClientPackageInfo clientPackageInfo,
             CancellationToken cancellationToken)
         {
-            var clientPackage = await ClientPackage(clientPackageInfo.ClientPackageId, cancellationToken);
-            var routeTrip = await Trips() .FirstAsync(r => r.Driver.UserId == driverUserId, cancellationToken);
+            var clientPackage = await ClientPackageAsync(clientPackageInfo.ClientPackageId, cancellationToken);
+            var routeTrip = await Trip(driverUserId);
             await _db.RejectedClientPackages
                 .AddAsync(new RejectedClientPackage
                 {
@@ -128,24 +108,40 @@ namespace Infrastructure.Services.DriverService
             await _db.SaveChangesAsync(cancellationToken);
             return await FindDriverConnectionIdAsync(clientPackageInfo, cancellationToken);
         }
-        
-        
-        private async Task<ClientPackage> ClientPackage(int clientPackageId, CancellationToken cancellationToken) =>  await _db.ClientPackages
+
+        private async Task<bool> CheckRejectedAsync(int routeTripId, int clientPackageId)
+        => await _db.RejectedClientPackages
+                .AnyAsync(r =>
+                    r.RouteTrip.Id == routeTripId &&
+                    r.ClientPackage.Id == clientPackageId);
+
+        private async Task UpDateClientPackageStateAsync(ClientPackage clientPackage, ClientPackageState state)
+        {
+            _db.ClientPackages.Update(clientPackage.ChangeState(state));
+            await _db.SaveChangesAsync();
+        }
+
+        private async Task<ClientPackage> ClientPackageAsync(int clientPackageId, CancellationToken cancellationToken) =>  await _db.ClientPackages
+            .Include(cp=>cp.Route.StartCity)
+            .Include(cp=>cp.Route.FinishCity)
+            .Include(cp=>cp.Package)
             .Include(c => c.Client)
-            .Include(c=>c.OnDriverReview)
             .FirstAsync(c => c.Id == clientPackageId, cancellationToken);
         
         private IQueryable<RouteTrip> Trips() => _db.RouteTrips
             .Include(r => r.Driver)
-            .Include(r => r.Route)
+            .Include(r => r.Route.StartCity)
+            .Include(r => r.Route.FinishCity)
             .Where(r => r.IsActive);
+
+        private Task<RouteTrip> Trip(string userDriverId) => 
+            Trips().FirstOrDefaultAsync(r => r.Driver.UserId == userDriverId);
 
         private IQueryable<WaitingClientPackage> WaitingClientPackages(int id, DateTime deliveryDate) => _db.WaitingClientPackages
             .Include(w => w.ClientPackage.Client)
             .Include(w => w.ClientPackage.Package)
             .Include(w => w.ClientPackage.Route.StartCity)
             .Include(w => w.ClientPackage.Route.FinishCity)
-            .Include(w=>w.ClientPackage.OnDriverReview)
             .Where(w =>
                 w.ClientPackage.Route.Id == id &&
                 w.ClientPackage.CreatedAt.Day <= deliveryDate.Day);

@@ -38,7 +38,7 @@ namespace Infrastructure.AppData.DataAccess
         public DbSet<WaitingClientPackage> WaitingClientPackages { get; set; }
         public DbSet<Package> Packages { get; set; }
         public DbSet<RejectedClientPackage>  RejectedClientPackages { get; set; }
-        public DbSet<OnDriverReview> OnDriverReviews { get; set; }
+        
         //kits
         public DbSet<Kit> Kits { get; set; }
         public DbSet<DriverKit> DriversKits { get; set; }

@@ -338,26 +338,6 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OnDriverReviews",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    OnReview = table.Column<bool>(type: "boolean", nullable: false),
-                    RouteTripId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OnDriverReviews", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_OnDriverReviews_RouteTrips_RouteTripId",
-                        column: x => x.RouteTripId,
-                        principalTable: "RouteTrips",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -394,11 +374,11 @@ namespace Infrastructure.Migrations
                     PackageId = table.Column<int>(type: "integer", nullable: true),
                     IsSingle = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ClientPackageState = table.Column<int>(type: "integer", nullable: false),
                     Price = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     LocationId = table.Column<int>(type: "integer", nullable: true),
                     RouteId = table.Column<int>(type: "integer", nullable: true),
-                    OrderId = table.Column<int>(type: "integer", nullable: true),
-                    OnDriverReviewId = table.Column<int>(type: "integer", nullable: true)
+                    OrderId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -419,12 +399,6 @@ namespace Infrastructure.Migrations
                         name: "FK_ClientPackages_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ClientPackages_OnDriverReviews_OnDriverReviewId",
-                        column: x => x.OnDriverReviewId,
-                        principalTable: "OnDriverReviews",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -523,11 +497,6 @@ namespace Infrastructure.Migrations
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientPackages_OnDriverReviewId",
-                table: "ClientPackages",
-                column: "OnDriverReviewId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ClientPackages_OrderId",
                 table: "ClientPackages",
                 column: "OrderId");
@@ -565,11 +534,6 @@ namespace Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_LocationDate_RouteTripId",
                 table: "LocationDate",
-                column: "RouteTripId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OnDriverReviews_RouteTripId",
-                table: "OnDriverReviews",
                 column: "RouteTripId");
 
             migrationBuilder.CreateIndex(
@@ -652,9 +616,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Locations");
-
-            migrationBuilder.DropTable(
-                name: "OnDriverReviews");
 
             migrationBuilder.DropTable(
                 name: "Orders");

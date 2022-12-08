@@ -6,12 +6,14 @@ using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
+using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PublicApi.HubNotification;
 
 namespace PublicApi.Endpoints.Clients.ClientPackage
 {
+    [Authorize]
     public class CreateClientPackage : EndpointBaseAsync.WithRequest<ClientPackageCommand>.WithActionResult
     {
         private readonly IClientPackage _clientPackage;

@@ -55,7 +55,9 @@ namespace PublicApi
                 .ForMember(o => o.FinishCity, 
                     o => o.MapFrom(c => c.Route.FinishCity))
                 .ForMember(o => o.CreateAt, 
-                    o => o.MapFrom(c => c.CreatedAt));
+                    o => o.MapFrom(c => c.CreatedAt))
+                .ForMember(o => o.CarType, 
+                    o => o.MapFrom(c => c.CarType));
             CreateMap<RefreshRequest, RefreshTokenInfo>()
                 .ForMember(o => o.RefreshToken, 
                     o => o.MapFrom(r => r.RefreshToken));

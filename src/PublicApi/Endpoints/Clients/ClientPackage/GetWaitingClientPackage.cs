@@ -20,7 +20,7 @@ namespace PublicApi.Endpoints.Clients.ClientPackage
         [HttpPost("api/clients/WaitingClientPackage")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
-            return await _clientPackage.GetWaitingClientPackage(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
+            return await _clientPackage.GetWaitingClientPackageAsync(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         }
     }
 }

@@ -10,6 +10,7 @@ using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
+using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Polly;
@@ -18,6 +19,7 @@ using PublicApi.HubNotification;
 
 namespace PublicApi.Endpoints.Drivers.CreateRouteTrip
 {
+    [Authorize]
     public class CreateRouteTrip : EndpointBaseAsync.WithRequest<CreateRouteTripCommand>.WithActionResult
     {
         private readonly IMapper _mapper;
