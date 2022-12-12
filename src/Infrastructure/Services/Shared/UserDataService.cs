@@ -4,8 +4,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces.SharedInterfaces;
-using Infrastructure.DataAccess;
-using Infrastructure.Identity;
+using Infrastructure.AppData.DataAccess;
+using Infrastructure.AppData.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,11 +27,12 @@ namespace Infrastructure.Services.Shared
             var user = await _dbIdentity.Users.FirstAsync(u => u.Id == userId, cancellationToken);
             if (user.IsDriver)
             {
-                var driver = _db.Drivers.Include(d => d.Car).First(d => d.UserId == userId);
+                var driver = await _db.Drivers.Include(d => d.Car)
+                                        .FirstAsync(d => d.UserId == userId, cancellationToken);
                 return new ObjectResult(driver);
             }
             
-            var client = _db.Clients.First(c => c.UserId == userId);
+            var client = await _db.Clients.FirstAsync(c => c.UserId == userId, cancellationToken);
             return new OkObjectResult(client);
         }
     }

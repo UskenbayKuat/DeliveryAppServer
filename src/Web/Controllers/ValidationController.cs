@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using ApplicationCore.Entities;
-using Infrastructure.Identity;
+using Infrastructure.AppData.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

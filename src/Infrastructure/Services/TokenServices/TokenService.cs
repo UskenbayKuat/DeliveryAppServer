@@ -7,10 +7,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using ApplicationCore.Entities;
-using ApplicationCore.Entities.ApiEntities;
+using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.TokenInterfaces;
+using Infrastructure.AppData.Identity;
 using Infrastructure.Config;
-using Infrastructure.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -60,7 +60,7 @@ namespace Infrastructure.Services.TokenServices
             {
                 var user = await _identityDb.Users.FirstAsync(u => u.RefreshToken == tokenInfo.RefreshToken &&
                                                         u.RefreshTokenExpiryTime >= DateTime.Now);
-                return new OkObjectResult(CreateAccessToken(user));
+                return new OkObjectResult(new {AccessToken = CreateAccessToken(user)});
             }
             catch
             {

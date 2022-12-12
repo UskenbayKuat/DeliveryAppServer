@@ -2,10 +2,12 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.ApiEntities;
 using ApplicationCore.Entities.AppEntities;
+using ApplicationCore.Entities.AppEntities.Cars;
+using ApplicationCore.Entities.Values;
+using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces.DriverInterfaces;
-using Infrastructure.DataAccess;
+using Infrastructure.AppData.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,36 +22,29 @@ namespace Infrastructure.Services.DriverService
             _db = db;
         }
 
-        public async Task<ActionResult> CreateAutoAsync(CreateCarInfo info, string userId, CancellationToken token)
+        public async Task<ActionResult> CreateAutoAsync(CreateCarInfo info, string userId, CancellationToken cancellationToken)
         {
             try
             {
-                var driver = _db.Drivers.Include(d => d.Car).First(d => d.UserId == userId);
-                var carBrand = await _db.CarBrands.FirstAsync(b => b.Id == info.CarBrandId, token);
-                var carColor = await _db.CarColors.FirstAsync(b => b.Id == info.CarColorId, token);
-                var carType = await _db.CarTypes.FirstAsync(b => b.Id == info.CarTypeId, token);
-                if (driver.Car is not null)
-                {
-                    return new BadRequestObjectResult("Car is already added");
-                } 
-                var car = new Car
-                {
-                    CarBrand = carBrand,
-                    CarColor = carColor,
-                    CarType = carType,
-                    CarNumber = info.LicensePlate,
-                    ProductionYear = info.ProductionYear,
-                    RegistrationCertificate = info.RegistrationCertificate
-                };
-                driver.Car= car;
-                await _db.Cars.AddAsync(car, token); 
+                var driver = await _db.Drivers.Include(d => d.Car).FirstAsync(d => d.UserId == userId,cancellationToken);
+                var carBrand = await _db.CarBrands.FirstAsync(b => b.Id == info.CarBrandId, cancellationToken);
+                var carColor = await _db.CarColors.FirstAsync(b => b.Id == info.CarColorId, cancellationToken);
+                var carType = await _db.CarTypes.FirstAsync(b => b.Id == info.CarTypeId, cancellationToken);
+
+                driver.Car = new Car(info.ProductionYear, info.RegistrationCertificate, info.LicensePlate)
+                    { CarBrand = carBrand, CarColor = carColor, CarType = carType };
+              
                 _db.Drivers.Update(driver);
-                await _db.SaveChangesAsync(token);
-                return new OkObjectResult(car);
+                await _db.SaveChangesAsync(cancellationToken);
+                return new OkObjectResult(new{driver.Car});
+            }
+            catch(CarExistsException ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
             }
             catch
             {
-                return new BadRequestResult();
+                return new BadRequestObjectResult("Not correct data");
             }
         }
     }

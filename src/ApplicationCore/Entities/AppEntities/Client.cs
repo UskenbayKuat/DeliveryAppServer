@@ -2,6 +2,11 @@
 {
     public class Client : BaseEntity
     {
-        public string UserId { get; set; }
+        public Client(string userId)
+        {
+            UserId = userId;
+        }
+
+        public string UserId { get; private set;}
     }
 }

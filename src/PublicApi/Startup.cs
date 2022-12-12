@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PublicApi.Extensions;
-using PublicApi.Hub;
+using PublicApi.HubNotification;
 
 namespace PublicApi
 {
@@ -19,11 +19,11 @@ namespace PublicApi
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            Dependencies.ConfigureServices(Configuration, services);
+
             services.GetServices(Configuration);
             services.AddControllers(options => { options.UseNamespaceRouteToken(); });
 
@@ -32,6 +32,7 @@ namespace PublicApi
                 options.SuppressInferBindingSourcesForParameters = true;
             });
 
+            #region Swagger
             services.AddSwaggerGen(option =>
             {
                 option.SwaggerDoc("v1", new OpenApiInfo { Title = "PublicApi", Version = "v1" });
@@ -59,6 +60,8 @@ namespace PublicApi
                     }
                 }); 
             });
+            #endregion
+            
             services.AddSignalR();
             services.AddAutoMapper(typeof(Startup));
         }

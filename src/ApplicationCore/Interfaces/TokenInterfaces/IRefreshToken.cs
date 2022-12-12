@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using ApplicationCore.Entities.ApiEntities;
+using ApplicationCore.Entities.Values;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationCore.Interfaces.TokenInterfaces

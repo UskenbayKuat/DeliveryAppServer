@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.ApiEntities;
+using ApplicationCore.Entities.Values;
 using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using Ardalis.ApiEndpoints;
@@ -27,7 +27,7 @@ namespace PublicApi.Endpoints.Drivers.CreateCar
             CancellationToken cancellationToken = new CancellationToken())
         {
                 return await _createCar.CreateAutoAsync(_mapper.Map<CreateCarInfo>(request),
-                    (string)HttpContext.Items["UserId"], cancellationToken);
+                    HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         }
     }
 }

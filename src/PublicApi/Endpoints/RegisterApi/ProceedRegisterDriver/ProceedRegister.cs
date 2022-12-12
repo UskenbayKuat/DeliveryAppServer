@@ -1,15 +1,17 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities;
-using ApplicationCore.Entities.ApiEntities;
+using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
+using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PublicApi.Endpoints.RegisterApi.ProceedRegisterDriver
 {
+    [Authorize]
     public class ProceedRegister : EndpointBaseAsync.WithRequest<ProceedRegisterCommand>.WithActionResult
     {
         private readonly IMapper _mapper;
@@ -27,7 +29,7 @@ namespace PublicApi.Endpoints.RegisterApi.ProceedRegisterDriver
         public override async Task<ActionResult> HandleAsync([FromBody]ProceedRegisterCommand request, CancellationToken cancellationToken = default)
         {
             return await _proceedRegistration.ProceedRegistration(_mapper.
-                Map<ProceedRegistrationInfo>(request), cancellationToken);
+                Map<ProceedRegistrationInfo>(request), HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         }
 
     }

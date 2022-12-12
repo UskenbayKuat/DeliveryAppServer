@@ -47,6 +47,7 @@ namespace Infrastructure.Config.Middlewares
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
                 
+                
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = jwtToken.Claims.First(x => x.Type == ClaimTypes.UserData).Value;
                 context.Items["UserId"] = userId;

@@ -1,8 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities;
-using Infrastructure.Identity;
-
+using Infrastructure.AppData.Identity;
 using Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -34,15 +33,8 @@ namespace Web.Controllers
         {
             if(ModelState.IsValid)
             {
-                User user = new User
-                {
-                    UserName = model.Login,
-                    Email = model.Email,
-                    PhoneNumber = model.PhoneNumber,
-                    Name = "Admin",
-                    Surname = "Adminov"
-                };
-                
+                User user = new User(model.Login, model.PhoneNumber, model.Email, "Admin", "Adminov");
+
                 var result = await _userManager.CreateAsync(user, model.Password);
                
                 if (result.Succeeded)

@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.ApiEntities;
+using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.SharedInterfaces;
 using Ardalis.ApiEndpoints;
 using Infrastructure.Config.Attributes;

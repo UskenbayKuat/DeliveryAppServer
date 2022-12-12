@@ -27,7 +27,7 @@ namespace PublicApi.Endpoints.Shared.UserData
         {
             try
             {
-                return await _userData.SendUser((string)HttpContext.Items["UserId"], cancellationToken);
+                return await _userData.SendUser(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
             }        
             catch(NotExistUserException ex)
             {
