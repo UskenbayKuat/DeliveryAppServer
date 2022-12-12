@@ -35,14 +35,15 @@ namespace Infrastructure.Services.DriverService
                 return new BadRequestObjectResult("Сначала завершите текущий маршрут");
             }
             await CreateRouteTrip(info, driver, cancellationToken);
-            return new OkObjectResult(await _driver.FindClientPackagesAsync(userId));
+          //  return new OkObjectResult(await _driver.FindClientPackagesAsync(userId));
+            return new OkObjectResult(info);
         }
 
         private async Task CreateRouteTrip(RouteInfo info, Driver driver, CancellationToken cancellationToken)
         {
             var route = await _db.Routes.FirstAsync(r =>
-                r.StartCityId == info.StartCityId &&
-                r.FinishCityId == info.FinishCityId, cancellationToken);
+                r.StartCityId == info.StartCity.Id &&
+                r.FinishCityId == info.FinishCity.Id, cancellationToken);
             var trip = new RouteTrip
             {
                 Driver = driver,
