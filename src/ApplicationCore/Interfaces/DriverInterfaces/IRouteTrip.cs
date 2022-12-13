@@ -8,6 +8,6 @@ namespace ApplicationCore.Interfaces.DriverInterfaces
 {
     public interface IRouteTrip
     {
-        public Task<ActionResult> CreateAsync(RouteInfo info, string userId, CancellationToken cancellationToken);
+        public Task<ActionResult> CreateAsync(RouteTripInfo tripInfo, string userId, CancellationToken cancellationToken);
     }
 }

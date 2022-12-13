@@ -136,14 +136,28 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: true),
-                    Length = table.Column<double>(type: "double precision", nullable: false),
-                    Width = table.Column<double>(type: "double precision", nullable: false),
-                    Height = table.Column<double>(type: "double precision", nullable: false),
-                    Weight = table.Column<double>(type: "double precision", nullable: false)
+                    Length = table.Column<double>(type: "double precision", precision: 18, scale: 2, nullable: false),
+                    Width = table.Column<double>(type: "double precision", precision: 18, scale: 2, nullable: false),
+                    Height = table.Column<double>(type: "double precision", precision: 18, scale: 2, nullable: false),
+                    Weight = table.Column<double>(type: "double precision", precision: 18, scale: 2, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Packages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "States",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_States", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -291,6 +305,7 @@ namespace Infrastructure.Migrations
                     DriverId = table.Column<int>(type: "integer", nullable: true),
                     RouteId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DeliveryDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -306,6 +321,37 @@ namespace Infrastructure.Migrations
                         name: "FK_RouteTrips_Routes_RouteId",
                         column: x => x.RouteId,
                         principalTable: "Routes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Deliveries",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    StateId = table.Column<int>(type: "integer", nullable: true),
+                    RouteTripId = table.Column<int>(type: "integer", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DeliveryDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CompletionDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CancellationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Deliveries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Deliveries_RouteTrips_RouteTripId",
+                        column: x => x.RouteTripId,
+                        principalTable: "RouteTrips",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Deliveries_States_StateId",
+                        column: x => x.StateId,
+                        principalTable: "States",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -343,125 +389,87 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RouteTripId = table.Column<int>(type: "integer", nullable: true),
-                    OrderState = table.Column<int>(type: "integer", nullable: false),
-                    OrderDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CompletionDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CancellationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    OrderCost = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Orders", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Orders_RouteTrips_RouteTripId",
-                        column: x => x.RouteTripId,
-                        principalTable: "RouteTrips",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ClientPackages",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CarTypeId = table.Column<int>(type: "integer", nullable: true),
                     ClientId = table.Column<int>(type: "integer", nullable: true),
                     PackageId = table.Column<int>(type: "integer", nullable: true),
                     IsSingle = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ClientPackageState = table.Column<int>(type: "integer", nullable: false),
+                    DeliveryDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    StateId = table.Column<int>(type: "integer", nullable: true),
                     Price = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     LocationId = table.Column<int>(type: "integer", nullable: true),
                     RouteId = table.Column<int>(type: "integer", nullable: true),
-                    OrderId = table.Column<int>(type: "integer", nullable: true)
+                    DeliveryId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClientPackages", x => x.Id);
+                    table.PrimaryKey("PK_Orders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ClientPackages_CarTypes_CarTypeId",
+                        name: "FK_Orders_CarTypes_CarTypeId",
                         column: x => x.CarTypeId,
                         principalTable: "CarTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ClientPackages_Clients_ClientId",
+                        name: "FK_Orders_Clients_ClientId",
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ClientPackages_Locations_LocationId",
+                        name: "FK_Orders_Deliveries_DeliveryId",
+                        column: x => x.DeliveryId,
+                        principalTable: "Deliveries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Orders_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ClientPackages_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ClientPackages_Packages_PackageId",
+                        name: "FK_Orders_Packages_PackageId",
                         column: x => x.PackageId,
                         principalTable: "Packages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ClientPackages_Routes_RouteId",
+                        name: "FK_Orders_Routes_RouteId",
                         column: x => x.RouteId,
                         principalTable: "Routes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Orders_States_StateId",
+                        column: x => x.StateId,
+                        principalTable: "States",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "RejectedClientPackages",
+                name: "RejectedOrders",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     RouteTripId = table.Column<int>(type: "integer", nullable: true),
-                    ClientPackageId = table.Column<int>(type: "integer", nullable: true)
+                    OrderId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RejectedClientPackages", x => x.Id);
+                    table.PrimaryKey("PK_RejectedOrders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RejectedClientPackages_ClientPackages_ClientPackageId",
-                        column: x => x.ClientPackageId,
-                        principalTable: "ClientPackages",
+                        name: "FK_RejectedOrders_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RejectedClientPackages_RouteTrips_RouteTripId",
+                        name: "FK_RejectedOrders_RouteTrips_RouteTripId",
                         column: x => x.RouteTripId,
                         principalTable: "RouteTrips",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "WaitingClientPackages",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ClientPackageId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_WaitingClientPackages", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_WaitingClientPackages_ClientPackages_ClientPackageId",
-                        column: x => x.ClientPackageId,
-                        principalTable: "ClientPackages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -482,34 +490,14 @@ namespace Infrastructure.Migrations
                 column: "CarTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientPackages_CarTypeId",
-                table: "ClientPackages",
-                column: "CarTypeId");
+                name: "IX_Deliveries_RouteTripId",
+                table: "Deliveries",
+                column: "RouteTripId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientPackages_ClientId",
-                table: "ClientPackages",
-                column: "ClientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ClientPackages_LocationId",
-                table: "ClientPackages",
-                column: "LocationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ClientPackages_OrderId",
-                table: "ClientPackages",
-                column: "OrderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ClientPackages_PackageId",
-                table: "ClientPackages",
-                column: "PackageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ClientPackages_RouteId",
-                table: "ClientPackages",
-                column: "RouteId");
+                name: "IX_Deliveries_StateId",
+                table: "Deliveries",
+                column: "StateId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Drivers_CarId",
@@ -537,18 +525,48 @@ namespace Infrastructure.Migrations
                 column: "RouteTripId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_RouteTripId",
+                name: "IX_Orders_CarTypeId",
                 table: "Orders",
-                column: "RouteTripId");
+                column: "CarTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RejectedClientPackages_ClientPackageId",
-                table: "RejectedClientPackages",
-                column: "ClientPackageId");
+                name: "IX_Orders_ClientId",
+                table: "Orders",
+                column: "ClientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RejectedClientPackages_RouteTripId",
-                table: "RejectedClientPackages",
+                name: "IX_Orders_DeliveryId",
+                table: "Orders",
+                column: "DeliveryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_LocationId",
+                table: "Orders",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_PackageId",
+                table: "Orders",
+                column: "PackageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_RouteId",
+                table: "Orders",
+                column: "RouteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_StateId",
+                table: "Orders",
+                column: "StateId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RejectedOrders_OrderId",
+                table: "RejectedOrders",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RejectedOrders_RouteTripId",
+                table: "RejectedOrders",
                 column: "RouteTripId");
 
             migrationBuilder.CreateIndex(
@@ -575,11 +593,6 @@ namespace Infrastructure.Migrations
                 name: "IX_RouteTrips_RouteId",
                 table: "RouteTrips",
                 column: "RouteId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_WaitingClientPackages_ClientPackageId",
-                table: "WaitingClientPackages",
-                column: "ClientPackageId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -597,34 +610,34 @@ namespace Infrastructure.Migrations
                 name: "MessagesForUser");
 
             migrationBuilder.DropTable(
-                name: "RejectedClientPackages");
+                name: "RejectedOrders");
 
             migrationBuilder.DropTable(
                 name: "RoutePrice");
 
             migrationBuilder.DropTable(
-                name: "WaitingClientPackages");
-
-            migrationBuilder.DropTable(
                 name: "Kits");
 
             migrationBuilder.DropTable(
-                name: "ClientPackages");
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Clients");
 
             migrationBuilder.DropTable(
-                name: "Locations");
+                name: "Deliveries");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "Locations");
 
             migrationBuilder.DropTable(
                 name: "Packages");
 
             migrationBuilder.DropTable(
                 name: "RouteTrips");
+
+            migrationBuilder.DropTable(
+                name: "States");
 
             migrationBuilder.DropTable(
                 name: "Drivers");

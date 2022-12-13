@@ -14,19 +14,19 @@ namespace PublicApi.Endpoints.Drivers.CreateCar
     public class CreateCar: EndpointBaseAsync.WithRequest<CreateCarCommand>.WithActionResult
     {
         private readonly IMapper _mapper;
-        private readonly ICreateCar _createCar;
+        private readonly ICar _car;
 
-        public CreateCar(IMapper mapper, ICreateCar createCar)
+        public CreateCar(IMapper mapper, ICar car)
         {
             _mapper = mapper;
-            _createCar = createCar;
+            _car = car;
         }
 
         [HttpPost("api/drivers/createCar")]
         public override async Task<ActionResult> HandleAsync([FromBody]CreateCarCommand request,
             CancellationToken cancellationToken = new CancellationToken())
         {
-                return await _createCar.CreateAutoAsync(_mapper.Map<CreateCarInfo>(request),
+                return await _car.CreateAsync(_mapper.Map<CarInfo>(request),
                     HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         }
     }

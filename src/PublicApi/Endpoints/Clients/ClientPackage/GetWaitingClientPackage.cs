@@ -10,17 +10,17 @@ namespace PublicApi.Endpoints.Clients.ClientPackage
     [Authorize]
     public class GetWaitingClientPackage : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
-        private readonly IClientPackage _clientPackage;
+        private readonly IOrder _order;
 
-        public GetWaitingClientPackage(IClientPackage clientPackage)
+        public GetWaitingClientPackage(IOrder order)
         {
-            _clientPackage = clientPackage;
+            _order = order;
         }
 
         [HttpPost("api/clients/WaitingClientPackage")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
-            return await _clientPackage.GetWaitingClientPackageAsync(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
+            return await _order.GetWaitingOrdersAsync(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         }
     }
 }

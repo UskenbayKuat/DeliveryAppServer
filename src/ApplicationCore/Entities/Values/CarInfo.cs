@@ -1,6 +1,6 @@
 namespace ApplicationCore.Entities.Values
 {
-    public class CreateCarInfo
+    public class CarInfo
     {
         public int CarBrandId { get; set; }
         public int CarTypeId { get; set; }

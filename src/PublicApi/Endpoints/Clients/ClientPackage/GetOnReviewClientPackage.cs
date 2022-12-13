@@ -10,17 +10,17 @@ namespace PublicApi.Endpoints.Clients.ClientPackage
     [Authorize]
     public class GetOnReviewClientPackage : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
-        private readonly IClientPackage _clientPackage;
+        private readonly IOrder _order;
 
-        public GetOnReviewClientPackage(IClientPackage clientPackage)
+        public GetOnReviewClientPackage(IOrder order)
         {
-            _clientPackage = clientPackage;
+            _order = order;
         }
 
         [HttpPost("api/clients/OnReviewClientPackage")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
-            return await _clientPackage.GetOnReviewClientPackageAsync(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
+            return await _order.GetOnReviewOrdersAsync(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         }
     }
 }

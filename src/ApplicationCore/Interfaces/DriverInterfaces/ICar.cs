@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationCore.Interfaces.DriverInterfaces
 {
-    public interface ICreateCar
+    public interface ICar
     {
-        public Task<ActionResult> CreateAutoAsync(CreateCarInfo create, string userId, CancellationToken cancellationToken);
+        public Task<ActionResult> CreateAsync(CarInfo create, string userId, CancellationToken cancellationToken);
     }
 }

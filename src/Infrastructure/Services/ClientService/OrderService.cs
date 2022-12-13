@@ -13,25 +13,28 @@ using ApplicationCore.Interfaces.ClientInterfaces;
 using AutoMapper;
 using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
+using Infrastructure.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.ClientService
 {
-    public class ClientPackageService : IClientPackage
+    public class OrderService : IOrder
     {
         private readonly AppDbContext _db;
         private readonly AppIdentityDbContext _dbIdentityDbContext;
         private readonly IMapper _mapper;
+        private readonly StateHelper _stateHelper;
 
-        public ClientPackageService(AppDbContext db, AppIdentityDbContext dbIdentityDbContext, IMapper mapper)
+        public OrderService(AppDbContext db, AppIdentityDbContext dbIdentityDbContext, IMapper mapper, StateHelper stateHelper)
         {
             _db = db;
             _dbIdentityDbContext = dbIdentityDbContext;
             _mapper = mapper;
+            _stateHelper = stateHelper;
         }
 
-        public async Task<ClientPackageInfo> CreateAsync(ClientPackageInfo info, string clientUserId,
+        public async Task<OrderInfo> CreateAsync(OrderInfo info, string clientUserId,
             CancellationToken cancellationToken)
         {
             var user = await _dbIdentityDbContext.Users.FirstAsync(u => u.Id == clientUserId, cancellationToken);
@@ -43,49 +46,48 @@ namespace Infrastructure.Services.ClientService
                 .FirstAsync(r => 
                     r.StartCity.Id == info.StartCity.Id  && 
                     r.FinishCity.Id == info.FinishCity.Id, cancellationToken);
-
-            var clientPackage = new ClientPackage(info.IsSingle, info.Price)
+            var order = new Order(info.IsSingle, info.Price, info.DeliveryDate)
             {
                 Client = client,
                 Package = info.Package,
                 CarType = carType,  
-                Route = route
+                Route = route,
+                State =  _stateHelper.FindState((int)GeneralState.New)
             };
-            await _db.ClientPackages.AddAsync(clientPackage, cancellationToken);
+            await _db.Orders.AddAsync(order, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
-            return _mapper.Map<ClientPackageInfo>(clientPackage)
+            return _mapper.Map<OrderInfo>(order)
                 .SetClientData(user.Name, user.Surname, user.PhoneNumber);
             }
 
-        public async Task<ActionResult> GetWaitingClientPackageAsync(string clientUserId,CancellationToken cancellationToken)
+        public async Task<ActionResult> GetWaitingOrdersAsync(string clientUserId,CancellationToken cancellationToken)
         {
-            var clientPackageInfos = new List<ClientPackageInfo>();
+            var ordersInfo = new List<OrderInfo>();
             var user = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u => u.Id == clientUserId, cancellationToken);
-            await _db.WaitingClientPackages
-                .Include(w => w.ClientPackage)
-                .Include(w => w.ClientPackage.Route.StartCity)
-                .Include(w => w.ClientPackage.Route.FinishCity)
-                .Include(w => w.ClientPackage.Package)
-                .Include(w => w.ClientPackage.CarType)
-                .Where(w => w.ClientPackage.Client.UserId == clientUserId)
-                .ForEachAsync(w => clientPackageInfos.Add(_mapper.Map<ClientPackageInfo>(w.ClientPackage)
+            await _db.Orders
+                .Include(o => o.Route.StartCity)
+                .Include(o => o.Route.FinishCity)
+                .Include(o => o.Package)
+                .Include(o => o.CarType)
+                .Where(o => o.Client.UserId == clientUserId)
+                .ForEachAsync(o => ordersInfo.Add(_mapper.Map<OrderInfo>(o)
                     .SetClientData(user.Name, user.Surname, user.PhoneNumber)), cancellationToken);
-            return new OkObjectResult(clientPackageInfos);
+            return new OkObjectResult(ordersInfo);
         }
 
-        public async Task<ActionResult> GetOnReviewClientPackageAsync(string clientUserId, CancellationToken cancellationToken)
+        public async Task<ActionResult> GetOnReviewOrdersAsync(string clientUserId, CancellationToken cancellationToken)
         {
-            var clientPackageInfos = new List<ClientPackageInfo>();
+            var ordersInfo = new List<OrderInfo>();
             var user = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u => u.Id == clientUserId, cancellationToken);
-            await _db.ClientPackages
+            await _db.Orders
                 .Include(c => c.Route.StartCity)
                 .Include(c => c.Route.FinishCity)
                 .Include(c => c.Package)
                 .Include(c => c.CarType)
-                .Where(c => c.Client.UserId == clientUserId && c.ClientPackageState == ClientPackageState.OnReview)
-                .ForEachAsync(cp => clientPackageInfos.Add(_mapper.Map<ClientPackageInfo>(cp)
+                .Where(c => c.Client.UserId == clientUserId && c.State == _stateHelper.FindState((int)GeneralState.OnReview))
+                .ForEachAsync(cp => ordersInfo.Add(_mapper.Map<OrderInfo>(cp)
                     .SetClientData(user.Name, user.Surname, user.PhoneNumber)), cancellationToken);
-            return new OkObjectResult(clientPackageInfos);
+            return new OkObjectResult(ordersInfo);
         }
     }
 }

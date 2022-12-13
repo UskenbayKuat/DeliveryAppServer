@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.DriverInterfaces;
-using ApplicationCore.Interfaces.OrderInterfaces;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -34,11 +33,11 @@ namespace PublicApi.Endpoints.Orders
         {
             try
             {
-                var clientPackageInfo = _mapper.Map<ClientPackageInfo>(request);
+                var clientPackageInfo = _mapper.Map<OrderInfo>(request);
                 var driverConnectId =  await _driverService.RejectNextFindDriverConnectionIdAsync(HttpContext.Items["UserId"]?.ToString(), clientPackageInfo, cancellationToken);
                 if (!string.IsNullOrEmpty(driverConnectId))
                     await _hubContext.Clients.User(driverConnectId)
-                        .SendCoreAsync("SendClientInfoToDriver", new[] { new List<ClientPackageInfo>{clientPackageInfo} }, cancellationToken);
+                        .SendCoreAsync("SendClientInfoToDriver", new[] { new List<OrderInfo>{clientPackageInfo} }, cancellationToken);
                 return Ok();
             }
             catch

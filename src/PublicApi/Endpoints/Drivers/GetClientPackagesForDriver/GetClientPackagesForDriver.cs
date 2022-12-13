@@ -21,6 +21,6 @@ namespace PublicApi.Endpoints.Drivers.GetClientPackagesForDriver
         
         [HttpPost("api/drivers/ClientPackagesForDriver")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default) => 
-            await _driver.SendClientPackagesToDriverAsync(HttpContext.Items["UserId"]?.ToString());
+            await _driver.SendOnReviewOrdersToDriverAsync(HttpContext.Items["UserId"]?.ToString());
     }
 }

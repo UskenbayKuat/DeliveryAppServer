@@ -16,14 +16,14 @@ namespace PublicApi.Endpoints.Clients.ClientPackage
     [Authorize]
     public class CreateClientPackage : EndpointBaseAsync.WithRequest<ClientPackageCommand>.WithActionResult
     {
-        private readonly IClientPackage _clientPackage;
+        private readonly IOrder _order;
         private readonly IDriver _driverService;
         private readonly IMapper _mapper;
         private readonly IHubContext<Notification> _hubContext;
 
-        public CreateClientPackage(IClientPackage clientPackage, IMapper mapper, IHubContext<Notification> hubContext, IDriver driverService)
+        public CreateClientPackage(IOrder order, IMapper mapper, IHubContext<Notification> hubContext, IDriver driverService)
         {
-            _clientPackage = clientPackage;
+            _order = order;
             _mapper = mapper;
             _hubContext = hubContext;
             _driverService = driverService;
@@ -34,11 +34,11 @@ namespace PublicApi.Endpoints.Clients.ClientPackage
         {
             try
             {
-                var clientPackageInfo = await _clientPackage.CreateAsync(_mapper.Map<ClientPackageInfo>(request), HttpContext.Items["UserId"]?.ToString(), cancellationToken);
-                var driverConnectId = await _driverService.FindDriverConnectionIdAsync(clientPackageInfo, cancellationToken);
+                var orderInfo = await _order.CreateAsync(_mapper.Map<OrderInfo>(request), HttpContext.Items["UserId"]?.ToString(), cancellationToken);
+                var driverConnectId = await _driverService.FindDriverConnectionIdAsync(orderInfo, cancellationToken);
                 if (!string.IsNullOrEmpty(driverConnectId))
                     await _hubContext.Clients.Client(driverConnectId)
-                        .SendCoreAsync("SendClientInfoToDriver", new[] {  new List<ClientPackageInfo>{clientPackageInfo}}, cancellationToken);
+                        .SendCoreAsync("SendClientInfoToDriver", new[] {  new List<OrderInfo>{orderInfo}}, cancellationToken);
                 return Ok(request);
             }
             catch

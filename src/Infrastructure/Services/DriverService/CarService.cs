@@ -13,16 +13,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.DriverService
 {
-    public class CreateCarService: ICreateCar
+    public class CarService: ICar
     {
         private readonly AppDbContext _db;
 
-        public CreateCarService(AppDbContext db)
+        public CarService(AppDbContext db)
         {
             _db = db;
         }
 
-        public async Task<ActionResult> CreateAutoAsync(CreateCarInfo info, string userId, CancellationToken cancellationToken)
+        public async Task<ActionResult> CreateAsync(CarInfo info, string userId, CancellationToken cancellationToken)
         {
             try
             {

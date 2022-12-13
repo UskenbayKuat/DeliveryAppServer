@@ -7,6 +7,6 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
 {
     public interface ICalculate
     {
-        public Task<ActionResult> Calculate(ClientPackageInfo info,CancellationToken cancellationToken);
+        public Task<ActionResult> CalculateAsync(OrderInfo info,CancellationToken cancellationToken);
     }
 }

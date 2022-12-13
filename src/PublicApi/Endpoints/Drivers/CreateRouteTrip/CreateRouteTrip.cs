@@ -40,7 +40,7 @@ namespace PublicApi.Endpoints.Drivers.CreateRouteTrip
         [HttpPost("api/drivers/RouteTrip")]
         public override async Task<ActionResult> HandleAsync([FromBody] CreateRouteTripCommand request,
             CancellationToken cancellationToken = new CancellationToken()) =>
-            await _routeTrip.CreateAsync(_mapper.Map<RouteInfo>(request),
+            await _routeTrip.CreateAsync(_mapper.Map<RouteTripInfo>(request),
         HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         
             // if (!_validation.ValidationDate(request.TripTime))

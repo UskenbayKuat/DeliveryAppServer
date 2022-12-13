@@ -25,7 +25,7 @@ namespace PublicApi.Endpoints.Clients.CalculateOrder
         [HttpPost("api/client/calculate")]
         public override async Task<ActionResult> HandleAsync([FromBody]CalculateOrderCommand request, CancellationToken cancellationToken = new CancellationToken())
         {
-            return await _calculate.Calculate(_mapper.Map<ClientPackageInfo>(request), cancellationToken);
+            return await _calculate.CalculateAsync(_mapper.Map<OrderInfo>(request), cancellationToken);
         }
     }
 }

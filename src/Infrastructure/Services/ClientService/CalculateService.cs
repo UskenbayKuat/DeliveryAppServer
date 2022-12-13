@@ -9,20 +9,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.ClientService
 {
-    public class CalculatePriceService : ICalculate
+    public class CalculateService : ICalculate
     {
         private decimal RoutePrice { get; set; }
         private double VolumeWeight { get; set; }
         
         private readonly AppDbContext _db;
 
-        public CalculatePriceService(AppDbContext db)
+        public CalculateService(AppDbContext db)
         {
             _db = db;
         }
 
 
-        public async Task<ActionResult> Calculate(ClientPackageInfo info,CancellationToken cancellationToken)
+        public async Task<ActionResult> CalculateAsync(OrderInfo info,CancellationToken cancellationToken)
         {
             VolumeWeight = info.Package.Length * info.Package.Width * info.Package.Height / 0.005;
             RoutePrice = SetRoutePrice(info);
@@ -43,7 +43,7 @@ namespace Infrastructure.Services.ClientService
                 : price + 250 * (decimal)((int)kilo - 5);
         }
 
-        private decimal SetRoutePrice(ClientPackageInfo info)
+        private decimal SetRoutePrice(OrderInfo info)
         {
             var routePrice = _db.RoutePrice.Include(r => r.Route)
                 .FirstOrDefault(r => r.Route.StartCityId == info.StartCity.Id &&

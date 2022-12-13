@@ -22,13 +22,12 @@ namespace PublicApi
             CreateMap<RegisterCommand, RegistrationInfo>();
             CreateMap<ConfirmRegisterCommand, ConfirmRegistrationInfo>();
             CreateMap<ProceedRegisterCommand, ProceedRegistrationInfo>();
-            CreateMap<CreateRouteTripCommand, RouteInfo>();
-            CreateMap<CalculateOrderCommand, ClientPackageInfo>();
-            CreateMap<ClientPackageCommand, ClientPackageInfo>();
-            CreateMap<CreateCarCommand, CreateCarInfo>();
-            CreateMap<OrderCommand, ClientPackageInfo>();
-            CreateMap<ClientPackage, OrderInfo>().ForMember(o => o.OrderState, 
-                    o => o.MapFrom(c => c.Order.OrderState.ToString()))
+            CreateMap<CreateRouteTripCommand, RouteTripInfo>();
+            CreateMap<CalculateOrderCommand, OrderInfo>();
+            CreateMap<ClientPackageCommand, OrderInfo>();
+            CreateMap<CreateCarCommand, CarInfo>();
+            CreateMap<OrderCommand, OrderInfo>();
+            CreateMap<Order, DeliveryInfo>()
                 .ForMember(o => o.Package, 
                     o => o.MapFrom(c => c.Package))
                 .ForMember(o => o.Price, 
@@ -40,9 +39,12 @@ namespace PublicApi
                 .ForMember(o => o.FinishCity, 
                     o => o.MapFrom(c => c.Route.FinishCity))
                 .ForMember(o => o.CreatedAt, 
-                    o => o.MapFrom(c => c.CreatedAt));;
-            CreateMap<ClientPackage, ClientPackageInfo>()
-                .ForMember(o => o.ClientPackageId, 
+                    o => o.MapFrom(c => c.CreatedAt));
+            
+            //TODO .ForMember(o => o.DeliveryState, o => o.MapFrom(c => c.Delivery.State))
+            
+            CreateMap<Order, OrderInfo>()
+                .ForMember(o => o.OrderId, 
                     o => o.MapFrom(c => c.Id))
                 .ForMember(o => o.Package, 
                     o => o.MapFrom(c => c.Package))
@@ -54,8 +56,8 @@ namespace PublicApi
                     o => o.MapFrom(c => c.Route.StartCity))
                 .ForMember(o => o.FinishCity, 
                     o => o.MapFrom(c => c.Route.FinishCity))
-                .ForMember(o => o.CreateAt, 
-                    o => o.MapFrom(c => c.CreatedAt))
+                .ForMember(o => o.DeliveryDate, 
+                    o => o.MapFrom(c => c.DeliveryDate))
                 .ForMember(o => o.CarType, 
                     o => o.MapFrom(c => c.CarType));
             CreateMap<RouteTrip, RouteTripInfo>()
@@ -64,7 +66,7 @@ namespace PublicApi
                 .ForMember(o => o.FinishCity,
                     o => o.MapFrom(c => c.Route.FinishCity))
                 .ForMember(o => o.DeliveryDate,
-                    o => o.MapFrom(c => c.CreatedAt));
+                    o => o.MapFrom(c => c.DeliveryDate));
             CreateMap<RefreshRequest, RefreshTokenInfo>()
                 .ForMember(o => o.RefreshToken, 
                     o => o.MapFrom(r => r.RefreshToken));

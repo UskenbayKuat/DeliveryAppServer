@@ -1,8 +1,8 @@
 namespace ApplicationCore.Entities.AppEntities.Orders
 {
-    public class RejectedClientPackage : BaseEntity
+    public class RejectedOrder : BaseEntity
     {
         public RouteTrip RouteTrip { get; set; }
-        public ClientPackage ClientPackage { get; set; }
+        public Order Order { get; set; }
     }
 }
