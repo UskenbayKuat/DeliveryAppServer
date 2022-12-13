@@ -93,6 +93,19 @@ namespace Infrastructure.Services.DriverService
             }
         }
 
+        public async Task<ActionResult> SendRouteTripToDriverAsync(string driverUserId)
+        {
+            try
+            {
+                var routeTrip = await Trip(driverUserId) ?? throw new NullReferenceException("Текущих поездок нет");
+                return new OkObjectResult(_mapper.Map<RouteTripInfo>(routeTrip));
+            }
+            catch (NullReferenceException ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+            }
+        }
+
         public async Task<string> RejectNextFindDriverConnectionIdAsync(string driverUserId,
             ClientPackageInfo clientPackageInfo,
             CancellationToken cancellationToken)

@@ -58,6 +58,13 @@ namespace PublicApi
                     o => o.MapFrom(c => c.CreatedAt))
                 .ForMember(o => o.CarType, 
                     o => o.MapFrom(c => c.CarType));
+            CreateMap<RouteTrip, RouteTripInfo>()
+                .ForMember(o => o.StartCity,
+                    o => o.MapFrom(c => c.Route.StartCity))
+                .ForMember(o => o.FinishCity,
+                    o => o.MapFrom(c => c.Route.FinishCity))
+                .ForMember(o => o.DeliveryDate,
+                    o => o.MapFrom(c => c.CreatedAt));
             CreateMap<RefreshRequest, RefreshTokenInfo>()
                 .ForMember(o => o.RefreshToken, 
                     o => o.MapFrom(r => r.RefreshToken));
