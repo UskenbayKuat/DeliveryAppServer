@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PublicApi.HubNotification;
 
-namespace PublicApi.Endpoints.Clients.ClientPackage
+namespace PublicApi.Endpoints.Clients.Order
 {
     [Authorize]
     public class CreateOrder : EndpointBaseAsync.WithRequest<OrderCommand>.WithActionResult

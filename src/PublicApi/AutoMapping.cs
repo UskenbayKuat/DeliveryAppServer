@@ -4,6 +4,7 @@ using AutoMapper;
 using ApplicationCore.Entities.Values;
 using PublicApi.Endpoints.Clients.CalculateOrder;
 using PublicApi.Endpoints.Clients.ClientPackage;
+using PublicApi.Endpoints.Clients.Order;
 using PublicApi.Endpoints.Delivery;
 using PublicApi.Endpoints.Drivers.Car;
 using PublicApi.Endpoints.Drivers.RouteTrip;
