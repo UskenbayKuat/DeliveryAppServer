@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace PublicApi.Endpoints.Orders
 {
     [Authorize]
-    public class GetOrder: EndpointBaseAsync.WithoutRequest.WithActionResult
+    public class GetInProgressOrdersForClient: EndpointBaseAsync.WithoutRequest.WithActionResult
     {
         private readonly IDelivery _delivery;
 
-        public GetOrder(IDelivery delivery)
+        public GetInProgressOrdersForClient(IDelivery delivery)
         {
             _delivery = delivery;
         }
@@ -20,7 +20,7 @@ namespace PublicApi.Endpoints.Orders
         [HttpPost("api/ClientActiveOrder")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
-            return await _delivery.GetActiveDeliveriesForClient(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
+            return await _delivery.GetInProgressOrdersForClientAsync(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         }
     }
 

@@ -6,7 +6,6 @@ using ApplicationCore.Interfaces.ClientInterfaces;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using PublicApi.Endpoints.Drivers.CreateRouteTrip;
 
 namespace PublicApi.Endpoints.Clients.CalculateOrder
 {

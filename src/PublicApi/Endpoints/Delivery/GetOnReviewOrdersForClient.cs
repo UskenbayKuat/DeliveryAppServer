@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace PublicApi.Endpoints.Clients.ClientPackage
 {
     [Authorize]
-    public class GetOnReviewClientPackage : EndpointBaseAsync.WithoutRequest.WithActionResult
+    public class GetOnReviewOrdersForClient : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
         private readonly IOrder _order;
 
-        public GetOnReviewClientPackage(IOrder order)
+        public GetOnReviewOrdersForClient(IOrder order)
         {
             _order = order;
         }

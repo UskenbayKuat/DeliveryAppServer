@@ -73,7 +73,7 @@ namespace Infrastructure.Services.DriverService
             return ordersInfo;
         }
         
-        public async Task<ActionResult> SendOnReviewOrdersToDriverAsync(string driverUserId)
+        public async Task<ActionResult> GetOnReviewOrdersForDriverAsync(string driverUserId)
         {
             try
             {
@@ -98,7 +98,7 @@ namespace Infrastructure.Services.DriverService
             }
         }
 
-        public async Task<ActionResult> SendRouteTripToDriverAsync(string driverUserId)
+        public async Task<ActionResult> GetRouteTripIsActiveAsync(string driverUserId)
         {
             try
             {
@@ -111,20 +111,27 @@ namespace Infrastructure.Services.DriverService
             }
         }
 
-        public async Task<string> RejectNextFindDriverConnectionIdAsync(string driverUserId,
-            OrderInfo orderInfo,
-            CancellationToken cancellationToken)
+        public async Task<ActionResult> RejectNextFindDriverAsync(string driverUserId, OrderInfo orderInfo,Func<string, OrderInfo, Task> func)
         {
-            var clientPackage = await OrderAsync(orderInfo.OrderId, cancellationToken);
-            var routeTrip = await Trip(driverUserId);
-            await _db.RejectedOrders
-                .AddAsync(new RejectedOrder
-                {
-                    Order = clientPackage, 
-                    RouteTrip = routeTrip
-                }, cancellationToken);
-            await _db.SaveChangesAsync(cancellationToken);
-            return await FindDriverConnectionIdAsync(orderInfo, cancellationToken);
+            try
+            {
+                var clientPackage = await OrderAsync(orderInfo.OrderId, default);
+                var routeTrip = await Trip(driverUserId);
+                await _db.RejectedOrders
+                    .AddAsync(new RejectedOrder
+                    {
+                        Order = clientPackage, 
+                        RouteTrip = routeTrip
+                    });
+                await _db.SaveChangesAsync();
+                var driverConnectionId = await FindDriverConnectionIdAsync(orderInfo, default);
+                await func(driverConnectionId, orderInfo);
+                return new OkResult();
+            }
+            catch
+            {
+                return new BadRequestResult();
+            }
         }
 
         private async Task<bool> CheckRejectedAsync(int routeTripId, int orderId)

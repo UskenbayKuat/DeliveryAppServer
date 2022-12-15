@@ -5,7 +5,7 @@ using ApplicationCore.Entities.AppEntities.Routes;
 
 namespace PublicApi.Endpoints.Clients.ClientPackage
 {
-    public class ClientPackageCommand
+    public class OrderCommand
     {
         public City StartCity { get; set; }
         public City FinishCity { get; set; }

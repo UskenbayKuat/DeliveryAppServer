@@ -4,11 +4,12 @@ using AutoMapper;
 using ApplicationCore.Entities.Values;
 using PublicApi.Endpoints.Clients.CalculateOrder;
 using PublicApi.Endpoints.Clients.ClientPackage;
-using PublicApi.Endpoints.Drivers.CreateCar;
-using PublicApi.Endpoints.Drivers.CreateRouteTrip;
+using PublicApi.Endpoints.Delivery;
+using PublicApi.Endpoints.Drivers.Car;
+using PublicApi.Endpoints.Drivers.RouteTrip;
 using PublicApi.Endpoints.Orders;
 using PublicApi.Endpoints.RegisterApi.ConfirmRegister;
-using PublicApi.Endpoints.RegisterApi.ProceedRegisterDriver;
+using PublicApi.Endpoints.RegisterApi.ProceedRegister;
 using PublicApi.Endpoints.RegisterApi.Register;
 using PublicApi.Endpoints.Shared.RefreshToken;
 
@@ -22,11 +23,11 @@ namespace PublicApi
             CreateMap<RegisterCommand, RegistrationInfo>();
             CreateMap<ConfirmRegisterCommand, ConfirmRegistrationInfo>();
             CreateMap<ProceedRegisterCommand, ProceedRegistrationInfo>();
-            CreateMap<CreateRouteTripCommand, RouteTripInfo>();
+            CreateMap<RouteTripCommand, RouteTripInfo>();
             CreateMap<CalculateOrderCommand, OrderInfo>();
-            CreateMap<ClientPackageCommand, OrderInfo>();
-            CreateMap<CreateCarCommand, CarInfo>();
             CreateMap<OrderCommand, OrderInfo>();
+            CreateMap<CarCommand, CarInfo>();
+            CreateMap<DeliveryCommand, OrderInfo>();
             CreateMap<Order, DeliveryInfo>()
                 .ForMember(o => o.Package, 
                     o => o.MapFrom(c => c.Package))

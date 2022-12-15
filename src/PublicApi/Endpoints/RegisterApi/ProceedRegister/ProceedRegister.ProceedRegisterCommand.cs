@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PublicApi.Endpoints.RegisterApi.ProceedRegisterDriver
+namespace PublicApi.Endpoints.RegisterApi.ProceedRegister
 {
     public class ProceedRegisterCommand
     {

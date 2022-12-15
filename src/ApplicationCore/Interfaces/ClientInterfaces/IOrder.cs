@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
 {
     public interface IOrder
     {
-        public Task<OrderInfo> CreateAsync(OrderInfo info, string clientUserId, CancellationToken cancellationToken);
+        public Task<ActionResult> CreateAsync(OrderInfo info, string clientUserId, Func<string, OrderInfo, Task> func, CancellationToken cancellationToken);
         public Task<ActionResult> GetWaitingOrdersAsync(string clientUserId, CancellationToken cancellationToken);
         public Task<ActionResult> GetOnReviewOrdersAsync(string clientUserId, CancellationToken cancellationToken);
     }

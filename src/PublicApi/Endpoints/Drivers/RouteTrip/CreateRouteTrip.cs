@@ -1,11 +1,7 @@
 ﻿#nullable enable
-using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
-using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using Ardalis.ApiEndpoints;
@@ -13,14 +9,12 @@ using AutoMapper;
 using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Polly;
 using PublicApi.HubNotification;
 
-
-namespace PublicApi.Endpoints.Drivers.CreateRouteTrip
+namespace PublicApi.Endpoints.Drivers.RouteTrip
 {
     [Authorize]
-    public class CreateRouteTrip : EndpointBaseAsync.WithRequest<CreateRouteTripCommand>.WithActionResult
+    public class CreateRouteTrip : EndpointBaseAsync.WithRequest<RouteTripCommand>.WithActionResult
     {
         private readonly IMapper _mapper;
         private readonly IRouteTrip _routeTrip;
@@ -38,7 +32,7 @@ namespace PublicApi.Endpoints.Drivers.CreateRouteTrip
         }
 
         [HttpPost("api/drivers/RouteTrip")]
-        public override async Task<ActionResult> HandleAsync([FromBody] CreateRouteTripCommand request,
+        public override async Task<ActionResult> HandleAsync([FromBody] RouteTripCommand request,
             CancellationToken cancellationToken = new CancellationToken()) =>
             await _routeTrip.CreateAsync(_mapper.Map<RouteTripInfo>(request),
         HttpContext.Items["UserId"]?.ToString(), cancellationToken);

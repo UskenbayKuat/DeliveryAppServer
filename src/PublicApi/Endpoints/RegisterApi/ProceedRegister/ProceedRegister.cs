@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
@@ -9,7 +8,7 @@ using AutoMapper;
 using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PublicApi.Endpoints.RegisterApi.ProceedRegisterDriver
+namespace PublicApi.Endpoints.RegisterApi.ProceedRegister
 {
     [Authorize]
     public class ProceedRegister : EndpointBaseAsync.WithRequest<ProceedRegisterCommand>.WithActionResult

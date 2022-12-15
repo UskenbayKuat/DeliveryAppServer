@@ -5,14 +5,14 @@ using Ardalis.ApiEndpoints;
 using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PublicApi.Endpoints.Clients.ClientPackage
+namespace PublicApi.Endpoints.Delivery
 {
     [Authorize]
-    public class GetWaitingClientPackage : EndpointBaseAsync.WithoutRequest.WithActionResult
+    public class GetWaitingOrdersForClient : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
         private readonly IOrder _order;
 
-        public GetWaitingClientPackage(IOrder order)
+        public GetWaitingOrdersForClient(IOrder order)
         {
             _order = order;
         }

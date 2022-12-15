@@ -10,6 +10,7 @@ using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.ClientInterfaces;
+using ApplicationCore.Interfaces.DriverInterfaces;
 using AutoMapper;
 using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
@@ -25,40 +26,52 @@ namespace Infrastructure.Services.ClientService
         private readonly AppIdentityDbContext _dbIdentityDbContext;
         private readonly IMapper _mapper;
         private readonly StateHelper _stateHelper;
+        private readonly IDriver _driverService;
 
-        public OrderService(AppDbContext db, AppIdentityDbContext dbIdentityDbContext, IMapper mapper, StateHelper stateHelper)
+        public OrderService(AppDbContext db, AppIdentityDbContext dbIdentityDbContext, IMapper mapper, StateHelper stateHelper, IDriver driverService)
         {
             _db = db;
             _dbIdentityDbContext = dbIdentityDbContext;
             _mapper = mapper;
             _stateHelper = stateHelper;
+            _driverService = driverService;
         }
 
-        public async Task<OrderInfo> CreateAsync(OrderInfo info, string clientUserId,
+        public async Task<ActionResult> CreateAsync(OrderInfo info, string clientUserId,Func<string, OrderInfo, Task> func,
             CancellationToken cancellationToken)
         {
-            var user = await _dbIdentityDbContext.Users.FirstAsync(u => u.Id == clientUserId, cancellationToken);
-            var client = await _db.Clients.FirstAsync(c => c.UserId == clientUserId, cancellationToken);
-            var carType = await _db.CarTypes.FirstAsync(c => c.Id == info.CarType.Id, cancellationToken);
-            var route = await _db.Routes
-                .Include(r => r.StartCity)
-                .Include(r => r.FinishCity)
-                .FirstAsync(r => 
-                    r.StartCity.Id == info.StartCity.Id  && 
-                    r.FinishCity.Id == info.FinishCity.Id, cancellationToken);
-            var order = new Order(info.IsSingle, info.Price, info.DeliveryDate)
+            try
             {
-                Client = client,
-                Package = info.Package,
-                CarType = carType,  
-                Route = route,
-                State =  _stateHelper.FindState((int)GeneralState.New)
-            };
-            await _db.Orders.AddAsync(order, cancellationToken);
-            await _db.SaveChangesAsync(cancellationToken);
-            return _mapper.Map<OrderInfo>(order)
-                .SetClientData(user.Name, user.Surname, user.PhoneNumber);
+                var user = await _dbIdentityDbContext.Users.FirstAsync(u => u.Id == clientUserId, cancellationToken);
+                var client = await _db.Clients.FirstAsync(c => c.UserId == clientUserId, cancellationToken);
+                var carType = await _db.CarTypes.FirstAsync(c => c.Id == info.CarType.Id, cancellationToken);
+                var route = await _db.Routes
+                    .Include(r => r.StartCity)
+                    .Include(r => r.FinishCity)
+                    .FirstAsync(r => 
+                        r.StartCity.Id == info.StartCity.Id  && 
+                        r.FinishCity.Id == info.FinishCity.Id, cancellationToken);
+                var order = new Order(info.IsSingle, info.Price, info.DeliveryDate)
+                {
+                    Client = client,
+                    Package = info.Package,
+                    CarType = carType,  
+                    Route = route,
+                    State =  _stateHelper.FindState((int)GeneralState.New)
+                };
+                await _db.Orders.AddAsync(order, cancellationToken);
+                await _db.SaveChangesAsync(cancellationToken);
+                var orderInfo = _mapper.Map<OrderInfo>(order).SetClientData(user.Name, user.Surname, user.PhoneNumber);
+                var driverConnectionId = await _driverService.FindDriverConnectionIdAsync(orderInfo, cancellationToken);
+                await func(driverConnectionId, orderInfo);
+            
+                return new OkObjectResult(info);
             }
+            catch
+            {
+                return new BadRequestResult();
+            }
+        }
 
         public async Task<ActionResult> GetWaitingOrdersAsync(string clientUserId,CancellationToken cancellationToken)
         {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -30,17 +31,18 @@ namespace Infrastructure.Services.DeliveryServices
             _stateHelper = stateHelper;
         }
 
-        public async Task<string> AddToDeliveryAsync(int orderId)
+        public async Task<ActionResult> AddToDeliveryAsync(int orderId, Func<string, Task> func)
         {
             var order = await _db.Orders.Include(c => c.Client).FirstAsync(c => c.Id == orderId);
             order.State =  _stateHelper.FindState((int)GeneralState.PendingForHandOver);
             _db.Orders.Update(order);
             await _db.SaveChangesAsync();
-            return (await _db.ChatHubs.FirstOrDefaultAsync(c => c.UserId == order.Client.UserId))?.ConnectionId;
+            await func((await _db.ChatHubs.FirstOrDefaultAsync(c => c.UserId == order.Client.UserId))?.ConnectionId);
+            return new OkResult();
         }
 
 
-        public async Task<ActionResult> GetActiveDeliveriesForClient(string userClientId, CancellationToken cancellationToken)
+        public async Task<ActionResult> GetInProgressOrdersForClientAsync(string userClientId, CancellationToken cancellationToken)
         {
             var deliveriesInfo = new List<DeliveryInfo>();
             var userClient = await _identityDbContext.Users.FirstAsync(u => u.Id == userClientId, cancellationToken);
