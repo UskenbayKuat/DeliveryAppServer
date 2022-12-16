@@ -25,7 +25,7 @@ namespace PublicApi.Endpoints.Delivery
         }
 
         [HttpPost("api/driver/rejectOrder")]
-        public override async Task<ActionResult> HandleAsync(DeliveryCommand request,
+        public override async Task<ActionResult> HandleAsync([FromBody]DeliveryCommand request,
             CancellationToken cancellationToken = default) =>
             await _driverService.RejectNextFindDriverAsync(
                 driverUserId: HttpContext.Items["UserId"]?.ToString(),

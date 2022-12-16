@@ -15,11 +15,9 @@ namespace ApplicationCore.Entities.AppEntities.Orders
             CreatedAt = DateTime.Now;
             Price = price;
         }
-
         public CarType CarType { get;  set;}
         public Client Client { get;  set;}
         public Package Package { get;  set;}
-
         public bool IsSingle { get; private set;}
         public DateTime CreatedAt { get; private set; }
         public DateTime DeliveryDate { get; private set; }
@@ -27,7 +25,6 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         public decimal Price { get; private set;}
         public Location Location { get;  set;}
         public Route Route { get; set;}
-
         public Delivery Delivery { get;  set;}
 
     }

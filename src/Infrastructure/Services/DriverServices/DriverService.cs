@@ -50,8 +50,8 @@ namespace Infrastructure.Services.DriverServices
                 await UpDateOrderStateAsync(routeTrip, order, GeneralState.OnReview);
                 return chatHub.ConnectionId;
             }
-
-            order.State =await  _contextHelper.FindStateAsync((int)GeneralState.Waiting);
+            order.Delivery?.Orders.Remove(order);
+            order.State = await _contextHelper.FindStateAsync((int)GeneralState.Waiting);
             _db.Orders.Update(order);
             await _db.SaveChangesAsync(cancellationToken);
             return string.Empty;
@@ -113,7 +113,7 @@ namespace Infrastructure.Services.DriverServices
                 await _db.SaveChangesAsync();
                 var driverConnectionId = await FindDriverConnectionIdAsync(orderInfo, default);
                 await func(driverConnectionId, orderInfo);
-                return new OkResult();
+                return new OkObjectResult(new OrderInfo());
             }
             catch
             {

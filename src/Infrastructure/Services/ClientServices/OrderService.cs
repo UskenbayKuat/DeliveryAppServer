@@ -69,13 +69,9 @@ namespace Infrastructure.Services.ClientServices
         {
             var ordersInfo = new List<OrderInfo>();
             var user = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u => u.Id == clientUserId, cancellationToken);
-            await _db.Orders
-                .Include(o => o.Route.StartCity)
-                .Include(o => o.Route.FinishCity)
-                .Include(o => o.Package)
-                .Include(o => o.CarType)
-                .Where(o => o.Client.UserId == clientUserId)
-                .ForEachAsync(o => ordersInfo.Add(_mapper.Map<OrderInfo>(o)
+            var state = await _contextHelper.FindStateAsync((int) GeneralState.Waiting);
+            await _contextHelper.Orders(o => o.Client.UserId == clientUserId && o.State == state).
+            ForEachAsync(o => ordersInfo.Add(_mapper.Map<OrderInfo>(o)
                     .SetClientData(user.Name, user.Surname, user.PhoneNumber)), cancellationToken);
             return new OkObjectResult(ordersInfo);
         }
@@ -85,13 +81,8 @@ namespace Infrastructure.Services.ClientServices
             var ordersInfo = new List<OrderInfo>();
             var user = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u => u.Id == clientUserId, cancellationToken);
             var state = await _contextHelper.FindStateAsync((int)GeneralState.OnReview);
-            await _db.Orders
-                .Include(c => c.Route.StartCity)
-                .Include(c => c.Route.FinishCity)
-                .Include(c => c.Package)
-                .Include(c => c.CarType)
-                .Where(c => c.Client.UserId == clientUserId && c.State == state)
-                .ForEachAsync(cp => ordersInfo.Add(_mapper.Map<OrderInfo>(cp)
+            await _contextHelper.Orders(o => o.Client.UserId == clientUserId && o.State == state).
+                ForEachAsync(cp => ordersInfo.Add(_mapper.Map<OrderInfo>(cp)
                     .SetClientData(user.Name, user.Surname, user.PhoneNumber)), cancellationToken);
             return new OkObjectResult(ordersInfo);
         }

@@ -42,7 +42,7 @@ namespace Infrastructure.Services.DriverServices
             await CreateRouteTripAsync(tripInfo, driver);
             var driverChatHub = await _db.ChatHubs.FirstAsync(c => c.UserId == userId);
             var ordersInfo = await _driver.FindOrdersAsync(userId);
-            await func(driverChatHub.ConnectionId, ordersInfo.Any());
+            await func(driverChatHub?.ConnectionId, ordersInfo.Any());
             return new OkObjectResult(tripInfo);
         }
         

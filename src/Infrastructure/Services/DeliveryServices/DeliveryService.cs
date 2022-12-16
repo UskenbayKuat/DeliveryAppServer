@@ -39,7 +39,7 @@ namespace Infrastructure.Services.DeliveryServices
             _db.Orders.Update(order);
             await _db.SaveChangesAsync();
             await func((await _db.ChatHubs.FirstOrDefaultAsync(c => c.UserId == order.Client.UserId))?.ConnectionId);
-            return new OkResult();
+            return new OkObjectResult(new OrderInfo());
         }
 
 

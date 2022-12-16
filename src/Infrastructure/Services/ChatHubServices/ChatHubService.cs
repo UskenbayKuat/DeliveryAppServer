@@ -32,6 +32,7 @@ namespace Infrastructure.Services.ChatHubServices
             }
             var chatHub = new ChatHub(userId, connectId);
             await _db.ChatHubs.AddAsync(chatHub);
+            await _db.SaveChangesAsync();
             return chatHub;
         }
 

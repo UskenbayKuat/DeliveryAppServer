@@ -42,12 +42,16 @@ namespace Infrastructure.Helper
 
         public IQueryable<Order> Orders(Expression<Func<Order,bool>> predicate) =>
             _db.Orders
-                .Include(cp => cp.Route.StartCity)
-                .Include(cp => cp.Route.FinishCity)
-                .Include(cp => cp.Package)
-                .Include(c => c.Client)
-                .Include(c => c.Delivery)
-                .Include(c => c.State)
+                .Include(o => o.Route.StartCity)
+                .Include(o => o.Route.FinishCity)
+                .Include(o => o.Package)
+                .Include(o => o.Client)
+                .Include(o => o.Delivery)
+                .Include(o => o.Delivery.Orders)
+                .Include(o => o.Delivery.RouteTrip)
+                .Include(o => o.Delivery.RouteTrip.Driver)
+                .Include(o => o.State)
+                .Include(o => o.CarType)
                 .Where(predicate);
         
         
