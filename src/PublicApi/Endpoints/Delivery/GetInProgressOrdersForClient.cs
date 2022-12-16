@@ -17,11 +17,9 @@ namespace PublicApi.Endpoints.Delivery
             _delivery = delivery;
         }
 
-        [HttpPost("api/ClientActiveOrder")]
-        public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
-        {
-            return await _delivery.GetInProgressOrdersForClientAsync(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
-        }
+        [HttpPost("api/client/inProgressOrders")]
+        public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default) =>
+            await _delivery.GetInProgressOrdersForClientAsync(HttpContext.Items["UserId"]?.ToString());
     }
 
 }

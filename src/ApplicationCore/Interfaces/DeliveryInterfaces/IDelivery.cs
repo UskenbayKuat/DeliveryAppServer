@@ -8,7 +8,7 @@ namespace ApplicationCore.Interfaces.DeliveryInterfaces
     public interface IDelivery
     {
 
-        public Task<ActionResult> GetInProgressOrdersForClientAsync(string userClientId, CancellationToken cancellationToken);
+        public Task<ActionResult> GetInProgressOrdersForClientAsync(string userClientId);
         public Task<ActionResult> AddToDeliveryAsync(int orderId, Func<string, Task> func);
 
     }

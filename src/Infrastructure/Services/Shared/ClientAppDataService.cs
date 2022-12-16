@@ -5,6 +5,7 @@ using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.SharedInterfaces;
 using Infrastructure.AppData.DataAccess;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.Shared
 {
@@ -15,14 +16,16 @@ namespace Infrastructure.Services.Shared
         {
             _db = db;
         }
-        public Task<ActionResult> SendData(CancellationToken cancellationToken)
+        public async Task<ActionResult> SendDataAsync(CancellationToken cancellationToken)
         {
+            var cities =await _db.Cities.ToListAsync(cancellationToken);
+            var carTypes =await  _db.CarTypes.ToListAsync(cancellationToken);
             var info = new ClientAppDataInfo()
             {
-                Cities = _db.Cities.ToList(),
-                CarTypes = _db.CarTypes.ToList(),
+                Cities = cities,
+                CarTypes = carTypes
             };
-            return Task.FromResult<ActionResult>(new OkObjectResult(info));
+            return new OkObjectResult(info);
         }
     }
 }

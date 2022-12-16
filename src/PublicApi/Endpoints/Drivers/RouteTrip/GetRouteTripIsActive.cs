@@ -17,7 +17,7 @@ namespace PublicApi.Endpoints.Drivers.RouteTrip
             _routeTrip = routeTrip;
         }
         
-        [HttpPost("api/driver/routeTripForDriver")]
+        [HttpPost("api/driver/activeRouteTrip")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default) => 
             await _routeTrip.GetRouteTripIsActiveAsync(HttpContext.Items["UserId"]?.ToString());
     }

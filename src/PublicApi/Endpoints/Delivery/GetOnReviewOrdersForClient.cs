@@ -17,10 +17,8 @@ namespace PublicApi.Endpoints.Delivery
             _order = order;
         }
 
-        [HttpPost("api/clients/OnReviewClientPackage")]
-        public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
-        {
-            return await _order.GetOnReviewOrdersAsync(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
-        }
+        [HttpPost("api/client/onReviewOrders")]
+        public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)=>
+            await _order.GetOnReviewOrdersAsync(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
     }
 }

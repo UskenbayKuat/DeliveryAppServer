@@ -6,6 +6,6 @@ namespace ApplicationCore.Interfaces.SharedInterfaces
 {
     public interface IDeliveryAppData<T>
     {
-        public Task<ActionResult> SendData(CancellationToken cancellationToken);
+        public Task<ActionResult> SendDataAsync(CancellationToken cancellationToken);
     }
 }

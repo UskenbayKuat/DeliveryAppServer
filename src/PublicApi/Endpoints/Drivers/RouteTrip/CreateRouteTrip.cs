@@ -31,7 +31,7 @@ namespace PublicApi.Endpoints.Drivers.RouteTrip
             _driver = driver;
         }
 
-        [HttpPost("api/drivers/RouteTrip")]
+        [HttpPost("api/driver/createRouteTrip")]
         public override async Task<ActionResult> HandleAsync([FromBody] RouteTripCommand request,
             CancellationToken cancellationToken = new CancellationToken()) =>
             await _routeTrip.CreateAsync(_mapper.Map<RouteTripInfo>(request),

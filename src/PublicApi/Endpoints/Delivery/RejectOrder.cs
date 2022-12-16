@@ -24,7 +24,7 @@ namespace PublicApi.Endpoints.Delivery
             _mapper = mapper;
         }
 
-        [HttpPost("api/rejectOrder")]
+        [HttpPost("api/driver/rejectOrder")]
         public override async Task<ActionResult> HandleAsync(DeliveryCommand request,
             CancellationToken cancellationToken = default) =>
             await _driverService.RejectNextFindDriverAsync(

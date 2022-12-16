@@ -17,7 +17,7 @@ namespace PublicApi.Endpoints.Delivery
             _driver = driver;
         }
         
-        [HttpPost("api/drivers/ClientPackagesForDriver")]
+        [HttpPost("api/driver/onReviewOrders")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default) => 
             await _driver.GetOnReviewOrdersForDriverAsync(HttpContext.Items["UserId"]?.ToString());
     }

@@ -27,7 +27,7 @@ namespace PublicApi.Endpoints.Clients.Order
             _hubContext = hubContext;
         }
 
-        [HttpPost("api/client/confirmClientPackage")]
+        [HttpPost("api/client/createOrder")]
         public override async Task<ActionResult> HandleAsync([FromBody] OrderCommand request,
             CancellationToken cancellationToken = default) =>
             await _order.CreateAsync(

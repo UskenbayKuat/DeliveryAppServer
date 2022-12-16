@@ -41,7 +41,7 @@ namespace Infrastructure.Services.DriverServices
                             && r.Route.FinishCity.Id == orderInfo.FinishCity.Id
                             && r.DeliveryDate.Day >= orderInfo.DeliveryDate.Day)
                 .ToListAsync(cancellationToken);
-            var order = await OrderAsync(orderInfo.OrderId, cancellationToken);
+            var order = await _contextHelper.Orders(o => o.Id == orderInfo.OrderId).FirstOrDefaultAsync(cancellationToken);
             foreach (var routeTrip in routeTripList)
             {
                 var chatHub = await _db.ChatHubs.FirstOrDefaultAsync(c => c.UserId == routeTrip.Driver.UserId, cancellationToken);
@@ -62,8 +62,10 @@ namespace Infrastructure.Services.DriverServices
             var ordersInfo = new List<OrderInfo>();
             var routeTrip = await _contextHelper.Trip(driverUserId) ?? throw new HubException();
             var state = await _contextHelper.FindStateAsync((int)GeneralState.Waiting);
-            var waitingOrders = await WaitingOrders(routeTrip.Route.Id, routeTrip.DeliveryDate)
-                .Where(o=>o.State == state).ToListAsync();
+            var waitingOrders = await _contextHelper.Orders(o =>
+                o.Route.Id == routeTrip.Route.Id &&
+                o.DeliveryDate.Day <= routeTrip.DeliveryDate.Day && 
+                o.State == state).ToListAsync();
             foreach(var waitingOrder in waitingOrders)
             {
                 await UpDateOrderStateAsync(routeTrip, waitingOrder, GeneralState.OnReview);
@@ -80,7 +82,7 @@ namespace Infrastructure.Services.DriverServices
                 var routeTrip = await _contextHelper.Trip(driverUserId) ?? throw new NullReferenceException("Для проверки заказов создайте поездку");
                 var state = await _contextHelper.FindStateAsync((int)GeneralState.OnReview);
                 var ordersInfo = new List<OrderInfo>();
-                await _contextHelper.Orders(routeTrip.Id, state.Id)
+                await _contextHelper.Orders(o => o.Delivery.RouteTrip.Id == routeTrip.Id && o.State.Id == state.Id)
                     .ForEachAsync( o =>
                     {
                         var userClient = _identityDbContext.Users.First(u => u.Id == o.Client.UserId);
@@ -100,12 +102,12 @@ namespace Infrastructure.Services.DriverServices
         {
             try
             {
-                var clientPackage = await OrderAsync(orderInfo.OrderId, default);
+                var order = await _contextHelper.Orders(o => o.Id == orderInfo.OrderId).FirstOrDefaultAsync();
                 var routeTrip = await _contextHelper.Trip(driverUserId);
                 await _db.RejectedOrders
                     .AddAsync(new RejectedOrder
                     {
-                        Order = clientPackage, 
+                        Order = order, 
                         RouteTrip = routeTrip
                     });
                 await _db.SaveChangesAsync();
@@ -133,31 +135,7 @@ namespace Infrastructure.Services.DriverServices
             _db.Deliveries.Update(delivery);
             await _db.SaveChangesAsync();
         }
-
-        private async Task<Order> OrderAsync(int clientPackageId, CancellationToken cancellationToken) =>  await _db.Orders
-            .Include(cp=>cp.Route.StartCity)
-            .Include(cp=>cp.Route.FinishCity)
-            .Include(cp=>cp.Package)
-            .Include(c => c.Client)
-            .FirstAsync(c => c.Id == clientPackageId, cancellationToken);
         
 
-
-
-
-        private IQueryable<Order> WaitingOrders(int id, DateTime deliveryDate) => _db.Orders
-            .Include(o => o.Client)
-            .Include(o => o.Package)
-            .Include(o => o.Route.StartCity)
-            .Include(o => o.Route.FinishCity)
-            .Where(o =>
-                o.Route.Id == id &&
-                o.DeliveryDate.Day <= deliveryDate.Day);  
-        private IQueryable<Order> WaitingOrders() => _db.Orders
-            .Include(o => o.Client)
-            .Include(o => o.Package)
-            .Include(o => o.Route.StartCity)
-            .Include(o => o.Route.FinishCity);
-        
     }
 }

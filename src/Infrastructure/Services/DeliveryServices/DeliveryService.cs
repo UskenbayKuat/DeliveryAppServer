@@ -23,7 +23,8 @@ namespace Infrastructure.Services.DeliveryServices
         private readonly IMapper _mapper;
         private readonly ContextHelper _contextHelper;
 
-        public DeliveryService(AppDbContext db, AppIdentityDbContext identityDbContext, IMapper mapper, ContextHelper contextHelper)
+        public DeliveryService(AppDbContext db, AppIdentityDbContext identityDbContext, IMapper mapper,
+            ContextHelper contextHelper)
         {
             _db = db;
             _identityDbContext = identityDbContext;
@@ -42,35 +43,24 @@ namespace Infrastructure.Services.DeliveryServices
         }
 
 
-        public async Task<ActionResult> GetInProgressOrdersForClientAsync(string userClientId, CancellationToken cancellationToken)
+        public async Task<ActionResult> GetInProgressOrdersForClientAsync(string userClientId)
         {
             var deliveriesInfo = new List<DeliveryInfo>();
-            var userClient = await _identityDbContext.Users.FirstAsync(u => u.Id == userClientId, cancellationToken);
+            var userClient = await _identityDbContext.Users.FirstAsync(u => u.Id == userClientId);
             var state = await _contextHelper.FindStateAsync((int)GeneralState.InProgress);
-            var orders = await OrdersAsync(state, userClient.Id, cancellationToken);
-            orders.ForEach( o =>
-            {
-                var userDriver  = _identityDbContext.Users.First(u => u.Id == o.Delivery.RouteTrip.Driver.UserId);
-                deliveriesInfo.Add(_mapper.Map<DeliveryInfo>(o)
-                    .SetDriverData(userDriver.Name, userDriver.Surname, userDriver.PhoneNumber)
-                    .SetClientData(userClient.Name, userClient.Surname));
-            }); 
-            
-            //ForAll
-            
+            await _contextHelper
+                .Orders(c =>
+                    c.Client.UserId == userClientId &&
+                    c.Delivery.RouteTrip.IsActive &&
+                    c.State == state)
+                .ForEachAsync(o =>
+                {
+                    var userDriver = _identityDbContext.Users.First(u => u.Id == o.Delivery.RouteTrip.Driver.UserId);
+                    deliveriesInfo.Add(_mapper.Map<DeliveryInfo>(o)
+                        .SetDriverData(userDriver.Name, userDriver.Surname, userDriver.PhoneNumber)
+                        .SetClientData(userClient.Name, userClient.Surname));
+                });
             return new OkObjectResult(deliveriesInfo);
         }
-        
-        
-        private async Task<List<Order>> OrdersAsync(State state, string userClientId, CancellationToken cancellationToken) => 
-            await _db.Orders
-            .Include(c => c.Delivery.RouteTrip.Driver)
-            .Include(c => c.Route.StartCity)
-            .Include(c => c.Route.FinishCity)
-            .Include(c => c.Delivery)
-            .Include(c => c.Package)
-            .Include(c => c.State)
-            .Where(c => c.Client.UserId == userClientId && c.Delivery.RouteTrip.IsActive && c.State == state).ToListAsync(cancellationToken);
-        
     }
 }

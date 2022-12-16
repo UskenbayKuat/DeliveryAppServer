@@ -18,8 +18,8 @@ namespace PublicApi.Endpoints.Shared.ClientAppData
             _deliveryAppData = deliveryAppData;
         }
 
-        [HttpPost("api/ClientAppData")]
-        public override Task<ActionResult> HandleAsync(CancellationToken cancellationToken = new CancellationToken()) 
-            => _deliveryAppData.SendData(cancellationToken);
+        [HttpPost("api/client/appData")]
+        public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = new CancellationToken()) 
+            => await _deliveryAppData.SendDataAsync(cancellationToken);
     }
 }

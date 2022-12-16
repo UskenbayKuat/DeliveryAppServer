@@ -19,7 +19,7 @@ namespace PublicApi.Endpoints.Delivery
             _hubContext = hubContext;
         }
 
-        [HttpPost("api/Order")]
+        [HttpPost("api/driver/confirmOrder")]
         public override async Task<ActionResult> HandleAsync(DeliveryCommand request,
             CancellationToken cancellationToken = default) =>
             await _delivery.AddToDeliveryAsync(request.ClientPackageId, SendInfoForClientAsync);

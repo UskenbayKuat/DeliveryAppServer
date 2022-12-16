@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
@@ -39,13 +40,15 @@ namespace Infrastructure.Helper
         public Task<RouteTrip> Trip(string driverUserId) => 
             Trips().FirstOrDefaultAsync(r => r.Driver.UserId == driverUserId);
 
-        public IQueryable<Order> Orders(int routeTripId, int stateId) =>
+        public IQueryable<Order> Orders(Expression<Func<Order,bool>> predicate) =>
             _db.Orders
                 .Include(cp => cp.Route.StartCity)
                 .Include(cp => cp.Route.FinishCity)
                 .Include(cp => cp.Package)
                 .Include(c => c.Client)
-                .Where(o => o.Delivery.RouteTrip.Id == routeTripId && o.State.Id == stateId);
+                .Include(c => c.Delivery)
+                .Include(c => c.State)
+                .Where(predicate);
         
         
     }

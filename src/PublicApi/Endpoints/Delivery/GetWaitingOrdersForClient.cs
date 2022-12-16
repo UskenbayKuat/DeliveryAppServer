@@ -17,7 +17,7 @@ namespace PublicApi.Endpoints.Delivery
             _order = order;
         }
 
-        [HttpPost("api/clients/WaitingClientPackage")]
+        [HttpPost("api/client/waitingOrders")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
             return await _order.GetWaitingOrdersAsync(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
