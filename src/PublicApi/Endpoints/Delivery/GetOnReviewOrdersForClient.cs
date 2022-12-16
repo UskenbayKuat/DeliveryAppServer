@@ -5,7 +5,7 @@ using Ardalis.ApiEndpoints;
 using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PublicApi.Endpoints.Clients.ClientPackage
+namespace PublicApi.Endpoints.Delivery
 {
     [Authorize]
     public class GetOnReviewOrdersForClient : EndpointBaseAsync.WithoutRequest.WithActionResult

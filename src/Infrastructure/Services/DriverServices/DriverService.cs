@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Entities.Values.Enums;
@@ -16,28 +15,28 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Services.DriverService
+namespace Infrastructure.Services.DriverServices
 {
     public class DriverService : IDriver
     {
         private readonly AppDbContext _db;
         private readonly AppIdentityDbContext _identityDbContext;
         private readonly IMapper _mapper;        
-        private readonly StateHelper _stateHelper;
+        private readonly ContextHelper _contextHelper;
 
 
-        public DriverService(AppDbContext db, AppIdentityDbContext identityDbContext, IMapper mapper,StateHelper stateHelper)
+        public DriverService(AppDbContext db, AppIdentityDbContext identityDbContext, IMapper mapper,ContextHelper contextHelper)
         {
             _db = db;
             _identityDbContext = identityDbContext;
             _mapper = mapper;
-            _stateHelper = stateHelper;
+            _contextHelper = contextHelper;
         }
 
         public async Task<string> FindDriverConnectionIdAsync(OrderInfo orderInfo,
             CancellationToken cancellationToken)
         {
-            var routeTripList = await Trips()
+            var routeTripList = await _contextHelper.Trips()
                 .Where(r => r.Route.StartCity.Id == orderInfo.StartCity.Id 
                             && r.Route.FinishCity.Id == orderInfo.FinishCity.Id
                             && r.DeliveryDate.Day >= orderInfo.DeliveryDate.Day)
@@ -52,18 +51,19 @@ namespace Infrastructure.Services.DriverService
                 return chatHub.ConnectionId;
             }
 
-            order.State =  _stateHelper.FindState((int)GeneralState.Waiting);
+            order.State =await  _contextHelper.FindStateAsync((int)GeneralState.Waiting);
             _db.Orders.Update(order);
             await _db.SaveChangesAsync(cancellationToken);
             return string.Empty;
         }
 
-        public async Task<List<OrderInfo>> FindClientPackagesAsync(string driverUserId)
+        public async Task<List<OrderInfo>> FindOrdersAsync(string driverUserId)
         {
             var ordersInfo = new List<OrderInfo>();
-            var routeTrip = await Trip(driverUserId) ?? throw new HubException();
+            var routeTrip = await _contextHelper.Trip(driverUserId) ?? throw new HubException();
+            var state = await _contextHelper.FindStateAsync((int)GeneralState.Waiting);
             var waitingOrders = await WaitingOrders(routeTrip.Route.Id, routeTrip.DeliveryDate)
-                .Where(o=>o.State == _stateHelper.FindState((int)GeneralState.Waiting)).ToListAsync();
+                .Where(o=>o.State == state).ToListAsync();
             foreach(var waitingOrder in waitingOrders)
             {
                 await UpDateOrderStateAsync(routeTrip, waitingOrder, GeneralState.OnReview);
@@ -77,14 +77,10 @@ namespace Infrastructure.Services.DriverService
         {
             try
             {
-                var routeTrip = await Trip(driverUserId) ?? throw new NullReferenceException("Для проверки заказов создайте поездку");
+                var routeTrip = await _contextHelper.Trip(driverUserId) ?? throw new NullReferenceException("Для проверки заказов создайте поездку");
+                var state = await _contextHelper.FindStateAsync((int)GeneralState.OnReview);
                 var ordersInfo = new List<OrderInfo>();
-                await _db.Orders
-                    .Include(cp=>cp.Route.StartCity)
-                    .Include(cp=>cp.Route.FinishCity)
-                    .Include(cp=>cp.Package)
-                    .Include(c => c.Client)
-                    .Where(o => o.Delivery.RouteTrip.Id == routeTrip.Id && o.State == _stateHelper.FindState((int)GeneralState.OnReview))
+                await _contextHelper.Orders(routeTrip.Id, state.Id)
                     .ForEachAsync( o =>
                     {
                         var userClient = _identityDbContext.Users.First(u => u.Id == o.Client.UserId);
@@ -98,25 +94,14 @@ namespace Infrastructure.Services.DriverService
             }
         }
 
-        public async Task<ActionResult> GetRouteTripIsActiveAsync(string driverUserId)
-        {
-            try
-            {
-                var routeTrip = await Trip(driverUserId) ?? throw new NullReferenceException("Текущих поездок нет");
-                return new OkObjectResult(_mapper.Map<RouteTripInfo>(routeTrip));
-            }
-            catch (NullReferenceException ex)
-            {
-                return new BadRequestObjectResult(ex.Message);
-            }
-        }
+
 
         public async Task<ActionResult> RejectNextFindDriverAsync(string driverUserId, OrderInfo orderInfo,Func<string, OrderInfo, Task> func)
         {
             try
             {
                 var clientPackage = await OrderAsync(orderInfo.OrderId, default);
-                var routeTrip = await Trip(driverUserId);
+                var routeTrip = await _contextHelper.Trip(driverUserId);
                 await _db.RejectedOrders
                     .AddAsync(new RejectedOrder
                     {
@@ -142,7 +127,7 @@ namespace Infrastructure.Services.DriverService
 
         private async Task UpDateOrderStateAsync(RouteTrip routeTrip, Order order, GeneralState generalState)
         {
-            order.State =  _stateHelper.FindState((int)generalState);
+            order.State = await _contextHelper.FindStateAsync((int)generalState);
             var delivery = await _db.Deliveries.FirstOrDefaultAsync(d => d.RouteTrip.Id == routeTrip.Id);
             delivery.Orders.Add(order);
             _db.Deliveries.Update(delivery);
@@ -156,14 +141,9 @@ namespace Infrastructure.Services.DriverService
             .Include(c => c.Client)
             .FirstAsync(c => c.Id == clientPackageId, cancellationToken);
         
-        private IQueryable<RouteTrip> Trips() => _db.RouteTrips
-            .Include(r => r.Driver)
-            .Include(r => r.Route.StartCity)
-            .Include(r => r.Route.FinishCity)
-            .Where(r => r.IsActive);
 
-        private Task<RouteTrip> Trip(string userDriverId) => 
-            Trips().FirstOrDefaultAsync(r => r.Driver.UserId == userDriverId);
+
+
 
         private IQueryable<Order> WaitingOrders(int id, DateTime deliveryDate) => _db.Orders
             .Include(o => o.Client)
@@ -172,7 +152,12 @@ namespace Infrastructure.Services.DriverService
             .Include(o => o.Route.FinishCity)
             .Where(o =>
                 o.Route.Id == id &&
-                o.DeliveryDate.Day <= deliveryDate.Day);
+                o.DeliveryDate.Day <= deliveryDate.Day);  
+        private IQueryable<Order> WaitingOrders() => _db.Orders
+            .Include(o => o.Client)
+            .Include(o => o.Package)
+            .Include(o => o.Route.StartCity)
+            .Include(o => o.Route.FinishCity);
         
     }
 }

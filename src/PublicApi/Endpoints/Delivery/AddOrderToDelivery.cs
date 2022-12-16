@@ -1,16 +1,12 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.AppEntities;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using Ardalis.ApiEndpoints;
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using PublicApi.Endpoints.Delivery;
 using PublicApi.HubNotification;
 
-namespace PublicApi.Endpoints.Orders
+namespace PublicApi.Endpoints.Delivery
 {
     public class AddOrderToDelivery : EndpointBaseAsync.WithRequest<DeliveryCommand>.WithActionResult
     {
@@ -25,9 +21,10 @@ namespace PublicApi.Endpoints.Orders
 
         [HttpPost("api/Order")]
         public override async Task<ActionResult> HandleAsync(DeliveryCommand request,
-            CancellationToken cancellationToken = new CancellationToken()) =>
-            await _delivery.AddToDeliveryAsync(request.ClientPackageId, async clientConnectId => await _hubContext
-                .Clients.User(clientConnectId)
-                .SendCoreAsync("SendDriverInfoToClient", new[] { "Ваш заказ принята" }, cancellationToken));
+            CancellationToken cancellationToken = default) =>
+            await _delivery.AddToDeliveryAsync(request.ClientPackageId, SendInfoForClientAsync);
+
+        private async Task SendInfoForClientAsync(string clientConnectId) =>
+            await _hubContext.Clients.User(clientConnectId).SendCoreAsync("SendDriverInfoToClient", new[] { "Ваш заказ принята" });
     }
 }

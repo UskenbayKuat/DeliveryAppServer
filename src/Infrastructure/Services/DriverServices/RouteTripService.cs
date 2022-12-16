@@ -1,33 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Orders;
-using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.DriverInterfaces;
+using AutoMapper;
 using Infrastructure.AppData.DataAccess;
 using Infrastructure.Helper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Services.DriverService
+namespace Infrastructure.Services.DriverServices
 {
     public class RouteTripService : IRouteTrip
     {
         private readonly AppDbContext _db;
         private readonly IDriver _driver;
-        private readonly StateHelper _stateHelper;
+        private readonly ContextHelper _contextHelper;
+        private readonly IMapper _mapper;
         
-        public RouteTripService(AppDbContext db, IDriver driver, StateHelper stateHelper)
+        public RouteTripService(AppDbContext db, IDriver driver, ContextHelper contextHelper, IMapper mapper)
         {
             _db = db;
             _driver = driver;
-            _stateHelper = stateHelper;
+            _contextHelper = contextHelper;
+            _mapper = mapper;
         }
 
         public async Task<ActionResult> CreateAsync(RouteTripInfo tripInfo, string userId, CancellationToken cancellationToken)
@@ -38,17 +37,33 @@ namespace Infrastructure.Services.DriverService
             {
                 return new BadRequestObjectResult("Сначала завершите текущий маршрут");
             }
-            await CreateRouteTrip(tripInfo, driver, cancellationToken);
+            await CreateRouteTripAsync(tripInfo, driver, cancellationToken);
             //TODO  await _driver.FindClientPackagesAsync(userId);
             return new OkObjectResult(tripInfo);
         }
-
-        private async Task CreateRouteTrip(RouteTripInfo tripInfo, Driver driver, CancellationToken cancellationToken)
+        
+        public async Task<ActionResult> GetRouteTripIsActiveAsync(string driverUserId)
         {
-            var route = await _db.Routes.FirstAsync(r =>
-                r.StartCityId == tripInfo.StartCity.Id &&
-                r.FinishCityId == tripInfo.FinishCity.Id, cancellationToken);
-            var state =  _stateHelper.FindState((int)GeneralState.New);
+            try
+            {
+                var routeTrip = await _contextHelper.Trip(driverUserId) ?? throw new NullReferenceException("Текущих поездок нет");
+                return new OkObjectResult(_mapper.Map<RouteTripInfo>(routeTrip));
+            }
+            catch (NullReferenceException ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+            }
+            catch
+            {
+                return new BadRequestObjectResult("Non correct");
+            }
+        }
+        
+
+        private async Task CreateRouteTripAsync(RouteTripInfo tripInfo, Driver driver, CancellationToken cancellationToken)
+        {
+            var route = await _contextHelper.FindRouteAsync(tripInfo.StartCity.Id, tripInfo.FinishCity.Id);
+            var state = await _contextHelper.FindStateAsync((int)GeneralState.New);
             var delivery = new Delivery
             {
                 State = state,

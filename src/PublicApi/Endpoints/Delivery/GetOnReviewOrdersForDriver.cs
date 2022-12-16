@@ -5,7 +5,7 @@ using Ardalis.ApiEndpoints;
 using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PublicApi.Endpoints.Drivers.Delivery
+namespace PublicApi.Endpoints.Delivery
 {
     [Authorize]
     public class GetOnReviewOrdersForDriver : EndpointBaseAsync.WithoutRequest.WithActionResult

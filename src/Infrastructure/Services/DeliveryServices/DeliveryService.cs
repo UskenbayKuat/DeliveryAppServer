@@ -21,20 +21,20 @@ namespace Infrastructure.Services.DeliveryServices
         private readonly AppDbContext _db;
         private readonly AppIdentityDbContext _identityDbContext;
         private readonly IMapper _mapper;
-        private readonly StateHelper _stateHelper;
+        private readonly ContextHelper _contextHelper;
 
-        public DeliveryService(AppDbContext db, AppIdentityDbContext identityDbContext, IMapper mapper, StateHelper stateHelper)
+        public DeliveryService(AppDbContext db, AppIdentityDbContext identityDbContext, IMapper mapper, ContextHelper contextHelper)
         {
             _db = db;
             _identityDbContext = identityDbContext;
             _mapper = mapper;
-            _stateHelper = stateHelper;
+            _contextHelper = contextHelper;
         }
 
         public async Task<ActionResult> AddToDeliveryAsync(int orderId, Func<string, Task> func)
         {
             var order = await _db.Orders.Include(c => c.Client).FirstAsync(c => c.Id == orderId);
-            order.State =  _stateHelper.FindState((int)GeneralState.PendingForHandOver);
+            order.State = await _contextHelper.FindStateAsync((int)GeneralState.PendingForHandOver);
             _db.Orders.Update(order);
             await _db.SaveChangesAsync();
             await func((await _db.ChatHubs.FirstOrDefaultAsync(c => c.UserId == order.Client.UserId))?.ConnectionId);
@@ -46,7 +46,7 @@ namespace Infrastructure.Services.DeliveryServices
         {
             var deliveriesInfo = new List<DeliveryInfo>();
             var userClient = await _identityDbContext.Users.FirstAsync(u => u.Id == userClientId, cancellationToken);
-            var state =  _stateHelper.FindState((int)GeneralState.InProgress);
+            var state = await _contextHelper.FindStateAsync((int)GeneralState.InProgress);
             var orders = await OrdersAsync(state, userClient.Id, cancellationToken);
             orders.ForEach( o =>
             {

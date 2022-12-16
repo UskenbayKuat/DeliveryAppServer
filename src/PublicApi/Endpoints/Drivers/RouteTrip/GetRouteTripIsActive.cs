@@ -10,15 +10,15 @@ namespace PublicApi.Endpoints.Drivers.RouteTrip
     [Authorize]
     public class GetRouteTripIsActive : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
-        private readonly IDriver _driver;
+        private readonly IRouteTrip _routeTrip;
 
-        public GetRouteTripIsActive(IDriver driver)
+        public GetRouteTripIsActive(IRouteTrip routeTrip)
         {
-            _driver = driver;
+            _routeTrip = routeTrip;
         }
         
         [HttpPost("api/driver/routeTripForDriver")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default) => 
-            await _driver.GetRouteTripIsActiveAsync(HttpContext.Items["UserId"]?.ToString());
+            await _routeTrip.GetRouteTripIsActiveAsync(HttpContext.Items["UserId"]?.ToString());
     }
 }

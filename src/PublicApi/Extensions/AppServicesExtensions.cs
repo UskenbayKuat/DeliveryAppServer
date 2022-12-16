@@ -14,10 +14,10 @@ using Infrastructure.AppData.Identity;
 using Infrastructure.Config;
 using Infrastructure.Helper;
 using Infrastructure.Services;
-using Infrastructure.Services.ClientService;
+using Infrastructure.Services.ChatHubServices;
+using Infrastructure.Services.ClientServices;
 using Infrastructure.Services.DeliveryServices;
-using Infrastructure.Services.DriverService;
-using Infrastructure.Services.HubServices;
+using Infrastructure.Services.DriverServices;
 using Infrastructure.Services.RegisterServices;
 using Infrastructure.Services.Shared;
 using Infrastructure.Services.TokenServices;
@@ -25,7 +25,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using IOrder = ApplicationCore.Interfaces.ClientInterfaces.IOrder;
-using OrderService = Infrastructure.Services.ClientService.OrderService;
+using OrderService = Infrastructure.Services.ClientServices.OrderService;
 
 namespace PublicApi.Extensions
 {
@@ -35,7 +35,7 @@ namespace PublicApi.Extensions
         {
             services.AddTransient<IOrder, OrderService>();
             services.AddTransient<IDriver, DriverService>();
-            services.AddTransient<IHubConnect, HubConnectService>();
+            services.AddTransient<IChatHub, ChatHubService>();
             services.AddTransient<IDelivery, DeliveryService>();
             services.AddTransient<IValidation, ValidationService>();
             services.AddTransient<IGenerateToken, TokenService>();
@@ -48,7 +48,7 @@ namespace PublicApi.Extensions
             services.AddTransient<IDeliveryAppData<DriverAppDataInfo>, DriverAppDataService>();
             services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
             services.AddTransient<IUserData, UserDataService>();
-            services.AddTransient<StateHelper>();
+            services.AddTransient<ContextHelper>();
             services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.JwtSettings));
             services.ConfigureDbContextServices(configuration);
         }

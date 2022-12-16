@@ -7,11 +7,9 @@ using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using PublicApi.Endpoints.Delivery;
-using PublicApi.Endpoints.Orders;
 using PublicApi.HubNotification;
 
-namespace PublicApi.Endpoints.Drivers.Delivery
+namespace PublicApi.Endpoints.Delivery
 {
     public class RejectOrder : EndpointBaseAsync.WithRequest<DeliveryCommand>.WithActionResult
     {
@@ -32,8 +30,9 @@ namespace PublicApi.Endpoints.Drivers.Delivery
             await _driverService.RejectNextFindDriverAsync(
                 driverUserId: HttpContext.Items["UserId"]?.ToString(),
                 orderInfo: _mapper.Map<OrderInfo>(request),
-                func: async (driverConnectionId, info) => 
-                    await _hubContext.Clients.User(driverConnectionId).SendCoreAsync("SendClientInfoToDriver", new[] { new List<OrderInfo> { info } },
-                        cancellationToken));
+                func: SendInfoForDriverAsync);
+        
+        private async Task SendInfoForDriverAsync(string driverConnectionId, OrderInfo info) =>
+            await _hubContext.Clients.User(driverConnectionId).SendCoreAsync("SendClientInfoToDriver", new[] { new List<OrderInfo> { info } });
     }
 }

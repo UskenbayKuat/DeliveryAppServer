@@ -1,8 +1,5 @@
-using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Exceptions;
@@ -11,7 +8,7 @@ using Infrastructure.AppData.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Services.DriverService
+namespace Infrastructure.Services.DriverServices
 {
     public class CarService: ICar
     {

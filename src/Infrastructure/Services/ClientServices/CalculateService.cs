@@ -7,7 +7,7 @@ using Infrastructure.AppData.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Services.ClientService
+namespace Infrastructure.Services.ClientServices
 {
     public class CalculateService : ICalculate
     {

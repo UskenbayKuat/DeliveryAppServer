@@ -9,21 +9,21 @@ namespace PublicApi.HubNotification
     [Authorize]
     public class Notification : Hub
     {
-        private readonly IHubConnect _hubConnect;
+        private readonly IChatHub _chatHub;
         
-        public Notification(IHubConnect hubConnect)
+        public Notification(IChatHub chatHub)
         {
-            _hubConnect = hubConnect;
+            _chatHub = chatHub;
         }
         public override async Task<Task> OnConnectedAsync()
         {
-            await _hubConnect.ConnectedUser(Context.GetHttpContext().Items["UserId"]?.ToString(), Context.ConnectionId);
+            await _chatHub.ConnectedAsync(Context.GetHttpContext().Items["UserId"]?.ToString(), Context.ConnectionId);
             return base.OnConnectedAsync();
         }
 
         public override async Task<Task> OnDisconnectedAsync(Exception exception)
         {
-            await _hubConnect.DisconnectedUser(Context.ConnectionId);
+            await _chatHub.DisconnectedAsync(Context.ConnectionId);
             return base.OnDisconnectedAsync(exception);
         }
     }

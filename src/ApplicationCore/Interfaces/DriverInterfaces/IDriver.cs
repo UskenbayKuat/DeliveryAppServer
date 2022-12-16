@@ -9,9 +9,8 @@ namespace ApplicationCore.Interfaces.DriverInterfaces
 {
     public interface IDriver
     {       
-        public Task<List<OrderInfo>> FindClientPackagesAsync(string driverUserId);
-        public Task<ActionResult> GetOnReviewOrdersForDriverAsync(string driverUserId);
-        public Task<ActionResult> GetRouteTripIsActiveAsync(string driverUserId);
+        public Task<List<OrderInfo>> FindOrdersAsync(string driverUserId);
+        public Task<ActionResult> GetOnReviewOrdersForDriverAsync(string userDriverId);
         public Task<ActionResult> RejectNextFindDriverAsync(string driverUserId, OrderInfo orderInfo,Func<string, OrderInfo, Task> func);
         public Task<string> FindDriverConnectionIdAsync(OrderInfo orderInfo, CancellationToken cancellationToken);
     }
