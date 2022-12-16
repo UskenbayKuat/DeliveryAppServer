@@ -22,6 +22,7 @@ namespace ApplicationCore.Entities.Values
         public bool IsSingle { get; set; }
         public decimal Price  { get; set; }
         public string Location  { get; set; }
+        public string StateName  { get; set; }
         public Package Package { get;  set;}
 
         public DeliveryInfo SetClientData(string name, string surname, string phoneNumber = "")

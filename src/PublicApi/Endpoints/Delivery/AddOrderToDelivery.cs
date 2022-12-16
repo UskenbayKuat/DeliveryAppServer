@@ -25,6 +25,6 @@ namespace PublicApi.Endpoints.Delivery
             await _delivery.AddToDeliveryAsync(request.ClientPackageId, SendInfoForClientAsync);
 
         private async Task SendInfoForClientAsync(string clientConnectId) =>
-            await _hubContext.Clients.User(clientConnectId).SendCoreAsync("SendDriverInfoToClient", new[] { "Ваш заказ принята" });
+            await _hubContext.Clients.User(clientConnectId).SendCoreAsync("SendDriverInfoToClient", new[] { "Ваш заказ принят, ожидает передачи." });
     }
 }

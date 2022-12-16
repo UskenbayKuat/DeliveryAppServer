@@ -35,8 +35,8 @@ namespace PublicApi.Endpoints.Clients.Order
                 clientUserId: HttpContext.Items["UserId"]?.ToString(),
                 func: SendInfoForClientAsync, cancellationToken);
 
-        private async Task SendInfoForClientAsync(string connectionId, OrderInfo info) =>
-            await _hubContext.Clients.User(connectionId)
-                .SendCoreAsync("SendClientInfoToDriver", new[] { new List<OrderInfo> { info } });
+        private async Task SendInfoForClientAsync(string connectionDriverId) =>
+            await _hubContext.Clients.User(connectionDriverId)
+                .SendCoreAsync("SendClientInfoToDriver", new[] { "Новый заказ" });
     }
 }

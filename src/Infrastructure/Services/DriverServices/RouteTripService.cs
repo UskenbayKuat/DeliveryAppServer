@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
@@ -29,16 +31,18 @@ namespace Infrastructure.Services.DriverServices
             _mapper = mapper;
         }
 
-        public async Task<ActionResult> CreateAsync(RouteTripInfo tripInfo, string userId, CancellationToken cancellationToken)
+        public async Task<ActionResult> CreateAsync(RouteTripInfo tripInfo, string userId, Func<string, bool, Task> func)
         {
-            var driver = await _db.Drivers.FirstAsync(d => d.UserId == userId, cancellationToken);
-            var anyRoute = await _db.RouteTrips.AnyAsync(r => r.Driver.Id == driver.Id && r.IsActive, cancellationToken);
+            var driver = await _db.Drivers.FirstAsync(d => d.UserId == userId);
+            var anyRoute = await _db.RouteTrips.AnyAsync(r => r.Driver.Id == driver.Id && r.IsActive);
             if (anyRoute)
             {
                 return new BadRequestObjectResult("Сначала завершите текущий маршрут");
             }
-            await CreateRouteTripAsync(tripInfo, driver, cancellationToken);
-            //TODO  await _driver.FindClientPackagesAsync(userId);
+            await CreateRouteTripAsync(tripInfo, driver);
+            var driverChatHub = await _db.ChatHubs.FirstAsync(c => c.UserId == userId);
+            var ordersInfo = await _driver.FindOrdersAsync(userId);
+            await func(driverChatHub.ConnectionId, ordersInfo.Any());
             return new OkObjectResult(tripInfo);
         }
         
@@ -60,7 +64,7 @@ namespace Infrastructure.Services.DriverServices
         }
         
 
-        private async Task CreateRouteTripAsync(RouteTripInfo tripInfo, Driver driver, CancellationToken cancellationToken)
+        private async Task CreateRouteTripAsync(RouteTripInfo tripInfo, Driver driver)
         {
             var route = await _contextHelper.FindRouteAsync(tripInfo.StartCity.Id, tripInfo.FinishCity.Id);
             var state = await _contextHelper.FindStateAsync((int)GeneralState.New);
@@ -73,8 +77,8 @@ namespace Infrastructure.Services.DriverServices
                     Route = route
                 }
             };
-            await _db.Deliveries.AddAsync(delivery, cancellationToken);
-            await _db.SaveChangesAsync(cancellationToken);
+            await _db.Deliveries.AddAsync(delivery);
+            await _db.SaveChangesAsync();
         }
         
     }

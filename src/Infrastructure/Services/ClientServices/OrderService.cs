@@ -34,7 +34,7 @@ namespace Infrastructure.Services.ClientServices
             _driverService = driverService;
         }
 
-        public async Task<ActionResult> CreateAsync(OrderInfo info, string clientUserId,Func<string, OrderInfo, Task> func,
+        public async Task<ActionResult> CreateAsync(OrderInfo info, string clientUserId,Func<string, Task> func,
             CancellationToken cancellationToken)
         {
             try
@@ -56,7 +56,7 @@ namespace Infrastructure.Services.ClientServices
                 await _db.SaveChangesAsync(cancellationToken);
                 var orderInfo = _mapper.Map<OrderInfo>(order).SetClientData(user.Name, user.Surname, user.PhoneNumber);
                 var driverConnectionId = await _driverService.FindDriverConnectionIdAsync(orderInfo, cancellationToken);
-                await func(driverConnectionId, orderInfo);
+                await func(driverConnectionId);
                 return new OkObjectResult(info);
             }
             catch

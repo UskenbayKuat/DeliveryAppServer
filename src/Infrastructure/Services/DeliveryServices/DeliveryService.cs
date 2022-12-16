@@ -43,16 +43,18 @@ namespace Infrastructure.Services.DeliveryServices
         }
 
 
-        public async Task<ActionResult> GetInProgressOrdersForClientAsync(string userClientId)
+        public async Task<ActionResult> GetActiveOrdersForClientAsync(string userClientId)
         {
             var deliveriesInfo = new List<DeliveryInfo>();
             var userClient = await _identityDbContext.Users.FirstAsync(u => u.Id == userClientId);
-            var state = await _contextHelper.FindStateAsync((int)GeneralState.InProgress);
+            var stateInProgress = await _contextHelper.FindStateAsync((int)GeneralState.InProgress);
+            var stateHandOver = await _contextHelper.FindStateAsync((int)GeneralState.PendingForHandOver);
+            var stateReceived = await _contextHelper.FindStateAsync((int)GeneralState.ReceivedByDriver);
             await _contextHelper
                 .Orders(c =>
                     c.Client.UserId == userClientId &&
                     c.Delivery.RouteTrip.IsActive &&
-                    c.State == state)
+                    c.State == stateInProgress || c.State == stateHandOver || c.State == stateReceived)
                 .ForEachAsync(o =>
                 {
                     var userDriver = _identityDbContext.Users.First(u => u.Id == o.Delivery.RouteTrip.Driver.UserId);

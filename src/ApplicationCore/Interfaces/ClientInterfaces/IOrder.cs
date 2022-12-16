@@ -10,7 +10,7 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
 {
     public interface IOrder
     {
-        public Task<ActionResult> CreateAsync(OrderInfo info, string clientUserId, Func<string, OrderInfo, Task> func, CancellationToken cancellationToken);
+        public Task<ActionResult> CreateAsync(OrderInfo info, string clientUserId, Func<string, Task> func, CancellationToken cancellationToken);
         public Task<ActionResult> GetWaitingOrdersAsync(string clientUserId, CancellationToken cancellationToken);
         public Task<ActionResult> GetOnReviewOrdersAsync(string clientUserId, CancellationToken cancellationToken);
     }

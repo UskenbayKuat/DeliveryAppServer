@@ -36,10 +36,12 @@ namespace PublicApi
                     o => o.MapFrom(c => c.Route.StartCity))
                 .ForMember(o => o.FinishCity, 
                     o => o.MapFrom(c => c.Route.FinishCity))
+                .ForMember(o => o.DeliveryState, 
+                    o => o.MapFrom(c => c.DeliveryDate))
+                .ForMember(o => o.StateName, 
+                    o => o.MapFrom(c => c.State.Name))
                 .ForMember(o => o.CreatedAt, 
                     o => o.MapFrom(c => c.CreatedAt));
-            
-            //TODO .ForMember(o => o.DeliveryState, o => o.MapFrom(c => c.Delivery.State))
             
             CreateMap<Order, OrderInfo>()
                 .ForMember(o => o.OrderId, 
