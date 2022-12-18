@@ -33,10 +33,10 @@ namespace PublicApi.Endpoints.Clients.Order
             await _order.CreateAsync(
                 info: _mapper.Map<OrderInfo>(request),
                 clientUserId: HttpContext.Items["UserId"]?.ToString(),
-                func: SendInfoForClientAsync, cancellationToken);
+                func: async (connectionId) => await SendInfoForDriverAsync(connectionId), cancellationToken);
 
-        private async Task SendInfoForClientAsync(string connectionDriverId) =>
-            await _hubContext.Clients.User(connectionDriverId)
-                .SendCoreAsync("SendClientInfoToDriver", new[] { "Новый заказ" });
+        private async Task SendInfoForDriverAsync(string connectionDriverId) =>
+            await _hubContext.Clients.Client(connectionDriverId)
+                .SendCoreAsync("SendToDriver", new[] { "У вас новый заказ" });
     }
 }

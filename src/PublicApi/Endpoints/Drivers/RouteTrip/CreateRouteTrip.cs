@@ -32,14 +32,14 @@ namespace PublicApi.Endpoints.Drivers.RouteTrip
         public override async Task<ActionResult> HandleAsync([FromBody] RouteTripCommand request,
             CancellationToken cancellationToken = new CancellationToken()) =>
             await _routeTrip.CreateAsync(_mapper.Map<RouteTripInfo>(request),
-        HttpContext.Items["UserId"]?.ToString(), SendInfoForDriverAsync);
+        HttpContext.Items["UserId"]?.ToString(), async (connectionId,isEmpty) => await SendInfoForDriverAsync(connectionId,isEmpty));
 
 
         private async Task SendInfoForDriverAsync(string connectionId, bool isEmpty)
         {
             if (isEmpty)
-                await _hubContext.Clients.User(connectionId)
-                    .SendCoreAsync("SendClientInfoToDriver", new[] { "Новый заказ" });
+                await _hubContext.Clients.Client(connectionId)
+                    .SendCoreAsync("SendToDriver", new[] { "У вас новый заказ" });
         }
         
         

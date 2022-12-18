@@ -30,9 +30,10 @@ namespace PublicApi.Endpoints.Delivery
             await _driverService.RejectNextFindDriverAsync(
                 driverUserId: HttpContext.Items["UserId"]?.ToString(),
                 orderInfo: _mapper.Map<OrderInfo>(request),
-                func: SendInfoForDriverAsync);
+                func: async (connectionId) => await SendInfoForDriverAsync(connectionId));
         
-        private async Task SendInfoForDriverAsync(string driverConnectionId, OrderInfo info) =>
-            await _hubContext.Clients.User(driverConnectionId).SendCoreAsync("SendClientInfoToDriver", new[] { new List<OrderInfo> { info } });
+        private async Task SendInfoForDriverAsync(string driverConnectionId) =>
+            await _hubContext.Clients.Client(driverConnectionId).
+                SendCoreAsync("SendToDriver", new[] { "У вас новый заказ" });
     }
 }

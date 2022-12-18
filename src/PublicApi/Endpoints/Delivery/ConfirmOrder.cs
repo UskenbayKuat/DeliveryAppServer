@@ -22,9 +22,11 @@ namespace PublicApi.Endpoints.Delivery
         [HttpPost("api/driver/confirmOrder")]
         public override async Task<ActionResult> HandleAsync([FromBody]DeliveryCommand request,
             CancellationToken cancellationToken = default) =>
-            await _delivery.AddToDeliveryAsync(request.OrderId, SendInfoForClientAsync);
+            await _delivery.AddToDeliveryAsync(request.OrderId, 
+                async (connectionId) => await SendInfoForClientAsync(connectionId));
 
         private async Task SendInfoForClientAsync(string clientConnectId) =>
-            await _hubContext.Clients.User(clientConnectId).SendCoreAsync("SendDriverInfoToClient", new[] { "Ваш заказ принят, ожидает передачи." });
+            await _hubContext.Clients.Client(clientConnectId).
+                SendCoreAsync("SendToClient", new[] { "Ваш заказ принят, ожидает передачи" });
     }
 }

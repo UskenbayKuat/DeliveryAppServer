@@ -151,9 +151,9 @@ namespace Infrastructure.AppData.DataAccess
         private static IEnumerable<State> GetPreconfiguredStates() =>
             new List<State>
             {
-                new((int)GeneralState.New, "", ""),
-                new((int)GeneralState.Waiting, "", ""),
-                new((int)GeneralState.OnReview, "", ""),
+                new((int)GeneralState.New, "Новый", ""),
+                new((int)GeneralState.Waiting, "Ожидает рассмотрения", ""),
+                new((int)GeneralState.OnReview, "На рассмотрении", ""),
                 new((int)GeneralState.PendingForHandOver, "Ожидает передачи", ""),
                 new((int)GeneralState.ReceivedByDriver, "Передан", ""),
                 new((int)GeneralState.InProgress, "В пути", ""),

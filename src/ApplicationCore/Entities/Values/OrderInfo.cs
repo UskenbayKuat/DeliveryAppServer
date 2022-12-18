@@ -15,7 +15,7 @@ namespace ApplicationCore.Entities.Values
         public CarType CarType { get; set; }
         public bool IsSingle { get; set; }
         public decimal Price { get; set; }
-        
+        public string StateName { get; set; }
         public string ClientPhoneNumber { get; set; }
         public DateTime DeliveryDate { get; set; }
         public string ClientName { get; set; }

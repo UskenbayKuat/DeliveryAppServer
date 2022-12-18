@@ -80,6 +80,31 @@ namespace Infrastructure.Services.DriverServices
             try
             {
                 var routeTrip = await _contextHelper.Trip(driverUserId) ?? throw new NullReferenceException("Для проверки заказов создайте поездку");
+                var stateInProgress = await _contextHelper.FindStateAsync((int)GeneralState.InProgress);
+                var stateHandOver = await _contextHelper.FindStateAsync((int)GeneralState.PendingForHandOver);
+                var stateReceived = await _contextHelper.FindStateAsync((int)GeneralState.ReceivedByDriver);
+                var ordersInfo = new List<OrderInfo>();
+                await _contextHelper.Orders(o => 
+                        o.Delivery.RouteTrip.Id == routeTrip.Id && 
+                        o.State == stateInProgress || o.State == stateHandOver || o.State == stateReceived)
+                    .ForEachAsync( o =>
+                    {
+                        var userClient = _identityDbContext.Users.First(u => u.Id == o.Client.UserId);
+                        ordersInfo.Add(_mapper.Map<OrderInfo>(o).SetClientData(userClient.Name, userClient.Surname, userClient.PhoneNumber));
+                    });
+                return new OkObjectResult(ordersInfo);
+            }
+            catch (NullReferenceException ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+            }
+        }
+        
+        public async Task<ActionResult> GetActiveOrdersForDriverAsync(string driverUserId)
+        {
+            try
+            {
+                var routeTrip = await _contextHelper.Trip(driverUserId) ?? throw new NullReferenceException("Для проверки заказов создайте поездку");
                 var state = await _contextHelper.FindStateAsync((int)GeneralState.OnReview);
                 var ordersInfo = new List<OrderInfo>();
                 await _contextHelper.Orders(o => o.Delivery.RouteTrip.Id == routeTrip.Id && o.State.Id == state.Id)
@@ -97,8 +122,7 @@ namespace Infrastructure.Services.DriverServices
         }
 
 
-
-        public async Task<ActionResult> RejectNextFindDriverAsync(string driverUserId, OrderInfo orderInfo,Func<string, OrderInfo, Task> func)
+        public async Task<ActionResult> RejectNextFindDriverAsync(string driverUserId, OrderInfo orderInfo,Func<string, Task> func)
         {
             try
             {
@@ -112,7 +136,7 @@ namespace Infrastructure.Services.DriverServices
                     });
                 await _db.SaveChangesAsync();
                 var driverConnectionId = await FindDriverConnectionIdAsync(orderInfo, default);
-                await func(driverConnectionId, orderInfo);
+                await func(driverConnectionId);
                 return new OkObjectResult(new OrderInfo());
             }
             catch

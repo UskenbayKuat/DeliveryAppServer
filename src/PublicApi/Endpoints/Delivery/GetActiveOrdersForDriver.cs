@@ -8,17 +8,17 @@ using Microsoft.AspNetCore.Mvc;
 namespace PublicApi.Endpoints.Delivery
 {
     [Authorize]
-    public class GetOnReviewOrdersForDriver : EndpointBaseAsync.WithoutRequest.WithActionResult
+    public class GetActiveOrdersForDriver : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
         private readonly IDriver _driver;
 
-        public GetOnReviewOrdersForDriver(IDriver driver)
+        public GetActiveOrdersForDriver(IDriver driver)
         {
             _driver = driver;
         }
         
-        [HttpPost("api/driver/onReviewOrders")]
+        [HttpPost("api/driver/activeOrders")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default) => 
-            await _driver.GetActiveOrdersForDriverAsync(HttpContext.Items["UserId"]?.ToString());
+            await _driver.GetOnReviewOrdersForDriverAsync(HttpContext.Items["UserId"]?.ToString());
     }
 }
