@@ -80,13 +80,9 @@ namespace Infrastructure.Services.DriverServices
             try
             {
                 var routeTrip = await _contextHelper.Trip(driverUserId) ?? throw new NullReferenceException("Для проверки заказов создайте поездку");
-                var stateInProgress = await _contextHelper.FindStateAsync((int)GeneralState.InProgress);
-                var stateHandOver = await _contextHelper.FindStateAsync((int)GeneralState.PendingForHandOver);
-                var stateReceived = await _contextHelper.FindStateAsync((int)GeneralState.ReceivedByDriver);
+                var state = await _contextHelper.FindStateAsync((int)GeneralState.OnReview);
                 var ordersInfo = new List<OrderInfo>();
-                await _contextHelper.Orders(o => 
-                        o.Delivery.RouteTrip.Id == routeTrip.Id && 
-                        o.State == stateInProgress || o.State == stateHandOver || o.State == stateReceived)
+                await _contextHelper.Orders(o => o.Delivery.RouteTrip.Id == routeTrip.Id && o.State.Id == state.Id)
                     .ForEachAsync( o =>
                     {
                         var userClient = _identityDbContext.Users.First(u => u.Id == o.Client.UserId);
@@ -105,9 +101,13 @@ namespace Infrastructure.Services.DriverServices
             try
             {
                 var routeTrip = await _contextHelper.Trip(driverUserId) ?? throw new NullReferenceException("Для проверки заказов создайте поездку");
-                var state = await _contextHelper.FindStateAsync((int)GeneralState.OnReview);
+                var stateInProgress = await _contextHelper.FindStateAsync((int)GeneralState.InProgress);
+                var stateHandOver = await _contextHelper.FindStateAsync((int)GeneralState.PendingForHandOver);
+                var stateReceived = await _contextHelper.FindStateAsync((int)GeneralState.ReceivedByDriver);
                 var ordersInfo = new List<OrderInfo>();
-                await _contextHelper.Orders(o => o.Delivery.RouteTrip.Id == routeTrip.Id && o.State.Id == state.Id)
+                await _contextHelper.Orders(o => 
+                        o.Delivery.RouteTrip.Id == routeTrip.Id &&
+                        (o.State.Id == stateInProgress.Id || o.State.Id == stateHandOver.Id || o.State.Id == stateReceived.Id))
                     .ForEachAsync( o =>
                     {
                         var userClient = _identityDbContext.Users.First(u => u.Id == o.Client.UserId);
