@@ -1,6 +1,7 @@
 using System;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
+using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 
@@ -20,7 +21,7 @@ namespace ApplicationCore.Entities.Values
         public DateTime DeliveryDate { get; set; }
         public string ClientName { get; set; }
         public string ClientSurname { get; set; } 
-        public string Location  { get; set; }
+        public Location Location  { get; set; }
         
         public OrderInfo SetClientData(string name, string surname, string phoneNumber = "")
         {

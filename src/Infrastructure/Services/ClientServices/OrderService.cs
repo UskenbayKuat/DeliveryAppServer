@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Entities.Values.Enums;
@@ -13,6 +14,7 @@ using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
 using Infrastructure.Helper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.ClientServices
@@ -50,7 +52,8 @@ namespace Infrastructure.Services.ClientServices
                     Package = info.Package,
                     CarType = carType,  
                     Route = route,
-                    State =  state
+                    State =  state,
+                    Location = new Location(info.Location.Latitude, info.Location.Longitude)
                 };
                 await _db.Orders.AddAsync(order, cancellationToken);
                 await _db.SaveChangesAsync(cancellationToken);
@@ -64,6 +67,25 @@ namespace Infrastructure.Services.ClientServices
                 return new BadRequestResult();
             }
         }
+        
+        public async Task<List<OrderInfo>> FindWaitingOrdersAsync(string driverUserId)
+        {
+            var ordersInfo = new List<OrderInfo>();
+            var routeTrip = await _contextHelper.Trip(driverUserId);
+            var state = await _contextHelper.FindStateAsync((int)GeneralState.Waiting);
+            var waitingOrders = await _contextHelper.Orders(o =>
+                o.Route.Id == routeTrip.Route.Id &&
+                o.DeliveryDate.Day <= routeTrip.DeliveryDate.Day && 
+                o.State == state).ToListAsync();
+            foreach(var waitingOrder in waitingOrders)
+            {
+                await _contextHelper.AddOrderToDeliveryAsync(routeTrip, waitingOrder, GeneralState.OnReview);
+                var user = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u =>u.Id == waitingOrder.Client.UserId);
+                ordersInfo.Add(_mapper.Map<OrderInfo>(waitingOrder).SetClientData(user.Name, user.Surname, user.PhoneNumber));
+            }
+            return ordersInfo;
+        }
+        
 
         public async Task<ActionResult> GetWaitingOrdersAsync(string clientUserId,CancellationToken cancellationToken)
         {

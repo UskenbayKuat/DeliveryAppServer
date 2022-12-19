@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Entities.Values.Enums;
@@ -50,18 +51,22 @@ namespace Infrastructure.Services.DeliveryServices
             var stateInProgress = await _contextHelper.FindStateAsync((int)GeneralState.InProgress);
             var stateHandOver = await _contextHelper.FindStateAsync((int)GeneralState.PendingForHandOver);
             var stateReceived = await _contextHelper.FindStateAsync((int)GeneralState.ReceivedByDriver);
-            await _contextHelper
-                .Orders(c =>
+            var orders = await _contextHelper.Orders(c =>
                     c.Client.UserId == userClientId &&
                     c.Delivery.RouteTrip.IsActive &&
-                    c.State == stateInProgress || c.State == stateHandOver || c.State == stateReceived)
-                .ForEachAsync(o =>
-                {
-                    var userDriver = _identityDbContext.Users.First(u => u.Id == o.Delivery.RouteTrip.Driver.UserId);
-                    deliveriesInfo.Add(_mapper.Map<DeliveryInfo>(o)
-                        .SetDriverData(userDriver.Name, userDriver.Surname, userDriver.PhoneNumber)
-                        .SetClientData(userClient.Name, userClient.Surname));
-                });
+                    c.State == stateInProgress || c.State == stateHandOver || c.State == stateReceived).ToListAsync();
+            foreach (var order in orders)
+            {
+                var userDriver = await _identityDbContext.Users.FirstAsync(u => u.Id == order.Delivery.RouteTrip.Driver.UserId);
+                var deliveryInfo = _mapper.Map<DeliveryInfo>(order)
+                    .SetDriverData(userDriver.Name, userDriver.Surname, userDriver.PhoneNumber)
+                    .SetClientData(userClient.Name, userClient.Surname);
+                var location = await _db.LocationDate.Include(r => r.Location)
+                    .FirstOrDefaultAsync(l => l.RouteTrip.Id == order.Delivery.RouteTrip.Id);
+                deliveryInfo.Location = location?.Location;
+                deliveriesInfo.Add(deliveryInfo);
+            }
+
             return new OkObjectResult(deliveriesInfo);
         }
     }

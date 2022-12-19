@@ -47,7 +47,7 @@ namespace Infrastructure.Services.DriverServices
                 var chatHub = await _db.ChatHubs.FirstOrDefaultAsync(c => c.UserId == routeTrip.Driver.UserId, cancellationToken);
                 if (string.IsNullOrEmpty(chatHub?.ConnectionId)) continue;
                 if (await CheckRejectedAsync(routeTrip.Id, orderInfo.OrderId)) continue;
-                await UpDateOrderStateAsync(routeTrip, order, GeneralState.OnReview);
+                await _contextHelper.AddOrderToDeliveryAsync(routeTrip, order, GeneralState.OnReview);
                 return chatHub.ConnectionId;
             }
             order.Delivery?.Orders.Remove(order);
@@ -57,23 +57,7 @@ namespace Infrastructure.Services.DriverServices
             return string.Empty;
         }
 
-        public async Task<List<OrderInfo>> FindOrdersAsync(string driverUserId)
-        {
-            var ordersInfo = new List<OrderInfo>();
-            var routeTrip = await _contextHelper.Trip(driverUserId) ?? throw new HubException();
-            var state = await _contextHelper.FindStateAsync((int)GeneralState.Waiting);
-            var waitingOrders = await _contextHelper.Orders(o =>
-                o.Route.Id == routeTrip.Route.Id &&
-                o.DeliveryDate.Day <= routeTrip.DeliveryDate.Day && 
-                o.State == state).ToListAsync();
-            foreach(var waitingOrder in waitingOrders)
-            {
-                await UpDateOrderStateAsync(routeTrip, waitingOrder, GeneralState.OnReview);
-                var user = await _identityDbContext.Users.FirstOrDefaultAsync(u =>u.Id == waitingOrder.Client.UserId);
-                ordersInfo.Add(_mapper.Map<OrderInfo>(waitingOrder).SetClientData(user.Name, user.Surname, user.PhoneNumber));
-            }
-            return ordersInfo;
-        }
+
         
         public async Task<ActionResult> GetOnReviewOrdersForDriverAsync(string driverUserId)
         {
@@ -151,14 +135,7 @@ namespace Infrastructure.Services.DriverServices
                     r.RouteTrip.Id == routeTripId &&
                     r.Order.Id == orderId);
 
-        private async Task UpDateOrderStateAsync(RouteTrip routeTrip, Order order, GeneralState generalState)
-        {
-            order.State = await _contextHelper.FindStateAsync((int)generalState);
-            var delivery = await _db.Deliveries.FirstOrDefaultAsync(d => d.RouteTrip.Id == routeTrip.Id);
-            delivery.Orders.Add(order);
-            _db.Deliveries.Update(delivery);
-            await _db.SaveChangesAsync();
-        }
+
         
 
     }

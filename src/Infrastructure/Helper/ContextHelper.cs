@@ -54,6 +54,13 @@ namespace Infrastructure.Helper
                 .Include(o => o.CarType)
                 .Where(predicate);
         
-        
+        public async Task AddOrderToDeliveryAsync(RouteTrip routeTrip, Order order, GeneralState generalState)
+        {
+            order.State = await FindStateAsync((int)generalState);
+            var delivery = await _db.Deliveries.FirstOrDefaultAsync(d => d.RouteTrip.Id == routeTrip.Id);
+            delivery.Orders.Add(order);
+            _db.Deliveries.Update(delivery);
+            await _db.SaveChangesAsync();
+        }
     }
 }

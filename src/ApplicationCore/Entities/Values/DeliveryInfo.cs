@@ -1,4 +1,5 @@
 using System;
+using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values.Enums;
@@ -21,7 +22,7 @@ namespace ApplicationCore.Entities.Values
         public City FinishCity { get; set; }
         public bool IsSingle { get; set; }
         public decimal Price  { get; set; }
-        public string Location  { get; set; }
+        public Location Location  { get; set; }
         public string StateName  { get; set; }
         public Package Package { get;  set;}
 

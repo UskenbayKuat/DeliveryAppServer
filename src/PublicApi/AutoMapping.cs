@@ -61,7 +61,9 @@ namespace PublicApi
                 .ForMember(o => o.CarType,
                     o => o.MapFrom(o => o.CarType))
                 .ForMember(o => o.StateName,
-                    o => o.MapFrom(o => o.State.Name));
+                    o => o.MapFrom(o => o.State.Name))
+                .ForMember(o => o.Location,
+                    o => o.MapFrom(o => o.Location));
             CreateMap<RouteTrip, RouteTripInfo>()
                 .ForMember(r => r.StartCity,
                     r => r.MapFrom(r => r.Route.StartCity))
