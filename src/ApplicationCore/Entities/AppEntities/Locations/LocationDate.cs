@@ -5,9 +5,9 @@ namespace ApplicationCore.Entities.AppEntities.Locations
 {
     public class LocationDate : BaseEntity
     {
-        public LocationDate(DateTime locationDateTime)
+        public LocationDate()
         {
-            LocationDateTime = locationDateTime;
+            LocationDateTime = DateTime.Now;
         }
 
         public Location Location { get; set;}

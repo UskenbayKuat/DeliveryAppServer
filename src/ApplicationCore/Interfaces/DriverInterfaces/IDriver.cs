@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,9 +9,10 @@ namespace ApplicationCore.Interfaces.DriverInterfaces
 {
     public interface IDriver
     {       
-        public Task<List<ClientPackageInfo>> FindClientPackagesAsync(string driverUserId);
-        public Task<ActionResult> SendClientPackagesToDriverAsync(string driverUserId);
-        public Task<string> RejectNextFindDriverConnectionIdAsync(string driverUserId, ClientPackageInfo clientPackageInfo, CancellationToken cancellationToken);
-        public Task<string> FindDriverConnectionIdAsync(ClientPackageInfo clientPackageInfo, CancellationToken cancellationToken);
+
+        public Task<ActionResult> GetOnReviewOrdersForDriverAsync(string userDriverId);
+        public Task<ActionResult> GetActiveOrdersForDriverAsync(string userDriverId);
+        public Task<ActionResult> RejectNextFindDriverAsync(string driverUserId, OrderInfo orderInfo,Func<string, Task> func);
+        public Task<string> FindDriverConnectionIdAsync(OrderInfo orderInfo, CancellationToken cancellationToken);
     }
 }

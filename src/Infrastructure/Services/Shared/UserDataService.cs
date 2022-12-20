@@ -22,7 +22,7 @@ namespace Infrastructure.Services.Shared
             _dbIdentity = dbIdentity;
         }
 
-        public async Task<ActionResult> SendUser(string userId, CancellationToken cancellationToken)
+        public async Task<ActionResult> GetDataAsync(string userId, CancellationToken cancellationToken)
         {
             var user = await _dbIdentity.Users.FirstAsync(u => u.Id == userId, cancellationToken);
             if (user.IsDriver)

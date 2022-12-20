@@ -85,7 +85,7 @@ namespace PublicApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<Notification>("/notification");
+                endpoints.MapHub<Notification>("/api/notification");
             });
         }
     }

@@ -16,7 +16,7 @@ namespace Infrastructure.Services.Shared
         {
             _db = db;
         }
-        public Task<ActionResult> SendData(CancellationToken cancellationToken)
+        public Task<ActionResult> SendDataAsync(CancellationToken cancellationToken)
         {
             var info = new DriverAppDataInfo()
             {

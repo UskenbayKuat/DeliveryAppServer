@@ -33,11 +33,11 @@ namespace Infrastructure.AppData.DataAccess
         public DbSet<LocationDate> LocationDate { get; set; }
 
         //orders
+        public DbSet<Delivery> Deliveries { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<ClientPackage> ClientPackages { get; set; }
-        public DbSet<WaitingClientPackage> WaitingClientPackages { get; set; }
         public DbSet<Package> Packages { get; set; }
-        public DbSet<RejectedClientPackage>  RejectedClientPackages { get; set; }
+        public DbSet<RejectedOrder>  RejectedOrders { get; set; }
+        public DbSet<State>  States { get; set; }
         
         //kits
         public DbSet<Kit> Kits { get; set; }
@@ -54,8 +54,11 @@ namespace Infrastructure.AppData.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ClientPackage>().Property(c => c.Price).HasPrecision(18, 2);
-            modelBuilder.Entity<Order>().Property(o => o.OrderCost).HasPrecision(18, 2);
+            modelBuilder.Entity<Order>().Property(c => c.Price).HasPrecision(18, 2);
+            modelBuilder.Entity<Package>().Property(c => c.Height).HasPrecision(18, 2);
+            modelBuilder.Entity<Package>().Property(c => c.Length).HasPrecision(18, 2);
+            modelBuilder.Entity<Package>().Property(c => c.Weight).HasPrecision(18, 2);
+            modelBuilder.Entity<Package>().Property(c => c.Width).HasPrecision(18, 2);
             base.OnModelCreating(modelBuilder);
         }
     }

@@ -1,44 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
+using ApplicationCore.Entities.AppEntities.Cars;
+using ApplicationCore.Entities.AppEntities.Locations;
+using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values.Enums;
 
 namespace ApplicationCore.Entities.AppEntities.Orders
 {
     public class Order : BaseEntity
     {
-        public Order (DateTime orderDate)
+        public Order(bool isSingle, decimal price, DateTime deliveryDate)
         {
-            OrderDate = orderDate;
-            OrderState = OrderState.New;
+            DeliveryDate = deliveryDate;
+            IsSingle = isSingle;
+            CreatedAt = DateTime.Now;
+            Price = price;
         }
-        
-        public RouteTrip RouteTrip { get; set;}
-        public OrderState OrderState { get; set; }
-        public DateTime OrderDate { get; private set;}  
-        public DateTime? StartDate { get; set; }
-        public DateTime? CompletionDate { get; private set; }
-        public DateTime? CancellationDate { get; private set; }
-        public decimal OrderCost { get; private set; }
-        public bool IsDeleted { get; set; }
-        public List<ClientPackage> ClientPackages { get;  set; } = new();
-        
+        public CarType CarType { get;  set;}
+        public Client Client { get;  set;}
+        public Package Package { get;  set;}
+        public bool IsSingle { get; private set;}
+        public DateTime CreatedAt { get; private set; }
+        public DateTime DeliveryDate { get; private set; }
+        public State State { get; set; }
+        public decimal Price { get; private set;}
+        public Location Location { get;  set;}
+        public Route Route { get; set;}
+        public Delivery Delivery { get;  set;}
 
-        public void UpdateStatus(OrderState status)
-        {
-            OrderState = status;
-        }
-
-        public void UpdateCompletionDate(DateTime dateTime)
-        {
-            CompletionDate = dateTime;
-        }
-        public void UpdateCancellationDate(DateTime dateTime)
-        {
-            CancellationDate = dateTime;
-        }
-        public void UpdateOrderCost(decimal cost)
-        {
-            OrderCost = cost;
-        }
     }
 }

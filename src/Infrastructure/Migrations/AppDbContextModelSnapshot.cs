@@ -263,62 +263,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("LocationDate");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.ClientPackage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int?>("CarTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ClientId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ClientPackageState")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("IsSingle")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("LocationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("PackageId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<int?>("RouteId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CarTypeId");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("LocationId");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("PackageId");
-
-                    b.HasIndex("RouteId");
-
-                    b.ToTable("ClientPackages");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Order", b =>
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Delivery", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -331,28 +276,86 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("CompletionDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<decimal>("OrderCost")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<DateTime>("OrderDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("OrderState")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("DeliveryDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<int?>("RouteTripId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("StartDate")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<int?>("StateId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RouteTripId");
+
+                    b.HasIndex("StateId");
+
+                    b.ToTable("Deliveries");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int?>("CarTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ClientId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DeliveryDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("DeliveryId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsSingle")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("LocationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("PackageId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int?>("RouteId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("StateId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CarTypeId");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("DeliveryId");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("PackageId");
+
+                    b.HasIndex("RouteId");
+
+                    b.HasIndex("StateId");
 
                     b.ToTable("Orders");
                 });
@@ -365,18 +368,22 @@ namespace Infrastructure.Migrations
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<double>("Height")
+                        .HasPrecision(18, 2)
                         .HasColumnType("double precision");
 
                     b.Property<double>("Length")
+                        .HasPrecision(18, 2)
                         .HasColumnType("double precision");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
                     b.Property<double>("Weight")
+                        .HasPrecision(18, 2)
                         .HasColumnType("double precision");
 
                     b.Property<double>("Width")
+                        .HasPrecision(18, 2)
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
@@ -384,14 +391,14 @@ namespace Infrastructure.Migrations
                     b.ToTable("Packages");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.RejectedClientPackage", b =>
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.RejectedOrder", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int?>("ClientPackageId")
+                    b.Property<int?>("OrderId")
                         .HasColumnType("integer");
 
                     b.Property<int?>("RouteTripId")
@@ -399,11 +406,11 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClientPackageId");
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("RouteTripId");
 
-                    b.ToTable("RejectedClientPackages");
+                    b.ToTable("RejectedOrders");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.RouteTrip", b =>
@@ -414,6 +421,9 @@ namespace Infrastructure.Migrations
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DeliveryDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("DriverId")
@@ -434,21 +444,22 @@ namespace Infrastructure.Migrations
                     b.ToTable("RouteTrips");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.WaitingClientPackage", b =>
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.State", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int?>("ClientPackageId")
-                        .HasColumnType("integer");
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClientPackageId");
-
-                    b.ToTable("WaitingClientPackages");
+                    b.ToTable("States");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Routes.City", b =>
@@ -583,7 +594,22 @@ namespace Infrastructure.Migrations
                     b.Navigation("RouteTrip");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.ClientPackage", b =>
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Delivery", b =>
+                {
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.RouteTrip", "RouteTrip")
+                        .WithMany()
+                        .HasForeignKey("RouteTripId");
+
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.State", "State")
+                        .WithMany()
+                        .HasForeignKey("StateId");
+
+                    b.Navigation("RouteTrip");
+
+                    b.Navigation("State");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Order", b =>
                 {
                     b.HasOne("ApplicationCore.Entities.AppEntities.Cars.CarType", "CarType")
                         .WithMany()
@@ -593,13 +619,13 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ClientId");
 
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.Delivery", "Delivery")
+                        .WithMany("Orders")
+                        .HasForeignKey("DeliveryId");
+
                     b.HasOne("ApplicationCore.Entities.AppEntities.Locations.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId");
-
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.Order", "Order")
-                        .WithMany("ClientPackages")
-                        .HasForeignKey("OrderId");
 
                     b.HasOne("ApplicationCore.Entities.AppEntities.Orders.Package", "Package")
                         .WithMany()
@@ -609,39 +635,36 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("RouteId");
 
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.State", "State")
+                        .WithMany()
+                        .HasForeignKey("StateId");
+
                     b.Navigation("CarType");
 
                     b.Navigation("Client");
 
-                    b.Navigation("Location");
+                    b.Navigation("Delivery");
 
-                    b.Navigation("Order");
+                    b.Navigation("Location");
 
                     b.Navigation("Package");
 
                     b.Navigation("Route");
+
+                    b.Navigation("State");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Order", b =>
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.RejectedOrder", b =>
                 {
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.RouteTrip", "RouteTrip")
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.Order", "Order")
                         .WithMany()
-                        .HasForeignKey("RouteTripId");
-
-                    b.Navigation("RouteTrip");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.RejectedClientPackage", b =>
-                {
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.ClientPackage", "ClientPackage")
-                        .WithMany()
-                        .HasForeignKey("ClientPackageId");
+                        .HasForeignKey("OrderId");
 
                     b.HasOne("ApplicationCore.Entities.AppEntities.Orders.RouteTrip", "RouteTrip")
                         .WithMany()
                         .HasForeignKey("RouteTripId");
 
-                    b.Navigation("ClientPackage");
+                    b.Navigation("Order");
 
                     b.Navigation("RouteTrip");
                 });
@@ -659,15 +682,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Driver");
 
                     b.Navigation("Route");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.WaitingClientPackage", b =>
-                {
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.ClientPackage", "ClientPackage")
-                        .WithMany()
-                        .HasForeignKey("ClientPackageId");
-
-                    b.Navigation("ClientPackage");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Routes.Route", b =>
@@ -700,9 +714,9 @@ namespace Infrastructure.Migrations
                     b.Navigation("Route");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Order", b =>
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Delivery", b =>
                 {
-                    b.Navigation("ClientPackages");
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

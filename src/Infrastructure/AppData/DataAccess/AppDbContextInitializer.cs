@@ -68,6 +68,10 @@ namespace Infrastructure.AppData.DataAccess
             {
                 await context.Kits.AddRangeAsync(GetPreconfiguredKits());
             }
+            if (!await context.States.AnyAsync())
+            {
+                await context.States.AddRangeAsync(GetPreconfiguredStates());
+            }
             await context.SaveChangesAsync();
         }
 
@@ -139,10 +143,23 @@ namespace Infrastructure.AppData.DataAccess
         private static IEnumerable<Kit> GetPreconfiguredKits() =>
             new List<Kit>
             {
-                new Kit(1, "Light", 5, false),
-                new Kit(2, "Standard ", 10, false),
-                new Kit(3, "Premium", 15, false),
-                new Kit(4, "Unlimited", 999999, true)
+                new(1, "Light", 5, false),
+                new(2, "Standard ", 10, false),
+                new(3, "Premium", 15, false),
+                new(4, "Unlimited", 999999, true)
+            };
+        private static IEnumerable<State> GetPreconfiguredStates() =>
+            new List<State>
+            {
+                new((int)GeneralState.New, "Новый", ""),
+                new((int)GeneralState.Waiting, "Ожидает рассмотрения", ""),
+                new((int)GeneralState.OnReview, "На рассмотрении", ""),
+                new((int)GeneralState.PendingForHandOver, "Ожидает передачи", ""),
+                new((int)GeneralState.ReceivedByDriver, "Передан", ""),
+                new((int)GeneralState.InProgress, "В пути", ""),
+                new((int)GeneralState.Done, "", ""),
+                new((int)GeneralState.Delayed, "", ""),
+                new((int)GeneralState.Canceled, "", "")
             };
         
     }

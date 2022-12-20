@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.Values;
@@ -8,6 +9,8 @@ namespace ApplicationCore.Interfaces.DriverInterfaces
 {
     public interface IRouteTrip
     {
-        public Task<ActionResult> CreateAsync(RouteInfo info, string userId, CancellationToken cancellationToken);
+        public Task<ActionResult> GetRouteTripIsActiveAsync(string driverUserId);
+
+        public Task<ActionResult> CreateAsync(RouteTripInfo tripInfo, string userId, Func<string, bool, Task> func);
     }
 }

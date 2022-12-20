@@ -6,6 +6,6 @@ namespace ApplicationCore.Interfaces.SharedInterfaces
 {
     public interface IUserData
     {
-        public Task<ActionResult> SendUser(string userId, CancellationToken cancellationToken);
+        public Task<ActionResult> GetDataAsync(string userId, CancellationToken cancellationToken);
     }
 }
