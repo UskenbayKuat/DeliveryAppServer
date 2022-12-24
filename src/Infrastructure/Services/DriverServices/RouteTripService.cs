@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Locations;
@@ -10,7 +8,6 @@ using ApplicationCore.Entities.Values;
 using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
-using AutoMapper;
 using Infrastructure.AppData.DataAccess;
 using Infrastructure.Helper;
 using Microsoft.AspNetCore.Mvc;
@@ -21,17 +18,13 @@ namespace Infrastructure.Services.DriverServices
     public class RouteTripService : IRouteTrip
     {
         private readonly AppDbContext _db;
-        private readonly IDriver _driver;
         private readonly IOrder _order;
         private readonly ContextHelper _contextHelper;
-        private readonly IMapper _mapper;
         
-        public RouteTripService(AppDbContext db, IDriver driver, ContextHelper contextHelper, IMapper mapper, IOrder order)
+        public RouteTripService(AppDbContext db, ContextHelper contextHelper, IOrder order)
         {
             _db = db;
-            _driver = driver;
             _contextHelper = contextHelper;
-            _mapper = mapper;
             _order = order;
         }
 
@@ -54,8 +47,9 @@ namespace Infrastructure.Services.DriverServices
         {
             try
             {
-                var routeTrip = await _contextHelper.Trip(driverUserId) ?? throw new NullReferenceException("Текущих поездок нет");
-                return new OkObjectResult(_mapper.Map<RouteTripInfo>(routeTrip));
+                var routeTrip = await _contextHelper.Trip(driverUserId) 
+                                ?? throw new NullReferenceException("Текущих поездок нет");
+                return new OkObjectResult(routeTrip.GetRouteTripInfo());
             }
             catch (NullReferenceException ex)
             {
@@ -63,7 +57,7 @@ namespace Infrastructure.Services.DriverServices
             }
             catch
             {
-                return new BadRequestObjectResult("Non correct");
+                return new BadRequestObjectResult("Not correct");
             }
         }
         

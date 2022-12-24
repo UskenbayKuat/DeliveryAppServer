@@ -1,14 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.AppEntities.Locations;
-using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
-using AutoMapper;
 using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
 using Infrastructure.Helper;
@@ -21,15 +17,13 @@ namespace Infrastructure.Services.DeliveryServices
     {
         private readonly AppDbContext _db;
         private readonly AppIdentityDbContext _identityDbContext;
-        private readonly IMapper _mapper;
         private readonly ContextHelper _contextHelper;
 
-        public DeliveryService(AppDbContext db, AppIdentityDbContext identityDbContext, IMapper mapper,
+        public DeliveryService(AppDbContext db, AppIdentityDbContext identityDbContext,
             ContextHelper contextHelper)
         {
             _db = db;
             _identityDbContext = identityDbContext;
-            _mapper = mapper;
             _contextHelper = contextHelper;
         }
 
@@ -51,16 +45,14 @@ namespace Infrastructure.Services.DeliveryServices
             var stateInProgress = await _contextHelper.FindStateAsync((int)GeneralState.InProgress);
             var stateHandOver = await _contextHelper.FindStateAsync((int)GeneralState.PendingForHandOver);
             var stateReceived = await _contextHelper.FindStateAsync((int)GeneralState.ReceivedByDriver);
-            var orders = await _contextHelper.Orders(c =>
+            var orders = await _contextHelper.OrdersForDriverInfo().Where(c =>
                     c.Client.UserId == userClientId &&
                     c.Delivery.RouteTrip.IsActive &&
                     c.State == stateInProgress || c.State == stateHandOver || c.State == stateReceived).ToListAsync();
             foreach (var order in orders)
             {
                 var userDriver = await _identityDbContext.Users.FirstAsync(u => u.Id == order.Delivery.RouteTrip.Driver.UserId);
-                var deliveryInfo = _mapper.Map<DeliveryInfo>(order)
-                    .SetDriverData(userDriver.Name, userDriver.Surname, userDriver.PhoneNumber)
-                    .SetClientData(userClient.Name, userClient.Surname);
+                var deliveryInfo = order.GetDeliveryInfo(userClient, userDriver);
                 var location = await _db.LocationDate.Include(r => r.Location)
                     .FirstOrDefaultAsync(l => l.RouteTrip.Id == order.Delivery.RouteTrip.Id);
                 deliveryInfo.Location = location?.Location;

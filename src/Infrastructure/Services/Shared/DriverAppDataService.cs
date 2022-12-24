@@ -18,7 +18,7 @@ namespace Infrastructure.Services.Shared
         }
         public Task<ActionResult> SendDataAsync(CancellationToken cancellationToken)
         {
-            var info = new DriverAppDataInfo()
+            var info = new DriverAppDataInfo
             {
                 Cities = _db.Cities.ToList(),
                 Kits = _db.Kits.ToList(),
