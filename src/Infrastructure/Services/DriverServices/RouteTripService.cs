@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
+using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.ClientInterfaces;
+using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
-using Infrastructure.AppData.DataAccess;
-using Infrastructure.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,27 +17,25 @@ namespace Infrastructure.Services.DriverServices
 {
     public class RouteTripService : IRouteTrip
     {
-        private readonly AppDbContext _db;
         private readonly IOrder _order;
-        private readonly ContextHelper _contextHelper;
+        private readonly IContext _context;
         
-        public RouteTripService(AppDbContext db, ContextHelper contextHelper, IOrder order)
+        public RouteTripService(IOrder order, IContext context)
         {
-            _db = db;
-            _contextHelper = contextHelper;
             _order = order;
+            _context = context;
         }
 
         public async Task<ActionResult> CreateAsync(RouteTripInfo tripInfo, string userId, Func<string, bool, Task> func)
         {
-            var driver = await _db.Drivers.FirstAsync(d => d.UserId == userId);
-            var anyRoute = await _db.RouteTrips.AnyAsync(r => r.Driver.Id == driver.Id && r.IsActive);
-            if (anyRoute)
+            var driver = await _context.FindAsync<Driver>(d => d.UserId == userId);
+            var anyTrip = await _context.AnyAsync<RouteTrip>(r => r.Driver.Id == driver.Id && r.IsActive);
+            if (anyTrip)
             {
                 return new BadRequestObjectResult("Сначала завершите текущий маршрут");
             }
             await CreateRouteTripAsync(tripInfo, driver);
-            var driverChatHub = await _db.ChatHubs.FirstAsync(c => c.UserId == userId);
+            var driverChatHub = await _context.FindAsync<ChatHub>(c => c.UserId == userId);
             var ordersInfo = await _order.FindWaitingOrdersAsync(userId);
             await func(driverChatHub?.ConnectionId, ordersInfo.Any());
             return new OkObjectResult(tripInfo);
@@ -47,7 +45,7 @@ namespace Infrastructure.Services.DriverServices
         {
             try
             {
-                var routeTrip = await _contextHelper.Trip(driverUserId) 
+                var routeTrip = await _context.RouteTrips().IncludeRoutesBuilder().FirstOrDefaultAsync(r => r.Driver.UserId ==driverUserId) 
                                 ?? throw new NullReferenceException("Текущих поездок нет");
                 return new OkObjectResult(routeTrip.GetRouteTripInfo());
             }
@@ -64,8 +62,10 @@ namespace Infrastructure.Services.DriverServices
 
         private async Task CreateRouteTripAsync(RouteTripInfo tripInfo, Driver driver)
         {
-            var route = await _contextHelper.FindRouteAsync(tripInfo.StartCity.Id, tripInfo.FinishCity.Id);
-            var state = await _contextHelper.FindStateAsync((int)GeneralState.New);
+            var route = await _context.FindAsync<Route>(r => 
+                r.StartCityId == tripInfo.StartCity.Id && 
+                r.FinishCityId == tripInfo.FinishCity.Id);
+            var state = await _context.FindAsync<State>((int)GeneralState.New);
             var trip = new RouteTrip(tripInfo.DeliveryDate)
             {
                 Driver = driver,
@@ -82,9 +82,8 @@ namespace Infrastructure.Services.DriverServices
                 Location = new Location(tripInfo.Location.Latitude, tripInfo.Location.Longitude),
                 RouteTrip = trip
             };
-            await _db.LocationDate.AddAsync(locationDate);
-            await _db.Deliveries.AddAsync(delivery);
-            await _db.SaveChangesAsync();
+            await _context.AddAsync(locationDate);
+            await _context.AddAsync(delivery); // <- check only AddAsync(locationDate), if saving delivery in db delete this row
         }
         
     }

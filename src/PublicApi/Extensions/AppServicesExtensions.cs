@@ -1,21 +1,20 @@
-﻿using ApplicationCore;
-using ApplicationCore.Entities.Values;
+﻿using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
+using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using ApplicationCore.Interfaces.SharedInterfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
-using Infrastructure;
 using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
 using Infrastructure.Config;
-using Infrastructure.Helper;
 using Infrastructure.Services;
 using Infrastructure.Services.ChatHubServices;
 using Infrastructure.Services.ClientServices;
+using Infrastructure.Services.ContextServices;
 using Infrastructure.Services.DeliveryServices;
 using Infrastructure.Services.DriverServices;
 using Infrastructure.Services.RegisterServices;
@@ -48,7 +47,7 @@ namespace PublicApi.Extensions
             services.AddTransient<IDeliveryAppData<DriverAppDataInfo>, DriverAppDataService>();
             services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
             services.AddTransient<IUserData, UserDataService>();
-            services.AddTransient<ContextHelper>();
+            services.AddTransient<IContext, ContextService>();
             services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.JwtSettings));
             services.ConfigureDbContextServices(configuration);
         }

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Entities.Values.Enums;
+using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
-using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
-using Infrastructure.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,38 +17,39 @@ namespace Infrastructure.Services.DriverServices
 {
     public class DriverService : IDriver
     {
-        private readonly AppDbContext _db;
         private readonly AppIdentityDbContext _identityDbContext;
-        private readonly ContextHelper _contextHelper;
+        private readonly IContext _context;
 
 
-        public DriverService(AppDbContext db, AppIdentityDbContext identityDbContext, ContextHelper contextHelper)
+        public DriverService(AppIdentityDbContext identityDbContext,IContext context)
         {
-            _db = db;
             _identityDbContext = identityDbContext;
-            _contextHelper = contextHelper;
+            _context = context;
         }
 
         public async Task<string> FindDriverConnectionIdAsync(Order order,
             CancellationToken cancellationToken)
         {
-            var routeTripList = await _contextHelper.Trips()
-                .Where(r => r.Route.StartCity.Id == order.Route.StartCity.Id 
-                            && r.Route.FinishCity.Id == order.Route.FinishCity.Id
-                            && r.DeliveryDate.Day >= order.DeliveryDate.Day)
+            var deliveries = await _context
+                .Deliveries()
+                .IncludeRouteTripAndDriverBuilder()
+                .Where(r => 
+                    r.RouteTrip.Route.StartCity.Id == order.Route.StartCityId && 
+                    r.RouteTrip.Route.FinishCity.Id == order.Route.FinishCityId && 
+                    r.RouteTrip.DeliveryDate.Day >= order.DeliveryDate.Day)
                 .ToListAsync(cancellationToken);
-            foreach (var routeTrip in routeTripList)
+            foreach (var delivery in deliveries)
             {
-                var chatHub = await _db.ChatHubs.FirstOrDefaultAsync(c => c.UserId == routeTrip.Driver.UserId, cancellationToken);
+                var chatHub = await _context.FindAsync<ChatHub>(c => c.UserId == delivery.RouteTrip.Driver.UserId);
                 if (string.IsNullOrEmpty(chatHub?.ConnectionId)) continue;
-                if (await CheckRejectedAsync(routeTrip.Id, order.Id)) continue;
-                await _contextHelper.AddOrderToDeliveryAsync(routeTrip, order, GeneralState.OnReview);
+                if (await CheckRejectedAsync(delivery.RouteTrip.Id, order.Id)) continue;
+                order.State = await _context.FindAsync<State>((int)GeneralState.OnReview);
+                await _context.UpdateAsync(delivery.AddOrder(order));
                 return chatHub.ConnectionId;
             }
             order.Delivery?.Orders.Remove(order);
-            order.State = await _contextHelper.FindStateAsync((int)GeneralState.Waiting);
-            _db.Orders.Update(order);
-            await _db.SaveChangesAsync(cancellationToken);
+            order.State = await _context.FindAsync<State>((int)GeneralState.Waiting);
+            await _context.UpdateAsync(order);
             return string.Empty;
         }
 
@@ -58,13 +59,16 @@ namespace Infrastructure.Services.DriverServices
         {
             try
             {
-                var routeTrip = await _contextHelper.Trip(driverUserId) ?? throw new NullReferenceException("Для проверки заказов создайте поездку");
-                var state = await _contextHelper.FindStateAsync((int)GeneralState.OnReview);
+                var delivery = await _context.FindAsync<Delivery>(d => d.RouteTrip.Driver.UserId == driverUserId) 
+                                ?? throw new NullReferenceException("Для проверки заказов создайте поездку");
+                var state = await _context.FindAsync<State>((int)GeneralState.OnReview);
                 var ordersInfo = new List<OrderInfo>();
-                await _contextHelper.OrdersForOrderInfoWithDriver().Where(o => o.Delivery.RouteTrip.Id == routeTrip.Id && o.State.Id == state.Id)
+                await _context.Orders()
+                    .IncludeOrdersInfoBuilder()
+                    .Where(o => o.Delivery.Id == delivery.Id && o.State.Id == state.Id)
                     .ForEachAsync( o =>
                     {
-                        var userClient = _identityDbContext.Users.First(u => u.Id == o.Client.UserId);
+                        var userClient = _identityDbContext.Users.FirstOrDefault(u => u.Id == o.Client.UserId);
                         ordersInfo.Add(o.GetOrderInfo(userClient));
                     });
                 return new OkObjectResult(ordersInfo);
@@ -79,17 +83,20 @@ namespace Infrastructure.Services.DriverServices
         {
             try
             {
-                var routeTrip = await _contextHelper.Trip(driverUserId) ?? throw new NullReferenceException("Для проверки заказов создайте поездку");
-                var stateInProgress = await _contextHelper.FindStateAsync((int)GeneralState.InProgress);
-                var stateHandOver = await _contextHelper.FindStateAsync((int)GeneralState.PendingForHandOver);
-                var stateReceived = await _contextHelper.FindStateAsync((int)GeneralState.ReceivedByDriver);
+                var delivery = await _context.FindAsync<Delivery>(d => d.RouteTrip.Driver.UserId == driverUserId) 
+                               ?? throw new NullReferenceException("Для проверки заказов создайте поездку");
+                var stateInProgress = await _context.FindAsync<State>((int)GeneralState.InProgress);
+                var stateHandOver = await _context.FindAsync<State>((int)GeneralState.PendingForHandOver);
+                var stateReceived = await _context.FindAsync<State>((int)GeneralState.ReceivedByDriver);
                 var ordersInfo = new List<OrderInfo>();
-                await _contextHelper.OrdersForOrderInfoWithDriver().Where(o => 
-                        o.Delivery.RouteTrip.Id == routeTrip.Id &&
+                await _context.Orders()
+                    .IncludeOrdersInfoBuilder()
+                    .Where(o => 
+                        o.Delivery.Id == delivery.Id &&
                         (o.State.Id == stateInProgress.Id || o.State.Id == stateHandOver.Id || o.State.Id == stateReceived.Id))
                     .ForEachAsync( o =>
                     {
-                        var userClient = _identityDbContext.Users.First(u => u.Id == o.Client.UserId);
+                        var userClient = _identityDbContext.Users.FirstOrDefault(u => u.Id == o.Client.UserId);
                         ordersInfo.Add(o.GetOrderInfo(userClient));
                     });
                 return new OkObjectResult(ordersInfo);
@@ -101,19 +108,17 @@ namespace Infrastructure.Services.DriverServices
         }
 
 
-        public async Task<ActionResult> RejectNextFindDriverAsync(string driverUserId, OrderInfo orderInfo,Func<string, Task> func)
+        public async Task<ActionResult> RejectNextFindDriverAsync(string driverUserId, OrderInfo orderInfo, Func<string, Task> func)
         {
             try
             {
-                var order = await _contextHelper.OrdersForReject().Where(o => o.Id == orderInfo.OrderId).FirstOrDefaultAsync();
-                var routeTrip = await _contextHelper.Trip(driverUserId);
-                await _db.RejectedOrders
-                    .AddAsync(new RejectedOrder
-                    {
-                        Order = order, 
-                        RouteTrip = routeTrip
-                    });
-                await _db.SaveChangesAsync();
+                var order = await _context.Orders().IncludeForRejectBuilder().FirstOrDefaultAsync(o => o.Id == orderInfo.OrderId);
+                var routeTrip = await _context.FindAsync<RouteTrip>(r => r.Driver.UserId == driverUserId);
+                await _context.AddAsync(new RejectedOrder
+                {
+                    Order = order,
+                    RouteTrip = routeTrip
+                });
                 var driverConnectionId = await FindDriverConnectionIdAsync(order, default);
                 await func(driverConnectionId);
                 return new OkObjectResult(new OrderInfo());
@@ -124,9 +129,9 @@ namespace Infrastructure.Services.DriverServices
             }
         }
 
-        private async Task<bool> CheckRejectedAsync(int routeTripId, int orderId)
-        => await _db.RejectedOrders
-                .AnyAsync(r =>
+        private async Task<bool> CheckRejectedAsync(int routeTripId, int orderId) => 
+            await _context
+                .AnyAsync<RejectedOrder>(r =>
                     r.RouteTrip.Id == routeTripId &&
                     r.Order.Id == orderId);
 

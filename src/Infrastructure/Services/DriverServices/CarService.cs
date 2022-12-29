@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Exceptions;
+using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
-using Infrastructure.AppData.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,28 +12,27 @@ namespace Infrastructure.Services.DriverServices
 {
     public class CarService: ICar
     {
-        private readonly AppDbContext _db;
+        private readonly IContext _context;
 
-        public CarService(AppDbContext db)
+        public CarService(IContext context)
         {
-            _db = db;
+            _context = context;
         }
 
         public async Task<ActionResult> CreateAsync(CarInfo info, string userId, CancellationToken cancellationToken)
         {
             try
             {
-                var driver = await _db.Drivers.Include(d => d.Car).FirstAsync(d => d.UserId == userId,cancellationToken);
-                var carBrand = await _db.CarBrands.FirstAsync(b => b.Id == info.CarBrandId, cancellationToken);
-                var carColor = await _db.CarColors.FirstAsync(b => b.Id == info.CarColorId, cancellationToken);
-                var carType = await _db.CarTypes.FirstAsync(b => b.Id == info.CarTypeId, cancellationToken);
+                var driver = await _context.Drivers().IncludeCarBuilder().FirstOrDefaultAsync(d => d.UserId == userId,cancellationToken);
+                var carBrand = await _context.FindAsync<CarBrand>(b => b.Id == info.CarBrandId);
+                var carColor = await _context.FindAsync<CarColor>(b => b.Id == info.CarColorId);
+                var carType = await _context.FindAsync<CarType>(b => b.Id == info.CarTypeId);
 
                 driver.Car = new Car(info.ProductionYear, info.RegistrationCertificate, info.LicensePlate)
                     { CarBrand = carBrand, CarColor = carColor, CarType = carType };
-              
-                _db.Drivers.Update(driver);
-                await _db.SaveChangesAsync(cancellationToken);
-                return new OkObjectResult(new{driver.Car});
+
+                await _context.UpdateAsync(driver);
+                return new NoContentResult();
             }
             catch(CarExistsException ex)
             {

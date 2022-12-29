@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
+using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
 using Infrastructure.AppData.DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -9,19 +10,18 @@ namespace Infrastructure.Services.ChatHubServices
 {
     public class ChatHubService : IChatHub
     {
-        private readonly AppDbContext _db;
+        private readonly IContext _context;
 
-        public ChatHubService(AppDbContext db)
+        public ChatHubService(IContext context)
         {
-            _db = db;
+            _context = context;
         }
 
         public async Task ConnectedAsync(string userId, string connectId)
         {
-            var chatHub = await _db.ChatHubs.FirstOrDefaultAsync(c => c.UserId == userId)
+            var chatHub = await _context.FindAsync<ChatHub>(c => c.UserId == userId)
                           ?? await CreateChatHubAsync(userId, connectId);
-            _db.ChatHubs.Update(chatHub.UpdateConnectId(connectId));
-            await _db.SaveChangesAsync();
+            await _context.UpdateAsync(chatHub.UpdateConnectId(connectId));
         }
 
         private async Task<ChatHub> CreateChatHubAsync(string userId, string connectId)
@@ -31,16 +31,14 @@ namespace Infrastructure.Services.ChatHubServices
                 throw new NullReferenceException();
             }
             var chatHub = new ChatHub(userId, connectId);
-            await _db.ChatHubs.AddAsync(chatHub);
-            await _db.SaveChangesAsync();
+            await _context.AddAsync(chatHub);
             return chatHub;
         }
 
         public async Task DisconnectedAsync(string connectId)
         {
-            var chatHub = await _db.ChatHubs.FirstOrDefaultAsync(c => c.ConnectionId == connectId);
-            _db.ChatHubs.Update(chatHub.RemoveConnectId());
-            await _db.SaveChangesAsync();
+            var chatHub = await _context.FindAsync<ChatHub>(c => c.ConnectionId == connectId);
+            await _context.UpdateAsync(chatHub.RemoveConnectId());
         }
     }
 }
