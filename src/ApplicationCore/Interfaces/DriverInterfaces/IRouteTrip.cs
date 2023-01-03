@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +12,6 @@ namespace ApplicationCore.Interfaces.DriverInterfaces
     {
         public Task<ActionResult> GetRouteTripIsActiveAsync(string driverUserId);
 
-        public Task<ActionResult> CreateAsync(RouteTripInfo tripInfo, string userId, Func<string, bool, Task> func);
+        public Task<Delivery> CreateAsync(RouteTripInfo tripInfo, string userId);
     }
 }

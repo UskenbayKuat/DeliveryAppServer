@@ -26,19 +26,19 @@ namespace Infrastructure.Services.DriverServices
             _context = context;
         }
 
-        public async Task<ActionResult> CreateAsync(RouteTripInfo tripInfo, string userId, Func<string, bool, Task> func)
+        public async Task<Delivery> CreateAsync(RouteTripInfo tripInfo, string userId)
         {
             var driver = await _context.FindAsync<Driver>(d => d.UserId == userId);
             var anyTrip = await _context.AnyAsync<RouteTrip>(r => r.Driver.Id == driver.Id && r.IsActive);
             if (anyTrip)
             {
-                return new BadRequestObjectResult("Сначала завершите текущий маршрут");
+                throw new NotSupportedException();
             }
-            await CreateRouteTripAsync(tripInfo, driver);
-            var driverChatHub = await _context.FindAsync<ChatHub>(c => c.UserId == userId);
-            var ordersInfo = await _order.FindWaitingOrdersAsync(userId);
-            await func(driverChatHub?.ConnectionId, ordersInfo.Any());
-            return new OkObjectResult(tripInfo);
+            var delivery = await CreateRouteTripAsync(tripInfo, driver);
+            return delivery;
+            // var driverChatHub = await _context.FindAsync<ChatHub>(c => c.UserId == userId);
+            // var ordersInfo = await _order.FindWaitingOrdersAsync(userId);
+            // await func(driverChatHub?.ConnectionId, ordersInfo.Any());
         }
         
         public async Task<ActionResult> GetRouteTripIsActiveAsync(string driverUserId)
@@ -60,7 +60,7 @@ namespace Infrastructure.Services.DriverServices
         }
         
 
-        private async Task CreateRouteTripAsync(RouteTripInfo tripInfo, Driver driver)
+        private async Task<Delivery> CreateRouteTripAsync(RouteTripInfo tripInfo, Driver driver)
         {
             var route = await _context.FindAsync<Route>(r => 
                 r.StartCityId == tripInfo.StartCity.Id && 
@@ -84,6 +84,7 @@ namespace Infrastructure.Services.DriverServices
             };
             await _context.AddAsync(locationDate);
             await _context.AddAsync(delivery); // <- check only AddAsync(locationDate), if saving delivery in db delete this row
+            return delivery;
         }
         
     }

@@ -32,61 +32,46 @@ namespace Infrastructure.Services.ClientServices
             _context = context;
         }
 
-        public async Task<ActionResult> CreateAsync(OrderInfo info, string clientUserId, Func<string, Task> func,
-            CancellationToken cancellationToken)
+        public async Task<Order> CreateAsync(OrderInfo info, string clientUserId, CancellationToken cancellationToken)
         {
-            try
-            {
-                var client = await _context.FindAsync<Client>(c => c.UserId == clientUserId);
-                var carType = await _context.FindAsync<CarType>(c => c.Id == info.CarType.Id);
-                var route = await _context.FindAsync<Route>(r => 
-                    r.StartCityId == info.StartCity.Id && 
-                    r.FinishCityId == info.FinishCity.Id);
-                var state = await _context.FindAsync<State>((int)GeneralState.New);
-                var order = new Order(info.IsSingle, info.Price, info.DeliveryDate)
-                {
-                    Client = client,
-                    Package = info.Package,
-                    CarType = carType,  
-                    Route = route,
-                    State =  state,
-                    Location = new Location(info.Location.Latitude, info.Location.Longitude)
-                };
-                await _context.AddAsync(order);
-                var driverConnectionId = await _driverService.FindDriverConnectionIdAsync(order, cancellationToken);
-                await func(driverConnectionId);
-                return new OkObjectResult(info);
-            }
-            catch
-            {
-                return new BadRequestResult();
-            }
-        }
-        
-        public async Task<List<OrderInfo>> FindWaitingOrdersAsync(string driverUserId)
-        {
-            var ordersInfo = new List<OrderInfo>();
-            var delivery = await _context.Deliveries()
-                .IncludeRouteTripAndRouteBuilder()
-                .FirstOrDefaultAsync(d => d.RouteTrip.Driver.UserId == driverUserId); // check debug Driver.UserId is null ? (Include(Driver)) : delete comment
+            var client = await _context.FindAsync<Client>(c => c.UserId == clientUserId);
+            var carType = await _context.FindAsync<CarType>(c => c.Id == info.CarType.Id);
+            var route = await _context.FindAsync<Route>(r =>
+                r.StartCityId == info.StartCity.Id &&
+                r.FinishCityId == info.FinishCity.Id);
             var state = await _context.FindAsync<State>((int)GeneralState.Waiting);
+            var order = new Order(info.IsSingle, info.Price, info.DeliveryDate)
+            {
+                Client = client,
+                Package = info.Package,
+                CarType = carType,
+                Route = route,
+                State = state,
+                Location = new Location(info.Location.Latitude, info.Location.Longitude)
+            };
+            await _context.AddAsync(order);
+            return order;
+        }
+
+        public async Task<bool> AnyWaitingOrdersAsync(Delivery delivery)
+        {
+            var stateWaiting = await _context.FindAsync<State>((int)GeneralState.Waiting);
+            var stateOnReview = await _context.FindAsync<State>((int)GeneralState.OnReview);;
             var waitingOrders = await _context.Orders().IncludeOrdersInfoBuilder().Where(o =>
                 o.Route.Id == delivery.RouteTrip.Route.Id &&
-                o.DeliveryDate.Day <= delivery.RouteTrip.DeliveryDate.Day && 
-                o.State == state).ToListAsync();
-            foreach(var waitingOrder in waitingOrders)
+                o.DeliveryDate.Day <= delivery.RouteTrip.DeliveryDate.Day &&
+                o.State == stateWaiting).ToListAsync();
+            foreach (var waitingOrder in waitingOrders)
             {
-                waitingOrder.State = await _context.FindAsync<State>((int)GeneralState.OnReview);
+                waitingOrder.State = stateOnReview;
                 delivery.AddOrder(waitingOrder);
-                var userClient = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u =>u.Id == waitingOrder.Client.UserId);
-                ordersInfo.Add(waitingOrder.GetOrderInfo(userClient));
             }
             await _context.UpdateAsync(delivery);
-            return ordersInfo;
+            return waitingOrders.Any();
         }
-        
 
-        public async Task<ActionResult> GetWaitingOrdersAsync(string clientUserId,CancellationToken cancellationToken)
+
+        public async Task<ActionResult> GetWaitingOrdersAsync(string clientUserId, CancellationToken cancellationToken)
         {
             return new OkObjectResult(await GetOrderInfoAsync(clientUserId, GeneralState.Waiting));
         }
@@ -107,7 +92,5 @@ namespace Infrastructure.Services.ClientServices
                 .ForEachAsync(o => ordersInfo.Add(o.GetOrderInfo(userClient)));
             return ordersInfo;
         }
-        
-        
     }
 }

@@ -26,13 +26,12 @@ namespace Infrastructure.Services.DeliveryServices
             _context = context;
         }
 
-        public async Task<ActionResult> AddToDeliveryAsync(int orderId, Func<string, Task> func)
+        public async Task<Order> AddToDeliveryAsync(int orderId)
         {
             var order = await _context.Orders().IncludeClientBuilder().FirstAsync(c => c.Id == orderId);
             order.State = await _context.FindAsync<State>((int)GeneralState.PendingForHandOver);
             await _context.UpdateAsync(order);
-            await func((await _context.FindAsync<ChatHub>(c => c.UserId == order.Client.UserId))?.ConnectionId);
-            return new NoContentResult();
+            return order;
         }
 
 

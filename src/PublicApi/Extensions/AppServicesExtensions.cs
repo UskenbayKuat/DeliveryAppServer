@@ -23,6 +23,7 @@ using Infrastructure.Services.TokenServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PublicApi.Helpers;
 using IOrder = ApplicationCore.Interfaces.ClientInterfaces.IOrder;
 using OrderService = Infrastructure.Services.ClientServices.OrderService;
 
@@ -48,6 +49,7 @@ namespace PublicApi.Extensions
             services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
             services.AddTransient<IUserData, UserDataService>();
             services.AddTransient<IContext, ContextService>();
+            services.AddTransient<HubHelper>();
             services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.JwtSettings));
             services.ConfigureDbContextServices(configuration);
         }
