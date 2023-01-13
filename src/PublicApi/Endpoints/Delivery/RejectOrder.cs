@@ -25,9 +25,7 @@ namespace PublicApi.Endpoints.Delivery
         {
             try
             {
-                var driverConnectionId =
-                    await _mediator.Send(request.SetUserId(HttpContext.Items["UserId"]?.ToString()), cancellationToken);
-                await _hubHelper.SendToDriver(driverConnectionId, cancellationToken);
+                await _mediator.Send(request.SetUserId(HttpContext.Items["UserId"]?.ToString()), cancellationToken);
                 return new NoContentResult();
             }
             catch

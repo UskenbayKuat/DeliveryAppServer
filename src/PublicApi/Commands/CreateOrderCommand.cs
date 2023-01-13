@@ -7,7 +7,7 @@ using MediatR;
 
 namespace PublicApi.Commands
 {
-    public class CreateOrderCommand : IRequest<string>
+    public class CreateOrderCommand : IRequest
     {
         public City StartCity { get; set; }
         public City FinishCity { get; set; }

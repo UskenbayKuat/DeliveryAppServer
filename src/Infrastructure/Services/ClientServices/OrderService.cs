@@ -53,6 +53,13 @@ namespace Infrastructure.Services.ClientServices
             return order;
         }
 
+        public async Task UpdateOrderAsync(Order order, Delivery delivery, int stateId)
+        {
+            order.State = await _context.FindAsync<State>(stateId);
+            order.Delivery = delivery;
+            await _context.UpdateAsync(order);
+        }
+
         public async Task<bool> AnyWaitingOrdersAsync(Delivery delivery)
         {
             var stateWaiting = await _context.FindAsync<State>((int)GeneralState.Waiting);

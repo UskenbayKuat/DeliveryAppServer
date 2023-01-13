@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Locations;
@@ -64,5 +65,33 @@ namespace Infrastructure.Services.DeliveryServices
 
             return new OkObjectResult(deliveriesInfo);
         }
+        
+        public async Task<Delivery> FindIsActiveDelivery(Order order, CancellationToken cancellationToken)
+        {
+            var deliveries = await Deliveries(order, cancellationToken);
+            foreach (var delivery in deliveries)
+            {
+                if (await CheckRejectedAsync(delivery.RouteTrip.Id, order.Id)) continue;
+                return delivery;
+            }
+            return null;
+        }
+        
+        private async Task<List<Delivery>> Deliveries(Order order, CancellationToken cancellationToken) => 
+            await _context
+                .Deliveries()
+                .IncludeRouteTripAndDriverBuilder()
+                .Where(r => 
+                    r.RouteTrip.Route.StartCity.Id == order.Route.StartCityId && 
+                    r.RouteTrip.Route.FinishCity.Id == order.Route.FinishCityId && 
+                    r.RouteTrip.DeliveryDate >= order.DeliveryDate)
+                .ToListAsync(cancellationToken);
+        
+        private async Task<bool> CheckRejectedAsync(int routeTripId, int orderId) => 
+            await _context
+                .AnyAsync<RejectedOrder>(r =>
+                    r.RouteTrip.Id == routeTripId &&
+                    r.Order.Id == orderId);
+        
     }
 }

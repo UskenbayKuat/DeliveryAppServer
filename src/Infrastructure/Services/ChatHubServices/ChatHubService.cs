@@ -29,6 +29,12 @@ namespace Infrastructure.Services.ChatHubServices
             await _context.UpdateAsync(chatHub.UpdateConnectId(connectId));
         }
 
+
+        public async Task<string> GetConnectionIdAsync(string userId, CancellationToken cancellationToken)
+        {
+            var chatHub = await _context.FindAsync<ChatHub>(c => c.UserId == userId);
+            return chatHub?.ConnectionId;
+        }
         public async Task<string> FindDriverConnectionIdAsync(Order order,
             CancellationToken cancellationToken)
         {
@@ -44,7 +50,11 @@ namespace Infrastructure.Services.ChatHubServices
             }
             return string.Empty;
         }
-        
+        public async Task DisconnectedAsync(string connectId)
+        {
+            var chatHub = await _context.FindAsync<ChatHub>(c => c.ConnectionId == connectId);
+            await _context.UpdateAsync(chatHub.RemoveConnectId());
+        }
         private async Task<ChatHub> CreateChatHubAsync(string userId, string connectId)
         {
             if (string.IsNullOrEmpty(userId))
@@ -54,12 +64,6 @@ namespace Infrastructure.Services.ChatHubServices
             var chatHub = new ChatHub(userId, connectId);
             await _context.AddAsync(chatHub);
             return chatHub;
-        }
-
-        public async Task DisconnectedAsync(string connectId)
-        {
-            var chatHub = await _context.FindAsync<ChatHub>(c => c.ConnectionId == connectId);
-            await _context.UpdateAsync(chatHub.RemoveConnectId());
         }
         
         private async Task<List<Delivery>> Deliveries(Order order, CancellationToken cancellationToken) => 

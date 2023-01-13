@@ -1,4 +1,5 @@
 using ApplicationCore.Entities;
+using ApplicationCore.Entities.AppEntities;
 
 namespace ApplicationCore.Interfaces.TokenInterfaces
 {

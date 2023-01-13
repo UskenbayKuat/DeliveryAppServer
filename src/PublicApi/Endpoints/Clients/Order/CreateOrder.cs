@@ -13,13 +13,9 @@ namespace PublicApi.Endpoints.Clients.Order
     public class CreateOrder : EndpointBaseAsync.WithRequest<CreateOrderCommand>.WithActionResult
     {
         private readonly IMediator _mediator;
-        private readonly HubHelper _hubHelper;
-
-
-        public CreateOrder(IMediator mediator, HubHelper hubHelper)
+        public CreateOrder(IMediator mediator)
         {
             _mediator = mediator;
-            _hubHelper = hubHelper;
         }
 
         [HttpPost("api/client/createOrder")]
@@ -28,8 +24,7 @@ namespace PublicApi.Endpoints.Clients.Order
         {
             try
             {
-                var driverConnectionId = await _mediator.Send(request.SetUserId(HttpContext.Items["UserId"]?.ToString()), cancellationToken);
-                await _hubHelper.SendToDriver(driverConnectionId, cancellationToken);
+                await _mediator.Send(request.SetUserId(HttpContext.Items["UserId"]?.ToString()), cancellationToken);
                 return new NoContentResult();
             }
             catch

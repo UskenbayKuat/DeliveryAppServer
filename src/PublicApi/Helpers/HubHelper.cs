@@ -14,7 +14,7 @@ namespace PublicApi.Helpers
             _hubContext = hubContext;
         }
 
-        public async Task SendToDriver(string connectionId, CancellationToken cancellationToken)
+        public async Task SendToDriverAsync(string connectionId, CancellationToken cancellationToken)
         {
             if (!string.IsNullOrEmpty(connectionId))
             {
