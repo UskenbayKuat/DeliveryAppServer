@@ -80,15 +80,14 @@ namespace Infrastructure.Services.DriverServices
             }
         }
 
-        public async Task<Order> RejectNextFindDriverAsync(string driverUserId, int orderId)
+        public async Task<Order> RejectOrderAsync(int orderId)
         {
             var order = await _context.Orders().IncludeForRejectBuilder()
                 .FirstOrDefaultAsync(o => o.Id == orderId);
-            var routeTrip = await _context.FindAsync<RouteTrip>(r => r.Driver.UserId == driverUserId);
             await _context.AddAsync(new RejectedOrder
             {
                 Order = order,
-                RouteTrip = routeTrip
+                RouteTrip = order.Delivery.RouteTrip
             });
             order.Delivery?.Orders.Remove(order);
             order.State = await _context.FindAsync<State>((int)GeneralState.Waiting);

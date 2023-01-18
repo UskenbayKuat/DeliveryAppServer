@@ -22,13 +22,11 @@ namespace Infrastructure.Services.ClientServices
     public class OrderService : IOrder
     {
         private readonly AppIdentityDbContext _dbIdentityDbContext;
-        private readonly IDriver _driverService;
         private readonly IContext _context;
 
-        public OrderService(AppIdentityDbContext dbIdentityDbContext, IDriver driverService, IContext context)
+        public OrderService(AppIdentityDbContext dbIdentityDbContext, IContext context)
         {
             _dbIdentityDbContext = dbIdentityDbContext;
-            _driverService = driverService;
             _context = context;
         }
 

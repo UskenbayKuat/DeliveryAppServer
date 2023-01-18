@@ -11,12 +11,10 @@ namespace PublicApi.Endpoints.Delivery
     public class RejectOrder : EndpointBaseAsync.WithRequest<RejectedOrderCommand>.WithActionResult
     {
         private readonly IMediator _mediator;
-        private readonly HubHelper _hubHelper;
 
-        public RejectOrder(IMediator mediator, HubHelper hubHelper)
+        public RejectOrder(IMediator mediator)
         {
             _mediator = mediator;
-            _hubHelper = hubHelper;
         }
 
         [HttpPost("api/driver/rejectOrder")]
@@ -25,7 +23,7 @@ namespace PublicApi.Endpoints.Delivery
         {
             try
             {
-                await _mediator.Send(request.SetUserId(HttpContext.Items["UserId"]?.ToString()), cancellationToken);
+                await _mediator.Send(request, cancellationToken);
                 return new NoContentResult();
             }
             catch

@@ -8,11 +8,5 @@ namespace PublicApi.Commands
     public class RejectedOrderCommand : IRequest    
     {
         public int OrderId { get; set; }
-        public string UserId { get; private set; }
-        public RejectedOrderCommand SetUserId(string userId)
-        {
-            UserId = userId;
-            return this;
-        }
     }
 }

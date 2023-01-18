@@ -22,12 +22,10 @@ namespace PublicApi.Commands
         private readonly IBackgroundTaskQueue _backgroundTask;
         private readonly IOrder _order;
         private readonly HubHelper _hubHelper;
-        private readonly IMapper _mapper;
 
-        public RejectedOrderCommandHandler(IDriver driverService, IMapper mapper, IChatHub chatHub, IDelivery delivery, IBackgroundTaskQueue backgroundTask, IOrder order, HubHelper hubHelper)
+        public RejectedOrderCommandHandler(IDriver driverService, IChatHub chatHub, IDelivery delivery, IBackgroundTaskQueue backgroundTask, IOrder order, HubHelper hubHelper)
         {
             _driverService = driverService;
-            _mapper = mapper;
             _chatHub = chatHub;
             _delivery = delivery;
             _backgroundTask = backgroundTask;
@@ -37,7 +35,7 @@ namespace PublicApi.Commands
 
         protected override async Task Handle(RejectedOrderCommand request, CancellationToken cancellationToken)
         {
-            var order = await _driverService.RejectNextFindDriverAsync(request.UserId, request.OrderId);
+            var order = await _driverService.RejectOrderAsync(request.OrderId);
             var delivery = await _delivery.FindIsActiveDelivery(order, cancellationToken);
             if (delivery is null)
             {
