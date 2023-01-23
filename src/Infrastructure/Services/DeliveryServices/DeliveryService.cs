@@ -43,26 +43,23 @@ namespace Infrastructure.Services.DeliveryServices
             var stateInProgress =  await _context.FindAsync<State>((int)GeneralState.InProgress);
             var stateHandOver = await _context.FindAsync<State>((int)GeneralState.PendingForHandOver);
             var stateReceived = await _context.FindAsync<State>((int)GeneralState.ReceivedByDriver);
-            var order2 = _context.GetAll<Order>();
-            var we = await order2.Include(o => o.State).Include(o => o.Client).ToListAsync();
             var orders = await _context 
                 .Orders()
                 .IncludeDeliveriesInfoBuilder()
                 .Where(c =>
                     c.Client.UserId == userClientId &&
                     c.Delivery.RouteTrip.IsActive &&
-                    c.State == stateInProgress || c.State == stateHandOver || c.State == stateReceived).ToListAsync();
+                    (c.State == stateInProgress || c.State == stateHandOver || c.State == stateReceived)).ToListAsync();
             foreach (var order in orders)
             {
                 var userDriver = await _identityDbContext.Users.FirstAsync(u => u.Id == order.Delivery.RouteTrip.Driver.UserId);
                 var deliveryInfo = order.GetDeliveryInfo(userClient, userDriver);
-                var location = await _context.GetAll<LocationDate>()
+                var driverLocation = await _context.GetAll<LocationDate>()
                     .Include(r => r.Location)
                     .FirstOrDefaultAsync(l => l.RouteTrip.Id == order.Delivery.RouteTrip.Id); // maybe create builder for LocationDateBuilder
-                deliveryInfo.Location = location?.Location;
+                deliveryInfo.Location = driverLocation?.Location;
                 deliveriesInfo.Add(deliveryInfo);
             }
-
             return new OkObjectResult(deliveriesInfo);
         }
         

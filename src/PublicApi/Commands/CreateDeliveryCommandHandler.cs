@@ -28,7 +28,7 @@ namespace PublicApi.Commands
         public async Task<string> Handle(CreateDeliveryCommand request, CancellationToken cancellationToken)
         {
             var delivery = await _routeTrip.CreateAsync(_mapper.Map<RouteTripInfo>(request), request.UserId);
-            if (await _order.AnyWaitingOrdersAsync(delivery))
+            if (!await _order.AnyWaitingOrdersAsync(delivery))
             {
                 return string.Empty;
             }

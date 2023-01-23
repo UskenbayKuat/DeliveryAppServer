@@ -30,7 +30,7 @@ namespace PublicApi.Endpoints.Drivers.RouteTrip
             {
                 var driverConnectionId =
                     await _mediator.Send(request.SetUserId(HttpContext.Items["UserId"]?.ToString()), cancellationToken);
-                await _hubHelper.SendToClient(driverConnectionId, cancellationToken);
+                await _hubHelper.SendToDriverAsync(driverConnectionId, cancellationToken);
                 return new NoContentResult();
             }
             catch
