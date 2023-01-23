@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicApi.Endpoints.Shared.RefreshToken
 {
-    public class RefreshToken : EndpointBaseAsync.WithRequest<RefreshRequest>.WithActionResult
+    public class RefreshToken : EndpointBaseAsync.WithRequest<RefreshCommand>.WithActionResult
     {
         private readonly IRefreshToken _refreshToken;
         private readonly IMapper _mapper;
@@ -23,8 +23,8 @@ namespace PublicApi.Endpoints.Shared.RefreshToken
 
 
         [HttpPost("api/refreshToken")]
-        public override async Task<ActionResult> HandleAsync([FromBody] RefreshRequest request,
+        public override async Task<ActionResult> HandleAsync([FromBody] RefreshCommand command,
             CancellationToken cancellationToken = default) => await 
-            _refreshToken.RefreshTokenAsync(_mapper.Map<RefreshTokenInfo>(request));
+            _refreshToken.RefreshTokenAsync(_mapper.Map<RefreshTokenInfo>(command));
     }
 }

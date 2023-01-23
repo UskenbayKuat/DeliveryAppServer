@@ -22,13 +22,5 @@ namespace ApplicationCore.Entities.Values
         public string ClientName { get; set; }
         public string ClientSurname { get; set; } 
         public Location Location  { get; set; }
-        
-        public OrderInfo SetClientData(string name, string surname, string phoneNumber = "")
-        {
-            ClientName = name;
-            ClientSurname = surname;
-            ClientPhoneNumber = phoneNumber;
-            return this;
-        }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore.Entities.AppEntities.Orders;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationCore.Interfaces.DeliveryInterfaces
@@ -9,7 +10,7 @@ namespace ApplicationCore.Interfaces.DeliveryInterfaces
     {
 
         public Task<ActionResult> GetActiveOrdersForClientAsync(string userClientId);
-        public Task<ActionResult> AddToDeliveryAsync(int orderId, Func<string, Task> func);
+        public Task<Order> AddToDeliveryAsync(int orderId);
 
     }
 }

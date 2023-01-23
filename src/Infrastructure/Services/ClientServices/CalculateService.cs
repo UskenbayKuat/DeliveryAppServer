@@ -1,9 +1,12 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.ClientInterfaces;
+using ApplicationCore.Interfaces.ContextInterfaces;
 using Infrastructure.AppData.DataAccess;
+using Infrastructure.Services.ContextServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,18 +17,18 @@ namespace Infrastructure.Services.ClientServices
         private decimal RoutePrice { get; set; }
         private double VolumeWeight { get; set; }
         
-        private readonly AppDbContext _db;
+        private readonly IContext _context;
 
-        public CalculateService(AppDbContext db)
+        public CalculateService(IContext context)
         {
-            _db = db;
+            _context = context;
         }
 
 
         public async Task<ActionResult> CalculateAsync(OrderInfo info,CancellationToken cancellationToken)
         {
             VolumeWeight = info.Package.Length * info.Package.Width * info.Package.Height / 0.005;
-            RoutePrice = SetRoutePrice(info);
+            RoutePrice = await SetRoutePrice(info);
             var weight = VolumeWeight > info.Package.Weight ? VolumeWeight : info.Package.Weight;
             info.Price = AddPerKilo(RoutePrice, weight);
             if (info.Package.Weight > 50 || info.Package.Length > 1 || info.Package.Width > 1 || info.Package.Height > 1)
@@ -43,12 +46,11 @@ namespace Infrastructure.Services.ClientServices
                 : price + 250 * (decimal)((int)kilo - 5);
         }
 
-        private decimal SetRoutePrice(OrderInfo info)
+        private async Task<decimal> SetRoutePrice(OrderInfo info)
         {
-            var routePrice = _db.RoutePrice.Include(r => r.Route)
-                .FirstOrDefault(r => r.Route.StartCityId == info.StartCity.Id &&
+            var route = await _context.FindAsync<RoutePrice>(r => r.Route.StartCityId == info.StartCity.Id &&
                                      r.Route.FinishCityId == info.FinishCity.Id);
-            return routePrice?.Price ?? 0;
+            return route?.Price ?? 0;
         } 
     }
 }

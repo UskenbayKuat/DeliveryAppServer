@@ -5,10 +5,8 @@ using ApplicationCore.Entities;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
-using AutoMapper;
 using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
-using Infrastructure.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,12 +16,10 @@ namespace Infrastructure.Services.RegisterServices
     {
         private readonly IGenerateToken _generateToken;
         private readonly AppIdentityDbContext _identityDb;
-        private readonly AppDbContext _db;
 
-        public RegisterBySmsMockService(AppIdentityDbContext identityDb, AppDbContext db, IGenerateToken generateToken)
+        public RegisterBySmsMockService(AppIdentityDbContext identityDb, IGenerateToken generateToken)
         {
             _identityDb = identityDb;
-            _db = db;
             _generateToken = generateToken;
         }
 

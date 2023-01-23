@@ -19,9 +19,14 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         public DateTime? CompletionDate { get; private set; }
         public DateTime? CancellationDate { get; private set; }
         public bool IsDeleted { get; set; }
-        public List<Order> Orders { get;  set; } = new();
-        
+        public List<Order> Orders { get; private set; } = new();
 
+
+        public Delivery AddOrder(Order order)
+        {
+            Orders?.Add(order);
+            return this;
+        }
         public void UpdateCompletionDate(DateTime dateTime)
         {
             CompletionDate = dateTime;

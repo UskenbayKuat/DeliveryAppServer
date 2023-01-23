@@ -1,5 +1,6 @@
 using Infrastructure;
 using Infrastructure.Config.Middlewares;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ namespace PublicApi
 
             services.GetServices(Configuration);
             services.AddControllers(options => { options.UseNamespaceRouteToken(); });
-
+            services.AddMediatR(typeof(Startup));
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressInferBindingSourcesForParameters = true;
@@ -72,7 +73,11 @@ namespace PublicApi
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PublicApi v1"));
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "PublicApi v1");
+                    c.RoutePrefix = string.Empty;
+                });
             }
 
             app.UseHttpsRedirection();

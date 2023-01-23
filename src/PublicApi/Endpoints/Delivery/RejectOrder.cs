@@ -1,39 +1,39 @@
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.Values;
-using ApplicationCore.Interfaces.DriverInterfaces;
 using Ardalis.ApiEndpoints;
-using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using PublicApi.HubNotification;
+using PublicApi.Commands;
+using PublicApi.Helpers;
 
 namespace PublicApi.Endpoints.Delivery
 {
-    public class RejectOrder : EndpointBaseAsync.WithRequest<DeliveryCommand>.WithActionResult
+    public class RejectOrder : EndpointBaseAsync.WithRequest<RejectedOrderCommand>.WithActionResult
     {
-        private readonly IDriver _driverService;
-        private readonly IHubContext<Notification> _hubContext;
-        private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
+        private readonly HubHelper _hubHelper;
 
-        public RejectOrder(IDriver driverService, IHubContext<Notification> hubContext, IMapper mapper)
+        public RejectOrder(IMediator mediator, HubHelper hubHelper)
         {
-            _driverService = driverService;
-            _hubContext = hubContext;
-            _mapper = mapper;
+            _mediator = mediator;
+            _hubHelper = hubHelper;
         }
 
         [HttpPost("api/driver/rejectOrder")]
-        public override async Task<ActionResult> HandleAsync([FromBody]DeliveryCommand request,
-            CancellationToken cancellationToken = default) =>
-            await _driverService.RejectNextFindDriverAsync(
-                driverUserId: HttpContext.Items["UserId"]?.ToString(),
-                orderInfo: _mapper.Map<OrderInfo>(request),
-                func: async (connectionId) => await SendInfoForDriverAsync(connectionId));
-        
-        private async Task SendInfoForDriverAsync(string driverConnectionId) =>
-            await _hubContext.Clients.Client(driverConnectionId).
-                SendCoreAsync("SendToDriver", new[] { "У вас новый заказ" });
+        public override async Task<ActionResult> HandleAsync([FromBody] RejectedOrderCommand request,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var driverConnectionId =
+                    await _mediator.Send(request.SetUserId(HttpContext.Items["UserId"]?.ToString()), cancellationToken);
+                await _hubHelper.SendToDriver(driverConnectionId, cancellationToken);
+                return new NoContentResult();
+            }
+            catch
+            {
+                return new BadRequestResult();
+            }
+        }
     }
 }

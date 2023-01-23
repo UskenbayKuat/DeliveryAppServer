@@ -3,110 +3,94 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore.Entities.AppEntities;
+using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
+using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.ClientInterfaces;
+using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
-using AutoMapper;
-using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
-using Infrastructure.Helper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.ClientServices
 {
     public class OrderService : IOrder
     {
-        private readonly AppDbContext _db;
         private readonly AppIdentityDbContext _dbIdentityDbContext;
-        private readonly IMapper _mapper;
-        private readonly ContextHelper _contextHelper;
         private readonly IDriver _driverService;
+        private readonly IContext _context;
 
-        public OrderService(AppDbContext db, AppIdentityDbContext dbIdentityDbContext, IMapper mapper, ContextHelper contextHelper, IDriver driverService)
+        public OrderService(AppIdentityDbContext dbIdentityDbContext, IDriver driverService, IContext context)
         {
-            _db = db;
             _dbIdentityDbContext = dbIdentityDbContext;
-            _mapper = mapper;
-            _contextHelper = contextHelper;
             _driverService = driverService;
+            _context = context;
         }
 
-        public async Task<ActionResult> CreateAsync(OrderInfo info, string clientUserId, Func<string, Task> func,
-            CancellationToken cancellationToken)
+        public async Task<Order> CreateAsync(OrderInfo info, string clientUserId, CancellationToken cancellationToken)
         {
-            try
+            var client = await _context.FindAsync<Client>(c => c.UserId == clientUserId);
+            var carType = await _context.FindAsync<CarType>(c => c.Id == info.CarType.Id);
+            var route = await _context.FindAsync<Route>(r =>
+                r.StartCityId == info.StartCity.Id &&
+                r.FinishCityId == info.FinishCity.Id);
+            var state = await _context.FindAsync<State>((int)GeneralState.Waiting);
+            var order = new Order(info.IsSingle, info.Price, info.DeliveryDate)
             {
-                var user = await _dbIdentityDbContext.Users.FirstAsync(u => u.Id == clientUserId, cancellationToken);
-                var client = await _db.Clients.FirstAsync(c => c.UserId == clientUserId, cancellationToken);
-                var carType = await _db.CarTypes.FirstAsync(c => c.Id == info.CarType.Id, cancellationToken);
-                var route = await _contextHelper.FindRouteAsync(info.StartCity.Id, info.FinishCity.Id);
-                var state = await _contextHelper.FindStateAsync((int)GeneralState.New);
-                var order = new Order(info.IsSingle, info.Price, info.DeliveryDate)
-                {
-                    Client = client,
-                    Package = info.Package,
-                    CarType = carType,  
-                    Route = route,
-                    State =  state,
-                    Location = new Location(info.Location.Latitude, info.Location.Longitude)
-                };
-                await _db.Orders.AddAsync(order, cancellationToken);
-                await _db.SaveChangesAsync(cancellationToken);
-                var orderInfo = _mapper.Map<OrderInfo>(order).SetClientData(user.Name, user.Surname, user.PhoneNumber);
-                var driverConnectionId = await _driverService.FindDriverConnectionIdAsync(orderInfo, cancellationToken);
-                await func(driverConnectionId);
-                return new OkObjectResult(info);
-            }
-            catch
-            {
-                return new BadRequestResult();
-            }
+                Client = client,
+                Package = info.Package,
+                CarType = carType,
+                Route = route,
+                State = state,
+                Location = new Location(info.Location.Latitude, info.Location.Longitude)
+            };
+            await _context.AddAsync(order);
+            return order;
         }
-        
-        public async Task<List<OrderInfo>> FindWaitingOrdersAsync(string driverUserId)
-        {
-            var ordersInfo = new List<OrderInfo>();
-            var routeTrip = await _contextHelper.Trip(driverUserId);
-            var state = await _contextHelper.FindStateAsync((int)GeneralState.Waiting);
-            var waitingOrders = await _contextHelper.Orders(o =>
-                o.Route.Id == routeTrip.Route.Id &&
-                o.DeliveryDate.Day <= routeTrip.DeliveryDate.Day && 
-                o.State == state).ToListAsync();
-            foreach(var waitingOrder in waitingOrders)
-            {
-                await _contextHelper.AddOrderToDeliveryAsync(routeTrip, waitingOrder, GeneralState.OnReview);
-                var user = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u =>u.Id == waitingOrder.Client.UserId);
-                ordersInfo.Add(_mapper.Map<OrderInfo>(waitingOrder).SetClientData(user.Name, user.Surname, user.PhoneNumber));
-            }
-            return ordersInfo;
-        }
-        
 
-        public async Task<ActionResult> GetWaitingOrdersAsync(string clientUserId,CancellationToken cancellationToken)
+        public async Task<bool> AnyWaitingOrdersAsync(Delivery delivery)
         {
-            var ordersInfo = new List<OrderInfo>();
-            var user = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u => u.Id == clientUserId, cancellationToken);
-            var state = await _contextHelper.FindStateAsync((int) GeneralState.Waiting);
-            await _contextHelper.Orders(o => o.Client.UserId == clientUserId && o.State == state).
-            ForEachAsync(o => ordersInfo.Add(_mapper.Map<OrderInfo>(o)
-                    .SetClientData(user.Name, user.Surname, user.PhoneNumber)), cancellationToken);
-            return new OkObjectResult(ordersInfo);
+            var stateWaiting = await _context.FindAsync<State>((int)GeneralState.Waiting);
+            var stateOnReview = await _context.FindAsync<State>((int)GeneralState.OnReview);;
+            var waitingOrders = await _context.Orders().IncludeOrdersInfoBuilder().Where(o =>
+                o.Route.Id == delivery.RouteTrip.Route.Id &&
+                o.DeliveryDate.Day <= delivery.RouteTrip.DeliveryDate.Day &&
+                o.State == stateWaiting).ToListAsync();
+            foreach (var waitingOrder in waitingOrders)
+            {
+                waitingOrder.State = stateOnReview;
+                delivery.AddOrder(waitingOrder);
+            }
+            await _context.UpdateAsync(delivery);
+            return waitingOrders.Any();
+        }
+
+
+        public async Task<ActionResult> GetWaitingOrdersAsync(string clientUserId, CancellationToken cancellationToken)
+        {
+            return new OkObjectResult(await GetOrderInfoAsync(clientUserId, GeneralState.Waiting));
         }
 
         public async Task<ActionResult> GetOnReviewOrdersAsync(string clientUserId, CancellationToken cancellationToken)
         {
+            return new OkObjectResult(await GetOrderInfoAsync(clientUserId, GeneralState.OnReview));
+        }
+
+        private async Task<List<OrderInfo>> GetOrderInfoAsync(string clientUserId, GeneralState status)
+        {
             var ordersInfo = new List<OrderInfo>();
-            var user = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u => u.Id == clientUserId, cancellationToken);
-            var state = await _contextHelper.FindStateAsync((int)GeneralState.OnReview);
-            await _contextHelper.Orders(o => o.Client.UserId == clientUserId && o.State == state).
-                ForEachAsync(cp => ordersInfo.Add(_mapper.Map<OrderInfo>(cp)
-                    .SetClientData(user.Name, user.Surname, user.PhoneNumber)), cancellationToken);
-            return new OkObjectResult(ordersInfo);
+            var userClient = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u => u.Id == clientUserId);
+            var state = await _context.FindAsync<State>((int)status);
+            await _context.Orders()
+                .IncludeOrdersInfoBuilder()
+                .Where(o => o.Client.UserId == clientUserId && o.State == state)
+                .ForEachAsync(o => ordersInfo.Add(o.GetOrderInfo(userClient)));
+            return ordersInfo;
         }
     }
 }

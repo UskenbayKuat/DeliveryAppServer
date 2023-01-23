@@ -1,8 +1,7 @@
 namespace PublicApi.Endpoints.Shared.RefreshToken
 {
-    public class RefreshRequest
+    public class RefreshCommand
     {
-        public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
     }
 }

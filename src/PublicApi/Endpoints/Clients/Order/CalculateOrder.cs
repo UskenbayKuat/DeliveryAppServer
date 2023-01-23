@@ -5,10 +5,11 @@ using ApplicationCore.Interfaces.ClientInterfaces;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using PublicApi.Commands;
 
 namespace PublicApi.Endpoints.Clients.Order
 {
-    public class CalculateOrder : EndpointBaseAsync.WithRequest<OrderCommand>.WithActionResult
+    public class CalculateOrder : EndpointBaseAsync.WithRequest<CreateOrderCommand>.WithActionResult
     {
         private readonly ICalculate _calculate;
         private readonly IMapper _mapper;
@@ -21,7 +22,7 @@ namespace PublicApi.Endpoints.Clients.Order
         }
 
         [HttpPost("api/client/calculate")]
-        public override async Task<ActionResult> HandleAsync([FromBody]OrderCommand request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult> HandleAsync([FromBody]CreateOrderCommand request, CancellationToken cancellationToken = new CancellationToken())
         {
             return await _calculate.CalculateAsync(_mapper.Map<OrderInfo>(request), cancellationToken);
         }
