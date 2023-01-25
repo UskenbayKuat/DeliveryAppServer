@@ -17,16 +17,14 @@ namespace PublicApi.Commands
     public class RejectedOrderCommandHandler : AsyncRequestHandler<RejectedOrderCommand>
     {
         private readonly IDriver _driverService;
-        private readonly IChatHub _chatHub;
         private readonly IDelivery _delivery;
         private readonly IBackgroundTaskQueue _backgroundTask;
         private readonly IOrder _order;
         private readonly HubHelper _hubHelper;
 
-        public RejectedOrderCommandHandler(IDriver driverService, IChatHub chatHub, IDelivery delivery, IBackgroundTaskQueue backgroundTask, IOrder order, HubHelper hubHelper)
+        public RejectedOrderCommandHandler(IDriver driverService, IDelivery delivery, IBackgroundTaskQueue backgroundTask, IOrder order, HubHelper hubHelper)
         {
             _driverService = driverService;
-            _chatHub = chatHub;
             _delivery = delivery;
             _backgroundTask = backgroundTask;
             _order = order;
@@ -43,8 +41,7 @@ namespace PublicApi.Commands
             }
             await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, delivery.Id));
             await _order.UpdateOrderAsync(order, delivery, (int)GeneralState.OnReview);
-            var connectionDriverId = await _chatHub.GetConnectionIdAsync(delivery.RouteTrip.Driver.UserId, cancellationToken);
-            await _hubHelper.SendToDriverAsync(connectionDriverId, cancellationToken);
+            await _hubHelper.SendToDriverAsync(delivery.RouteTrip.Driver.UserId, cancellationToken);
         }
     }
 }

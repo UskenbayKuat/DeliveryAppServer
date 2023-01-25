@@ -17,12 +17,10 @@ namespace Infrastructure.Services.DriverServices
 {
     public class RouteTripService : IRouteTrip
     {
-        private readonly IOrder _order;
         private readonly IContext _context;
         
-        public RouteTripService(IOrder order, IContext context)
+        public RouteTripService(IContext context)
         {
-            _order = order;
             _context = context;
         }
 
@@ -36,9 +34,6 @@ namespace Infrastructure.Services.DriverServices
             }
             var delivery = await CreateRouteTripAsync(tripInfo, driver);
             return delivery;
-            // var driverChatHub = await _context.FindAsync<ChatHub>(c => c.UserId == userId);
-            // var ordersInfo = await _order.FindWaitingOrdersAsync(userId);
-            // await func(driverChatHub?.ConnectionId, ordersInfo.Any());
         }
         
         public async Task<ActionResult> GetRouteTripIsActiveAsync(string driverUserId)

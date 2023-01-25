@@ -59,7 +59,7 @@ namespace BackgroundTasks
                 .Include(o => o.Delivery.RouteTrip)
                 .FirstOrDefaultAsync(o =>
                     o.Id == backgroundOrder.OrderId && 
-                    o.Delivery.Id == backgroundOrder.DeliveryId);
+                    o.Delivery.Id == backgroundOrder.DeliveryId);  //TODO builder
 
         private bool CheckState(Order order, int deliveryId) =>
             order?.State.Id == (int)GeneralState.OnReview && 

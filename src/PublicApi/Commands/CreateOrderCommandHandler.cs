@@ -19,15 +19,13 @@ namespace PublicApi.Commands
         private readonly IOrder _order;
         private readonly IDelivery _delivery;
         private readonly IMapper _mapper;
-        private readonly IChatHub _chatHub;
         private readonly HubHelper _hubHelper;
         private readonly IBackgroundTaskQueue _backgroundTask;
 
-        public CreateOrderCommandHandler(IOrder order, IMapper mapper, IChatHub chatHub, IDelivery delivery, HubHelper hubHelper, IBackgroundTaskQueue backgroundTask)
+        public CreateOrderCommandHandler(IOrder order, IMapper mapper, IDelivery delivery, HubHelper hubHelper, IBackgroundTaskQueue backgroundTask)
         {
             _order = order;
             _mapper = mapper;
-            _chatHub = chatHub;
             _delivery = delivery;
             _hubHelper = hubHelper;
             _backgroundTask = backgroundTask;
@@ -43,9 +41,7 @@ namespace PublicApi.Commands
             }
             await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, delivery.Id));
             await _order.UpdateOrderAsync(order, delivery, (int)GeneralState.OnReview);
-            
-            var connectionDriverId = await _chatHub.GetConnectionIdAsync(delivery.RouteTrip.Driver.UserId, cancellationToken);
-            await _hubHelper.SendToDriverAsync(connectionDriverId, cancellationToken);
+            await _hubHelper.SendToDriverAsync(delivery.RouteTrip.Driver.UserId, cancellationToken);
         }
     }
 }

@@ -14,12 +14,10 @@ namespace PublicApi.Endpoints.Drivers.RouteTrip
     public class CreateRouteTrip : EndpointBaseAsync.WithRequest<CreateDeliveryCommand>.WithActionResult
     {
         private readonly IMediator _mediator;
-        private readonly HubHelper _hubHelper;
 
-        public CreateRouteTrip(IMediator mediator, HubHelper hubHelper)
+        public CreateRouteTrip(IMediator mediator)
         {
             _mediator = mediator;
-            _hubHelper = hubHelper;
         }
 
         [HttpPost("api/driver/createRouteTrip")]
@@ -28,9 +26,7 @@ namespace PublicApi.Endpoints.Drivers.RouteTrip
         {
             try
             {
-                var driverConnectionId =
-                    await _mediator.Send(request.SetUserId(HttpContext.Items["UserId"]?.ToString()), cancellationToken);
-                await _hubHelper.SendToDriverAsync(driverConnectionId, cancellationToken);
+                await _mediator.Send(request.SetUserId(HttpContext.Items["UserId"]?.ToString()), cancellationToken);
                 return new NoContentResult();
             }
             catch
