@@ -35,6 +35,17 @@ namespace Infrastructure.Services.ChatHubServices
             return chatHub?.ConnectionId;
         }
 
+        public async Task<List<string>> GetConnectionIdListAsync(List<Order> orders)
+        {
+            var connectionIds = new List<string>();
+            foreach (var order in orders)
+            {
+                var chatHub = await  _context.FindAsync<ChatHub>(c => c.UserId == order.Client.UserId);
+                connectionIds.Add(chatHub?.ConnectionId);
+            }
+            return connectionIds;
+        }
+
         public async Task DisconnectedAsync(string connectId)
         {
             var chatHub = await _context.FindAsync<ChatHub>(c => c.ConnectionId == connectId);
