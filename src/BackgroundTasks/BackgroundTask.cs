@@ -31,15 +31,13 @@ namespace BackgroundTasks
             while (!stoppingToken.IsCancellationRequested)
             {
                 var backgroundOrder = await _backgroundQueue.DequeueAsync(stoppingToken);
-                while (backgroundOrder?.WaitingPeriodTime > DateTime.Now)
+                if (backgroundOrder is null) continue;
+                while (backgroundOrder.WaitingPeriodTime > DateTime.Now)
                 {
                     _logger.LogInformation("Waiting order state. {0} : {1}", backgroundOrder.WaitingPeriodTime.ToString("T"), DateTime.Now.ToString("T"));
                     await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
                 }
-                if (backgroundOrder is not null)
-                {
-                    await DoWork(backgroundOrder, stoppingToken);
-                }
+                await DoWork(backgroundOrder, stoppingToken);
             }
         }
 
@@ -47,25 +45,37 @@ namespace BackgroundTasks
         {
             var scope = _serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetService<AppDbContext>();
-            var order = await dbContext.Orders
+            var order = await OrderAsync(dbContext, backgroundOrder);
+            if (CheckState(order, backgroundOrder.DeliveryId))
+            {
+                await RejectedOrderAsync(order, dbContext, stoppingToken);
+                _logger.LogInformation("Complete work!");
+            }
+        }
+        
+        private async Task<Order> OrderAsync(AppDbContext dbContext,BackgroundOrder backgroundOrder) =>
+            await dbContext.Orders
                 .Include(o => o.State)
                 .Include(o => o.Delivery.RouteTrip)
                 .FirstOrDefaultAsync(o =>
                     o.Id == backgroundOrder.OrderId && 
-                    o.Delivery.Id == backgroundOrder.DeliveryId, stoppingToken);
-            if (order?.State.Id == (int)GeneralState.OnReview)
+                    o.Delivery.Id == backgroundOrder.DeliveryId);
+
+        private bool CheckState(Order order, int deliveryId) =>
+            order?.State.Id == (int)GeneralState.OnReview && 
+            order.Delivery.Id == deliveryId;
+
+        private async Task RejectedOrderAsync(Order order,AppDbContext dbContext, CancellationToken stoppingToken)
+        {
+            var rejectedOrder = new RejectedOrder
             {
-                var rejectedOrder = new RejectedOrder
-                {
-                    Order = order,
-                    RouteTrip = order.Delivery.RouteTrip
-                };
-                order.State = await dbContext.States.FirstOrDefaultAsync(s => s.Id == (int)GeneralState.Waiting, stoppingToken);
-                order.Delivery = null;
-                await dbContext.RejectedOrders.AddAsync(rejectedOrder, stoppingToken);
-                await dbContext.SaveChangesAsync(stoppingToken);
-                _logger.LogInformation("Complete work!");
-            }
+                Order = order,
+                RouteTrip = order.Delivery.RouteTrip
+            };
+            order.State = await dbContext.States.FirstOrDefaultAsync(s => s.Id == (int)GeneralState.Waiting, stoppingToken);
+            order.Delivery = null;
+            await dbContext.RejectedOrders.AddAsync(rejectedOrder, stoppingToken);
+            await dbContext.SaveChangesAsync(stoppingToken);
         }
     }
 }
