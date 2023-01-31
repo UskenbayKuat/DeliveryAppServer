@@ -29,20 +29,27 @@ namespace Infrastructure.Services.ChatHubServices
             await _context.UpdateAsync(chatHub.UpdateConnectId(connectId));
         }
 
-        public async Task<string> FindDriverConnectionIdAsync(Order order,
-            CancellationToken cancellationToken)
+        public async Task<string> GetConnectionIdAsync(string userId, CancellationToken cancellationToken)
         {
-            var deliveries = await Deliveries(order, cancellationToken);
-            foreach (var delivery in deliveries)
+            var chatHub = await _context.FindAsync<ChatHub>(c => c.UserId == userId);
+            return chatHub?.ConnectionId;
+        }
+
+        public async Task<List<string>> GetConnectionIdListAsync(List<Order> orders)
+        {
+            var connectionIds = new List<string>();
+            foreach (var order in orders)
             {
-                var chatHub = await _context.FindAsync<ChatHub>(c => c.UserId == delivery.RouteTrip.Driver.UserId);
-                if (string.IsNullOrEmpty(chatHub?.ConnectionId)) continue;
-                if (await CheckRejectedAsync(delivery.RouteTrip.Id, order.Id)) continue;
-                order.State = await _context.FindAsync<State>((int)GeneralState.OnReview);
-                await _context.UpdateAsync(delivery.AddOrder(order));
-                return chatHub.ConnectionId;
+                var chatHub = await  _context.FindAsync<ChatHub>(c => c.UserId == order.Client.UserId);
+                connectionIds.Add(chatHub?.ConnectionId);
             }
-            return string.Empty;
+            return connectionIds;
+        }
+
+        public async Task DisconnectedAsync(string connectId)
+        {
+            var chatHub = await _context.FindAsync<ChatHub>(c => c.ConnectionId == connectId);
+            await _context.UpdateAsync(chatHub.RemoveConnectId());
         }
         
         private async Task<ChatHub> CreateChatHubAsync(string userId, string connectId)
@@ -55,27 +62,5 @@ namespace Infrastructure.Services.ChatHubServices
             await _context.AddAsync(chatHub);
             return chatHub;
         }
-
-        public async Task DisconnectedAsync(string connectId)
-        {
-            var chatHub = await _context.FindAsync<ChatHub>(c => c.ConnectionId == connectId);
-            await _context.UpdateAsync(chatHub.RemoveConnectId());
-        }
-        
-        private async Task<List<Delivery>> Deliveries(Order order, CancellationToken cancellationToken) => 
-            await _context
-                .Deliveries()
-                .IncludeRouteTripAndDriverBuilder()
-                .Where(r => 
-                    r.RouteTrip.Route.StartCity.Id == order.Route.StartCityId && 
-                    r.RouteTrip.Route.FinishCity.Id == order.Route.FinishCityId && 
-                    r.RouteTrip.DeliveryDate.Day >= order.DeliveryDate.Day)
-                .ToListAsync(cancellationToken);
-        
-        private async Task<bool> CheckRejectedAsync(int routeTripId, int orderId) => 
-            await _context
-                .AnyAsync<RejectedOrder>(r =>
-                    r.RouteTrip.Id == routeTripId &&
-                    r.Order.Id == orderId);
     }
 }

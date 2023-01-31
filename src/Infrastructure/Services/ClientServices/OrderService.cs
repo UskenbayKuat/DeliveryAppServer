@@ -22,13 +22,11 @@ namespace Infrastructure.Services.ClientServices
     public class OrderService : IOrder
     {
         private readonly AppIdentityDbContext _dbIdentityDbContext;
-        private readonly IDriver _driverService;
         private readonly IContext _context;
 
-        public OrderService(AppIdentityDbContext dbIdentityDbContext, IDriver driverService, IContext context)
+        public OrderService(AppIdentityDbContext dbIdentityDbContext, IContext context)
         {
             _dbIdentityDbContext = dbIdentityDbContext;
-            _driverService = driverService;
             _context = context;
         }
 
@@ -51,6 +49,13 @@ namespace Infrastructure.Services.ClientServices
             };
             await _context.AddAsync(order);
             return order;
+        }
+
+        public async Task UpdateOrderAsync(Order order, Delivery delivery, int stateId)
+        {
+            order.State = await _context.FindAsync<State>(stateId);
+            order.Delivery = delivery;
+            await _context.UpdateAsync(order);
         }
 
         public async Task<bool> AnyWaitingOrdersAsync(Delivery delivery)

@@ -3,26 +3,28 @@ using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Interfaces.HubInterfaces;
 using MediatR;
+using PublicApi.Helpers;
 
 namespace PublicApi.Commands
 {
-    public class ConfirmOrderCommandHandler : IRequestHandler<ConfirmOrderCommand, string>
+    public class ConfirmOrderCommandHandler : AsyncRequestHandler<ConfirmOrderCommand>
     {
         private readonly IDelivery _delivery;
-        private readonly IContext _context;
+        private readonly HubHelper _hubHelper;
 
-        public ConfirmOrderCommandHandler(IDelivery delivery, IContext context)
+
+        public ConfirmOrderCommandHandler(IDelivery delivery, HubHelper hubHelper)
         {
             _delivery = delivery;
-            _context = context;
+            _hubHelper = hubHelper;
         }
 
-        public async Task<string> Handle(ConfirmOrderCommand request, CancellationToken cancellationToken)
+        protected override async Task Handle(ConfirmOrderCommand request, CancellationToken cancellationToken)
         {
             var order  = await _delivery.AddToDeliveryAsync(request.OrderId);
-            var chatHub = await _context.FindAsync<ChatHub>(c => c.UserId == order.Client.UserId);
-            return chatHub?.ConnectionId;
+            await _hubHelper.SendToClient(order.Client.UserId, cancellationToken);
         }
     }
 }

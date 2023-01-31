@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using ApplicationCore.Entities;
+using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.TokenInterfaces;
 using Infrastructure.AppData.Identity;

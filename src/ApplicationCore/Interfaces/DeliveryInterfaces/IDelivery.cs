@@ -8,7 +8,7 @@ namespace ApplicationCore.Interfaces.DeliveryInterfaces
 {
     public interface IDelivery
     {
-
+        public  Task<Delivery> FindIsActiveDelivery(Order order, CancellationToken cancellationToken);
         public Task<ActionResult> GetActiveOrdersForClientAsync(string userClientId);
         public Task<Order> AddToDeliveryAsync(int orderId);
 

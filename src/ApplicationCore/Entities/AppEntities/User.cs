@@ -1,8 +1,7 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
-namespace ApplicationCore.Entities
+namespace ApplicationCore.Entities.AppEntities
 {
     public sealed class User : IdentityUser
     {

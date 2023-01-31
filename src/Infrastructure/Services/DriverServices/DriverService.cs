@@ -26,35 +26,7 @@ namespace Infrastructure.Services.DriverServices
             _identityDbContext = identityDbContext;
             _context = context;
         }
-
-        public async Task<string> FindDriverConnectionIdAsync(Order order,
-            CancellationToken cancellationToken)
-        {
-            var deliveries = await _context
-                .Deliveries()
-                .IncludeRouteTripAndDriverBuilder()
-                .Where(r =>
-                    r.RouteTrip.Route.StartCity.Id == order.Route.StartCityId &&
-                    r.RouteTrip.Route.FinishCity.Id == order.Route.FinishCityId &&
-                    r.RouteTrip.DeliveryDate.Day >= order.DeliveryDate.Day)
-                .ToListAsync(cancellationToken);
-            foreach (var delivery in deliveries)
-            {
-                var chatHub = await _context.FindAsync<ChatHub>(c => c.UserId == delivery.RouteTrip.Driver.UserId);
-                if (string.IsNullOrEmpty(chatHub?.ConnectionId)) continue;
-                if (await CheckRejectedAsync(delivery.RouteTrip.Id, order.Id)) continue;
-                order.State = await _context.FindAsync<State>((int)GeneralState.OnReview);
-                await _context.UpdateAsync(delivery.AddOrder(order));
-                return chatHub.ConnectionId;
-            }
-
-            order.Delivery?.Orders.Remove(order);
-            order.State = await _context.FindAsync<State>((int)GeneralState.Waiting);
-            await _context.UpdateAsync(order);
-            return string.Empty;
-        }
-
-
+        
         public async Task<ActionResult> GetOnReviewOrdersForDriverAsync(string driverUserId)
         {
             try
@@ -108,27 +80,19 @@ namespace Infrastructure.Services.DriverServices
             }
         }
 
-
-        public async Task<Order> RejectNextFindDriverAsync(string driverUserId, int orderId)
+        public async Task<Order> RejectOrderAsync(int orderId)
         {
             var order = await _context.Orders().IncludeForRejectBuilder()
                 .FirstOrDefaultAsync(o => o.Id == orderId);
-            var routeTrip = await _context.FindAsync<RouteTrip>(r => r.Driver.UserId == driverUserId);
             await _context.AddAsync(new RejectedOrder
             {
                 Order = order,
-                RouteTrip = routeTrip
+                RouteTrip = order.Delivery.RouteTrip
             });
             order.Delivery?.Orders.Remove(order);
             order.State = await _context.FindAsync<State>((int)GeneralState.Waiting);
             await _context.UpdateAsync(order);
             return order;
         }
-
-        private async Task<bool> CheckRejectedAsync(int routeTripId, int orderId) =>
-            await _context
-                .AnyAsync<RejectedOrder>(r =>
-                    r.RouteTrip.Id == routeTripId &&
-                    r.Order.Id == orderId);
     }
 }

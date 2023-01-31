@@ -13,6 +13,6 @@ namespace ApplicationCore.Interfaces.DriverInterfaces
 
         public Task<ActionResult> GetOnReviewOrdersForDriverAsync(string userDriverId);
         public Task<ActionResult> GetActiveOrdersForDriverAsync(string userDriverId);
-        public Task<Order> RejectNextFindDriverAsync(string driverUserId, int orderId);
+        public Task<Order> RejectOrderAsync(int orderId);
     }
 }

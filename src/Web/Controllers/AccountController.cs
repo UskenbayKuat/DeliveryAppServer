@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities;
+using ApplicationCore.Entities.AppEntities;
 using Infrastructure.AppData.Identity;
 using Web.ViewModels;
 using Microsoft.AspNetCore.Identity;

@@ -13,21 +13,18 @@ namespace PublicApi.Endpoints.Delivery
     [Authorize]
     public class ConfirmOrder : EndpointBaseAsync.WithRequest<ConfirmOrderCommand>.WithActionResult
     {
-        private readonly HubHelper _hubHelper;
         private readonly IMediator _mediator;
 
-        public ConfirmOrder(IMediator mediator, HubHelper hubHelper)
+        public ConfirmOrder(IMediator mediator)
         {
             _mediator = mediator;
-            _hubHelper = hubHelper;
         }
 
         [HttpPost("api/driver/confirmOrder")]
         public override async Task<ActionResult> HandleAsync([FromBody]ConfirmOrderCommand request,
             CancellationToken cancellationToken = default)
         {
-            var clientConnectionId = await _mediator.Send(request, cancellationToken);
-            await _hubHelper.SendToClient(clientConnectionId, cancellationToken);
+            await _mediator.Send(request, cancellationToken);
             return new NoContentResult();
         }
     }

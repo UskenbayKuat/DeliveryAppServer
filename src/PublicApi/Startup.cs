@@ -1,4 +1,4 @@
-using Infrastructure;
+using BackgroundTasks;
 using Infrastructure.Config.Middlewares;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -24,8 +24,9 @@ namespace PublicApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-
+            
             services.GetServices(Configuration);
+            services.AddHostedService<BackgroundTask>();
             services.AddControllers(options => { options.UseNamespaceRouteToken(); });
             services.AddMediatR(typeof(Startup));
             services.Configure<ApiBehaviorOptions>(options =>

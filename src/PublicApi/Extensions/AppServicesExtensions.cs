@@ -8,6 +8,8 @@ using ApplicationCore.Interfaces.HubInterfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using ApplicationCore.Interfaces.SharedInterfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
+using BackgroundTasks.Interfaces;
+using BackgroundTasks.Service;
 using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
 using Infrastructure.Config;
@@ -33,6 +35,7 @@ namespace PublicApi.Extensions
     {
         public static void GetServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddTransient<IOrder, OrderService>();
             services.AddTransient<IDriver, DriverService>();
             services.AddTransient<IChatHub, ChatHubService>();
