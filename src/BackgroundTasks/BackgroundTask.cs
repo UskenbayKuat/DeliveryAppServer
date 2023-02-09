@@ -2,9 +2,10 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Orders;
+using ApplicationCore.Entities.Values;
 using ApplicationCore.Entities.Values.Enums;
-using BackgroundTasks.Interfaces;
-using BackgroundTasks.Model;
+using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
+using ApplicationCore.Interfaces.DeliveryInterfaces;
 using Infrastructure.AppData.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,12 +44,13 @@ namespace BackgroundTasks
 
         private async ValueTask DoWork(BackgroundOrder backgroundOrder, CancellationToken stoppingToken)
         {
-            var scope = _serviceProvider.CreateScope();
-            var dbContext = scope.ServiceProvider.GetService<AppDbContext>();
+            var serviceProvider = _serviceProvider.CreateScope().ServiceProvider;
+            var dbContext = serviceProvider.GetService<AppDbContext>();
             var order = await OrderAsync(dbContext, backgroundOrder);
             if (CheckState(order, backgroundOrder.DeliveryId))
             {
-                await RejectedOrderAsync(order, dbContext, stoppingToken);
+                var orderHandler = serviceProvider.GetService<IOrderHandler>();
+                await orderHandler.RejectedHandlerAsync(order.Id, stoppingToken);
                 _logger.LogInformation("Complete work!");
             }
         }
@@ -64,18 +66,5 @@ namespace BackgroundTasks
         private bool CheckState(Order order, int deliveryId) =>
             order?.State.Id == (int)GeneralState.OnReview && 
             order.Delivery.Id == deliveryId;
-
-        private async Task RejectedOrderAsync(Order order,AppDbContext dbContext, CancellationToken stoppingToken)
-        {
-            var rejectedOrder = new RejectedOrder
-            {
-                Order = order,
-                RouteTrip = order.Delivery.RouteTrip
-            };
-            order.State = await dbContext.States.FirstOrDefaultAsync(s => s.Id == (int)GeneralState.Waiting, stoppingToken);
-            order.Delivery = null;
-            await dbContext.RejectedOrders.AddAsync(rejectedOrder, stoppingToken);
-            await dbContext.SaveChangesAsync(stoppingToken);
-        }
     }
 }

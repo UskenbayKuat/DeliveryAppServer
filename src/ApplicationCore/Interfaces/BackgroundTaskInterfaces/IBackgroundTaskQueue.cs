@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
-using BackgroundTasks.Model;
+using ApplicationCore.Entities.Values;
 
-namespace BackgroundTasks.Interfaces
+namespace ApplicationCore.Interfaces.BackgroundTaskInterfaces
 {
     public interface IBackgroundTaskQueue
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace BackgroundTasks.Model
+namespace ApplicationCore.Entities.Values
 {
     public class BackgroundOrder
     {
@@ -13,7 +13,7 @@ namespace BackgroundTasks.Model
         {
             OrderId = orderId;
             DeliveryId = deliveryId;
-           // WaitingPeriodTime = DateTime.Now.AddMinutes(WaitingPeriodMinute);
+            // WaitingPeriodTime = DateTime.Now.AddMinutes(WaitingPeriodMinute);
             WaitingPeriodTime = DateTime.Now.AddSeconds(WaitingPeriodMinute);
         }
     }

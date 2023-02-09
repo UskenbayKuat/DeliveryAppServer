@@ -1,10 +1,10 @@
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using BackgroundTasks.Interfaces;
-using BackgroundTasks.Model;
+using ApplicationCore.Entities.Values;
+using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
 
-namespace BackgroundTasks.Service
+namespace Infrastructure.Services.BackgroundServices
 {
     public class BackgroundTaskQueue : IBackgroundTaskQueue
     {
