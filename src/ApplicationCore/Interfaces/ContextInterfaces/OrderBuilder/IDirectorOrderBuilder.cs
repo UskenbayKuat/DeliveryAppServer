@@ -13,6 +13,7 @@ namespace ApplicationCore.Interfaces.ContextInterfaces.OrderBuilder
         public IQueryable<Order> IncludeRouteTripBuilder();
 
         public IQueryable<Order> IncludeDeliveriesInfoBuilder();
+        public IQueryable<Order> IncludeStateBuilder();
         public IQueryable<Order> IncludeForRejectBuilder();
     }
 }

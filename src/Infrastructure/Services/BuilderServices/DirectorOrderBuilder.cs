@@ -42,6 +42,10 @@ namespace Infrastructure.Services.BuilderServices
             .IncludeRouteTrip()
             .IncludeDeliveriesInfo()
             .Build();
+        public IQueryable<Order> IncludeStateBuilder() => 
+            _builder
+            .IncludeState()
+            .Build();
 
         public IQueryable<Order> IncludeForRejectBuilder() =>
             _builder.IncludeRoute()

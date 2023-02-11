@@ -31,7 +31,7 @@ namespace Infrastructure.Services.DeliveryServices
         {
             var order = await _context.Orders().IncludeClientBuilder().FirstAsync(c => c.Id == orderId);
             order.State = await _context.FindAsync<State>((int)GeneralState.PendingForHandOver);
-            await _context.UpdateAsync(order);
+            await _context.UpdateAsync(order.SetSecretCode());
             return order;
         }
 
@@ -48,7 +48,7 @@ namespace Infrastructure.Services.DeliveryServices
                 var deliveryInfo = order.GetDeliveryInfo(userClient, userDriver);
                 var driverLocation = await _context.GetAll<LocationDate>()
                     .Include(r => r.Location)
-                    .FirstOrDefaultAsync(l => l.RouteTrip.Id == order.Delivery.RouteTrip.Id);  //TODO builder
+                    .FirstOrDefaultAsync(l => l.RouteTrip.Id == order.Delivery.RouteTrip.Id);     //TODO builder
                 deliveryInfo.Location = driverLocation?.Location;
                 deliveriesInfo.Add(deliveryInfo);
             }

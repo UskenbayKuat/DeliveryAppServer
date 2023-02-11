@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Entities.Values;
+﻿using ApplicationCore;
+using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
@@ -12,6 +13,7 @@ using ApplicationCore.Interfaces.TokenInterfaces;
 using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
 using Infrastructure.Config;
+using Infrastructure.Handlers;
 using Infrastructure.Services;
 using Infrastructure.Services.BackgroundServices;
 using Infrastructure.Services.ChatHubServices;
@@ -53,6 +55,7 @@ namespace PublicApi.Extensions
             services.AddTransient<IUserData, UserDataService>();
             services.AddTransient<IContext, ContextService>();
             services.AddTransient<HubHelper>();
+            services.AddTransient<IOrderHandler, OrderHandler>();
             services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.JwtSettings));
             services.ConfigureDbContextServices(configuration);
         }

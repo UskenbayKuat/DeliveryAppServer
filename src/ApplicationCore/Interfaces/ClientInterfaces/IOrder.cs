@@ -15,6 +15,6 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
         public Task UpdateOrderAsync(Order order, Delivery delivery, int stateId);
         public Task<Order> CreateAsync(OrderInfo info, string clientUserId, CancellationToken cancellationToken);
         public Task<ActionResult> GetWaitingOrdersAsync(string clientUserId, CancellationToken cancellationToken);
-        public Task<ActionResult> GetOnReviewOrdersAsync(string clientUserId, CancellationToken cancellationToken);
+        public Task<ActionResult> ConfirmHandOverAsync(ConfirmHandOverInfo info, CancellationToken cancellationToken);
     }
 }

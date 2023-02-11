@@ -31,7 +31,8 @@ namespace Infrastructure
                 Location = order.Location,
                 ClientName = client.Name,
                 ClientSurname = client.Surname,
-                ClientPhoneNumber = client.PhoneNumber
+                ClientPhoneNumber = client.PhoneNumber,
+                SecretCode = order.SecretCode
             };
 
         public static DeliveryInfo GetDeliveryInfo(this Order order, User client, User driver) =>
@@ -52,7 +53,8 @@ namespace Infrastructure
                 ClientPhoneNumber = client.PhoneNumber,
                 DriverPhoneNumber = driver.PhoneNumber,
                 DriverName = driver.Name,
-                DriverSurname = driver.Surname
+                DriverSurname = driver.Surname,
+                SecretCode = order.SecretCode
             };
     }
 }

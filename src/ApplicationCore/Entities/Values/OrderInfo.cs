@@ -22,5 +22,6 @@ namespace ApplicationCore.Entities.Values
         public string ClientName { get; set; }
         public string ClientSurname { get; set; } 
         public Location Location  { get; set; }
+        public string SecretCode { get; set; }
     }
 }

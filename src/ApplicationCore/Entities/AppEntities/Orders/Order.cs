@@ -23,9 +23,21 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         public DateTime DeliveryDate { get; private set; }
         public State State { get; set; }
         public decimal Price { get; private set;}
+        public string SecretCode { get; private set;}
         public Location Location { get;  set;}
         public Route Route { get; set;}
         public Delivery Delivery { get;  set;}
+
+        public Order SetSecretCode()
+        {
+            SecretCode = Guid.NewGuid().ToString("N")[..8].ToUpper();
+            return this;
+        }
+        public Order SetSecretCodeEmpty()
+        {
+            SecretCode = string.Empty;
+            return this;
+        }
 
     }
 }

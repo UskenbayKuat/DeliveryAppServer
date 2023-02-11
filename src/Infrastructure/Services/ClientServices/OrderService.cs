@@ -75,27 +75,28 @@ namespace Infrastructure.Services.ClientServices
             return waitingOrders.Any();
         }
 
-
+        public async Task<ActionResult> ConfirmHandOverAsync(ConfirmHandOverInfo info, CancellationToken cancellationToken)
+        {
+            var order = await _context.Orders().IncludeStateBuilder().FirstOrDefaultAsync(o => o.Id == info.OrderId, cancellationToken);
+            if (order.State.Id != (int)GeneralState.PendingForHandOver || order.SecretCode != info.SecretCode.ToUpper()) //TODO проверка на deliveryId == order.Delivery.Id нужен?
+            {
+                return new BadRequestResult();
+            }
+            order.State = await _context.FindAsync<State>(s => s.Id == (int)GeneralState.ReceivedByDriver);
+            await _context.UpdateAsync(order);
+            return new NoContentResult();
+        }
         public async Task<ActionResult> GetWaitingOrdersAsync(string clientUserId, CancellationToken cancellationToken)
         {
-            return new OkObjectResult(await GetOrderInfoAsync(clientUserId, GeneralState.Waiting));
-        }
-
-        public async Task<ActionResult> GetOnReviewOrdersAsync(string clientUserId, CancellationToken cancellationToken)
-        {
-            return new OkObjectResult(await GetOrderInfoAsync(clientUserId, GeneralState.OnReview));
-        }
-
-        private async Task<List<OrderInfo>> GetOrderInfoAsync(string clientUserId, GeneralState status)
-        {
             var ordersInfo = new List<OrderInfo>();
-            var userClient = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u => u.Id == clientUserId);
-            var state = await _context.FindAsync<State>((int)status);
+            var userClient = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(u => u.Id == clientUserId, cancellationToken);
             await _context.Orders()
                 .IncludeOrdersInfoBuilder()
-                .Where(o => o.Client.UserId == clientUserId && o.State == state)
-                .ForEachAsync(o => ordersInfo.Add(o.GetOrderInfo(userClient)));
-            return ordersInfo;
+                .Where(o => o.Client.UserId == clientUserId && 
+                            (o.State.Id == (int)GeneralState.Waiting || 
+                             o.State.Id == (int)GeneralState.OnReview))
+                .ForEachAsync(o => ordersInfo.Add(o.GetOrderInfo(userClient)), cancellationToken);
+            return new OkObjectResult(ordersInfo);
         }
     }
 }

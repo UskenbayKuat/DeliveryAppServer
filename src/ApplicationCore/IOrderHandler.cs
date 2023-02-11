@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.Values;
 
-namespace ApplicationCore.Interfaces.DeliveryInterfaces
+namespace ApplicationCore
 {
     public interface IOrderHandler
     {

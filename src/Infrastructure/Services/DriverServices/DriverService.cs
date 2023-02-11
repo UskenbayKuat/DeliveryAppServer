@@ -57,19 +57,18 @@ namespace Infrastructure.Services.DriverServices
             {
                 var delivery = await _context.FindAsync<Delivery>(d => d.RouteTrip.Driver.UserId == driverUserId)
                                ?? throw new NullReferenceException("Для проверки заказов создайте поездку");
-                var stateInProgress = await _context.FindAsync<State>((int)GeneralState.InProgress);
-                var stateHandOver = await _context.FindAsync<State>((int)GeneralState.PendingForHandOver);
-                var stateReceived = await _context.FindAsync<State>((int)GeneralState.ReceivedByDriver);
                 var ordersInfo = new List<OrderInfo>();
                 await _context.Orders()
                     .IncludeOrdersInfoBuilder()
                     .Where(o =>
                         o.Delivery.Id == delivery.Id &&
-                        (o.State.Id == stateInProgress.Id || o.State.Id == stateHandOver.Id ||
-                         o.State.Id == stateReceived.Id))
+                        (o.State.Id == (int)GeneralState.InProgress || 
+                         o.State.Id == (int)GeneralState.PendingForHandOver ||
+                         o.State.Id == (int)GeneralState.ReceivedByDriver))
                     .ForEachAsync(o =>
                     {
                         var userClient = _identityDbContext.Users.FirstOrDefault(u => u.Id == o.Client.UserId);
+                        o.SetSecretCodeEmpty();
                         ordersInfo.Add(o.GetOrderInfo(userClient));
                     });
                 return new OkObjectResult(ordersInfo);
