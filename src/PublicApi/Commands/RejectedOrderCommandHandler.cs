@@ -1,7 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore;
-using ApplicationCore.Interfaces.DeliveryInterfaces;
 using MediatR;
 using PublicApi.Helpers;
 
@@ -20,8 +19,8 @@ namespace PublicApi.Commands
 
         protected override async Task Handle(RejectedOrderCommand request, CancellationToken cancellationToken)
         {
-            var driverUserId = await _orderHandler.RejectedHandlerAsync(request.OrderId, cancellationToken);
-            await _hubHelper.SendToDriverAsync(driverUserId, cancellationToken);
+            var order = await _orderHandler.RejectedHandlerAsync(request.OrderId, cancellationToken);
+            await _hubHelper.SendToDriverAsync(order.Delivery.RouteTrip.Driver.UserId, cancellationToken);
         }
     }
 }

@@ -12,7 +12,6 @@ using ApplicationCore.Entities.Values;
 using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.ContextInterfaces;
-using ApplicationCore.Interfaces.DriverInterfaces;
 using Infrastructure.AppData.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -49,30 +48,6 @@ namespace Infrastructure.Services.ClientServices
             };
             await _context.AddAsync(order);
             return order;
-        }
-
-        public async Task UpdateOrderAsync(Order order, Delivery delivery, int stateId)
-        {
-            order.State = await _context.FindAsync<State>(stateId);
-            order.Delivery = delivery;
-            await _context.UpdateAsync(order);
-        }
-
-        public async Task<bool> AnyWaitingOrdersAsync(Delivery delivery)
-        {
-            var stateWaiting = await _context.FindAsync<State>((int)GeneralState.Waiting);
-            var stateOnReview = await _context.FindAsync<State>((int)GeneralState.OnReview);;
-            var waitingOrders = await _context.Orders().IncludeOrdersInfoBuilder().Where(o =>
-                o.Route.Id == delivery.RouteTrip.Route.Id &&
-                o.DeliveryDate.Day <= delivery.RouteTrip.DeliveryDate.Day &&
-                o.State == stateWaiting).ToListAsync();
-            foreach (var waitingOrder in waitingOrders)
-            {
-                waitingOrder.State = stateOnReview;
-                delivery.AddOrder(waitingOrder);
-            }
-            await _context.UpdateAsync(delivery);
-            return waitingOrders.Any();
         }
 
         public async Task<ActionResult> ConfirmHandOverAsync(ConfirmHandOverInfo info, CancellationToken cancellationToken)

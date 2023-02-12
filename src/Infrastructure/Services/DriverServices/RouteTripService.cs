@@ -78,7 +78,7 @@ namespace Infrastructure.Services.DriverServices
                 RouteTrip = trip
             };
             await _context.AddAsync(locationDate);
-            await _context.AddAsync(delivery); // <- check only AddAsync(locationDate), if saving delivery in db delete this row
+            await _context.AddAsync(delivery); //TODO <- check only AddAsync(locationDate), if saving delivery in db delete this row
             return delivery;
         }
         

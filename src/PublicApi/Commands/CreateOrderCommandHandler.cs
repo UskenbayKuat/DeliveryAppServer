@@ -23,9 +23,9 @@ namespace PublicApi.Commands
 
         protected override async Task Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
-            var driverUserId = await _orderHandler.CreatedHandlerAsync(_mapper.Map<OrderInfo>(request), request.UserId,
+            var order = await _orderHandler.CreatedHandlerAsync(_mapper.Map<OrderInfo>(request), request.UserId,
                 cancellationToken);
-            await _hubHelper.SendToDriverAsync(driverUserId, cancellationToken);
+            await _hubHelper.SendToDriverAsync(order.Delivery.RouteTrip.Driver.UserId, cancellationToken);
         }
     }
 }
