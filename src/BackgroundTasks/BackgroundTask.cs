@@ -39,16 +39,16 @@ namespace BackgroundTasks
                     _logger.LogInformation("Waiting order state. {0} : {1}", backgroundOrder.WaitingPeriodTime.ToString("T"), DateTime.Now.ToString("T"));
                     await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
                 }
-                await DoWork(backgroundOrder, stoppingToken);
+                await OrderHandlerAsync(backgroundOrder, stoppingToken);
             }
         }
 
-        private async ValueTask DoWork(BackgroundOrder backgroundOrder, CancellationToken stoppingToken)
+        private async ValueTask OrderHandlerAsync(BackgroundOrder backgroundOrder, CancellationToken stoppingToken)
         {
             var serviceProvider = _serviceProvider.CreateScope().ServiceProvider;
             var dbContext = serviceProvider.GetService<AppDbContext>();
             var order = await OrderAsync(dbContext, backgroundOrder);
-            if (CheckState(order, backgroundOrder.DeliveryId))
+            if (CheckOrderState(order, backgroundOrder))
             {
                 var orderHandler = serviceProvider.GetService<IOrderHandler>();
                 await orderHandler.RejectedHandlerAsync(order.Id, stoppingToken);
@@ -64,8 +64,8 @@ namespace BackgroundTasks
                     o.Id == backgroundOrder.OrderId && 
                     o.Delivery.Id == backgroundOrder.DeliveryId);  //TODO builder
 
-        private bool CheckState(Order order, int deliveryId) =>
+        private bool CheckOrderState(Order order, BackgroundOrder delivery) =>
             order?.State.Id == (int)GeneralState.OnReview && 
-            order.Delivery.Id == deliveryId;
+            order.Delivery.Id == delivery.DeliveryId;
     }
 }
