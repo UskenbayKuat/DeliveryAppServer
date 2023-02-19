@@ -7,6 +7,7 @@ using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
+using ApplicationCore.Interfaces.LocationInterfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using ApplicationCore.Interfaces.SharedInterfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
@@ -21,13 +22,15 @@ using Infrastructure.Services.ClientServices;
 using Infrastructure.Services.ContextBuilder;
 using Infrastructure.Services.DeliveryServices;
 using Infrastructure.Services.DriverServices;
+using Infrastructure.Services.LocationServices;
 using Infrastructure.Services.RegisterServices;
 using Infrastructure.Services.Shared;
 using Infrastructure.Services.TokenServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PublicApi.Helpers;
+using Notification.HubNotify;
+using Notification.Interfaces;
 
 namespace PublicApi.Extensions
 {
@@ -53,6 +56,7 @@ namespace PublicApi.Extensions
             
       
             services.AddTransient<IChatHub, ChatHubService>();
+            services.AddTransient<ILocation, LocationService>();
             services.AddTransient<IValidation, ValidationService>();
             services.AddTransient<IGenerateToken, TokenService>();
             services.AddTransient<IRefreshToken, TokenService>();
@@ -63,7 +67,7 @@ namespace PublicApi.Extensions
             services.AddTransient<IDeliveryAppData<DriverAppDataInfo>, DriverAppDataService>();
             services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
             services.AddTransient<IUserData, UserDataService>();
-            services.AddTransient<HubHelper>();
+            services.AddTransient<INotify, Notify>();
             services.AddTransient<IOrderHandler, OrderHandler>();
             services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.JwtSettings));
             services.ConfigureDbContextServices(configuration);

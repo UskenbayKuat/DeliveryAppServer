@@ -17,9 +17,11 @@ namespace Infrastructure.Services.ContextBuilder
             _orders = _db.Orders;
         }
 
-        public IOrderContextBuilder StateAndDeliveryBuilder()
+        public IOrderContextBuilder ForRejectBuilder()
         {
             _orders = _orders.Include(o => o.State)
+                .Include(o => o.Delivery.Driver)
+                .Include(o => o.Route)
                 .Include(o => o.Delivery);
             return this;
         }
@@ -49,8 +51,8 @@ namespace Infrastructure.Services.ContextBuilder
 
         public IOrderContextBuilder ClientAndDeliveryBuilder()
         {
-            _orders = _orders.Include(o => o.Client)
-                .Include(o => o.Delivery);
+            _orders = _orders.Include(o => o.Delivery).Include(o => o.Delivery.Driver)
+                .Include(o => o.Client);
             return this;
         }
 

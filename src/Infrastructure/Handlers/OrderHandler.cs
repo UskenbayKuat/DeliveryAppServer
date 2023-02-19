@@ -54,7 +54,8 @@ namespace Infrastructure.Handlers
         
         public async Task<Order> RejectedHandlerAsync(int orderId, CancellationToken cancellationToken)
         {
-            return await _orderCommand.RejectAsync(orderId);
+            var order = await _orderCommand.RejectAsync(orderId);
+            return await FindIsNewDeliveryHandlerAsync(order, cancellationToken);
         }
         public async Task<Order> CreatedHandlerAsync(OrderInfo orderInfo,string userId, CancellationToken cancellationToken)
         {
@@ -63,12 +64,13 @@ namespace Infrastructure.Handlers
         public async Task<Order> FindIsNewDeliveryHandlerAsync(Order order, CancellationToken cancellationToken)
         {
             order.Delivery = await _deliveryCommand.FindIsNewDelivery(order, cancellationToken);
-            if (order.Delivery != null)
+            if (order.Delivery == null)
             {
-                await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, order.Delivery.Id));
-                order.State = await _context.FindAsync<State>((int)GeneralState.OnReview);
-                await _context.UpdateAsync(order);
+                return order;
             }
+            await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, order.Delivery.Id));
+            order.State = await _context.FindAsync<State>((int)GeneralState.OnReview);
+            await _context.UpdateAsync(order);
             return order;
         }
     }

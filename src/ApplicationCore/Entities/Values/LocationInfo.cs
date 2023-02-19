@@ -1,8 +1,6 @@
-using MediatR;
-
-namespace PublicApi.Commands
+namespace ApplicationCore.Entities.Values
 {
-    public class LocationCommand : IRequest
+    public class LocationInfo
     {
         public double Latitude { get;  set; }
         public double Longitude { get;  set; }
@@ -10,7 +8,7 @@ namespace PublicApi.Commands
         public string DriverName { get;  set; }
         public string DriverSurname { get;  set; }
         public string DriverPhoneNumber { get;  set; }
-        public LocationCommand SetUserId(string userId)
+        public LocationInfo SetUserId(string userId)
         {
             UserId = userId;
             return this;

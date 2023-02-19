@@ -7,14 +7,13 @@ using ApplicationCore.Entities.Values;
 using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
 using ApplicationCore.Interfaces.ContextInterfaces;
-using ApplicationCore.Interfaces.DeliveryInterfaces;
-using Infrastructure.AppData.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Notification.Interfaces;
 
-namespace BackgroundTasks
+namespace OrderBackgroundTasks
 {
     public class BackgroundTask : BackgroundService
     {    
@@ -44,7 +43,7 @@ namespace BackgroundTasks
             }
         }
 
-        private async ValueTask OrderHandlerAsync(BackgroundOrder backgroundOrder, CancellationToken stoppingToken)
+        private async Task OrderHandlerAsync(BackgroundOrder backgroundOrder, CancellationToken stoppingToken)
         {
             var serviceProvider = _serviceProvider.CreateScope().ServiceProvider;
             var orderContextBuilder = serviceProvider.GetService<IOrderContextBuilder>();
@@ -52,14 +51,16 @@ namespace BackgroundTasks
             if (CheckOrderState(order, backgroundOrder))
             {
                 var orderHandler = serviceProvider.GetService<IOrderHandler>();
+                var notify = serviceProvider.GetService<INotify>();
                 await orderHandler.RejectedHandlerAsync(order.Id, stoppingToken);
+                await notify.SendToDriverAsync(order.Delivery?.Driver?.UserId, stoppingToken);
                 _logger.LogInformation("Complete work!");
             }
         }
         
         private async Task<Order> OrderAsync(IOrderContextBuilder orderContextBuilder,BackgroundOrder backgroundOrder) =>
             await orderContextBuilder
-                .StateAndDeliveryBuilder()
+                .ForRejectBuilder()
                 .Build()
                 .FirstOrDefaultAsync(o =>
                     o.Id == backgroundOrder.OrderId && 

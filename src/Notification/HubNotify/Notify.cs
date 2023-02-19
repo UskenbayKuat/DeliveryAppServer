@@ -2,19 +2,19 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Orders;
+using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.HubInterfaces;
 using Microsoft.AspNetCore.SignalR;
-using PublicApi.Commands;
-using PublicApi.HubNotification;
+using Notification.Interfaces;
 
-namespace PublicApi.Helpers
+namespace Notification.HubNotify
 {
-    public class HubHelper
+    public class Notify : INotify
     {
         private readonly IHubContext<Notification> _hubContext;
         private readonly IChatHub _chatHub;
 
-        public HubHelper(IHubContext<Notification> hubContext, IChatHub chatHub)
+        public Notify(IHubContext<Notification> hubContext, IChatHub chatHub)
         {
             _hubContext = hubContext;
             _chatHub = chatHub;
@@ -40,7 +40,7 @@ namespace PublicApi.Helpers
             }
         }
 
-        public async Task SendDriverLocationToClientsAsync(List<Order> orders, LocationCommand locationCommand)
+        public async Task SendDriverLocationToClientsAsync(List<Order> orders, LocationInfo locationCommand)
         {
             var connectionIdList = await _chatHub.GetConnectionIdListAsync(orders);
             foreach (var connectionId in connectionIdList)

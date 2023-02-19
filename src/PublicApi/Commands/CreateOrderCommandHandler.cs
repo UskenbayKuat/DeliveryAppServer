@@ -4,7 +4,7 @@ using ApplicationCore;
 using ApplicationCore.Entities.Values;
 using AutoMapper;
 using MediatR;
-using PublicApi.Helpers;
+using Notification.Interfaces;
 
 namespace PublicApi.Commands
 {
@@ -12,12 +12,12 @@ namespace PublicApi.Commands
     {
         private readonly IOrderHandler _orderHandler;
         private readonly IMapper _mapper;
-        private readonly HubHelper _hubHelper;
+        private readonly INotify _notify;
 
-        public CreateOrderCommandHandler(IMapper mapper, HubHelper hubHelper, IOrderHandler orderHandler)
+        public CreateOrderCommandHandler(IMapper mapper, INotify notify, IOrderHandler orderHandler)
         {
             _mapper = mapper;
-            _hubHelper = hubHelper;
+            _notify = notify;
             _orderHandler = orderHandler;
         }
 
@@ -26,7 +26,7 @@ namespace PublicApi.Commands
             var order = await _orderHandler.CreatedHandlerAsync(_mapper.Map<OrderInfo>(request), request.UserId,
                 cancellationToken);
             order = await _orderHandler.FindIsNewDeliveryHandlerAsync(order, cancellationToken);
-            await _hubHelper.SendToDriverAsync(order.Delivery?.Driver.UserId, cancellationToken);
+            await _notify.SendToDriverAsync(order.Delivery?.Driver.UserId, cancellationToken);
         }
     }
 }
