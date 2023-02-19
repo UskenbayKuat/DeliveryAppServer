@@ -6,6 +6,7 @@ using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
+using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using Infrastructure.AppData.DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -46,8 +47,8 @@ namespace BackgroundTasks
         private async ValueTask OrderHandlerAsync(BackgroundOrder backgroundOrder, CancellationToken stoppingToken)
         {
             var serviceProvider = _serviceProvider.CreateScope().ServiceProvider;
-            var dbContext = serviceProvider.GetService<AppDbContext>();
-            var order = await OrderAsync(dbContext, backgroundOrder);
+            var orderContextBuilder = serviceProvider.GetService<IOrderContextBuilder>();
+            var order = await OrderAsync(orderContextBuilder, backgroundOrder);
             if (CheckOrderState(order, backgroundOrder))
             {
                 var orderHandler = serviceProvider.GetService<IOrderHandler>();
@@ -56,13 +57,13 @@ namespace BackgroundTasks
             }
         }
         
-        private async Task<Order> OrderAsync(AppDbContext dbContext,BackgroundOrder backgroundOrder) =>
-            await dbContext.Orders
-                .Include(o => o.State)
-                .Include(o => o.Delivery.RouteTrip)
+        private async Task<Order> OrderAsync(IOrderContextBuilder orderContextBuilder,BackgroundOrder backgroundOrder) =>
+            await orderContextBuilder
+                .StateAndDeliveryBuilder()
+                .Build()
                 .FirstOrDefaultAsync(o =>
                     o.Id == backgroundOrder.OrderId && 
-                    o.Delivery.Id == backgroundOrder.DeliveryId);  //TODO builder
+                    o.Delivery.Id == backgroundOrder.DeliveryId);
 
         private bool CheckOrderState(Order order, BackgroundOrder delivery) =>
             order?.State.Id == (int)GeneralState.OnReview && 

@@ -18,32 +18,29 @@ namespace Infrastructure.Handlers
 {
     public class OrderHandler : IOrderHandler
     {
-        
-        private readonly IDriver _driverService;
-        private readonly IDelivery _delivery;
+        private readonly IDeliveryCommand _deliveryCommand;
         private readonly IBackgroundTaskQueue _backgroundTask;
-        private readonly IOrder _order;
+        private readonly IOrderCommand _orderCommand;
         private readonly IContext _context;
+        private readonly IOrderContextBuilder _orderContextBuilder;
 
-        public OrderHandler(IDriver driverService, IDelivery delivery, IBackgroundTaskQueue backgroundTask, IOrder order, IContext context)
+        public OrderHandler(IDeliveryCommand deliveryCommand, IBackgroundTaskQueue backgroundTask, IOrderCommand orderCommand, IContext context, IOrderContextBuilder orderContextBuilder)
         {
-            _driverService = driverService;
-            _delivery = delivery;
+            _deliveryCommand = deliveryCommand;
             _backgroundTask = backgroundTask;
-            _order = order;
+            _orderCommand = orderCommand;
             _context = context;
+            _orderContextBuilder = orderContextBuilder;
         }
 
-
-
-        public async Task<List<Order>> SetWaitingOrdersToDeliveryAsync(Delivery delivery, CancellationToken cancellationToken)
+        public async Task<List<Order>> AddWaitingOrdersToDeliveryAsync(Delivery delivery, CancellationToken cancellationToken)
         {
             var stateOnReview = await _context.FindAsync<State>((int)GeneralState.OnReview);
-            var orders = await _context.Orders()
-                .IncludeOrdersInfoBuilder()
+            var orders = await _orderContextBuilder.StateBuilder()
+                .Build()
                 .Where(o =>
-                    o.Route.Id == delivery.RouteTrip.Route.Id &&
-                    o.DeliveryDate.Day <= delivery.RouteTrip.DeliveryDate.Day &&
+                    o.Route.Id == delivery.Route.Id &&
+                    o.DeliveryDate.Day <= delivery.DeliveryDate.Day &&
                     o.State.Id == (int)GeneralState.Waiting).ToListAsync(cancellationToken);
             foreach (var order in orders)
             {
@@ -57,18 +54,15 @@ namespace Infrastructure.Handlers
         
         public async Task<Order> RejectedHandlerAsync(int orderId, CancellationToken cancellationToken)
         {
-            var order = await _driverService.RejectOrderAsync(orderId);
-            return await SetDeliveryAsync(order, cancellationToken);
+            return await _orderCommand.RejectAsync(orderId);
         }
         public async Task<Order> CreatedHandlerAsync(OrderInfo orderInfo,string userId, CancellationToken cancellationToken)
         {
-            var order = await _order.CreateAsync(orderInfo, userId, cancellationToken);
-            return await SetDeliveryAsync(order, cancellationToken);
+            return await _orderCommand.CreateAsync(orderInfo, userId, cancellationToken);
         }
-
-        private async Task<Order> SetDeliveryAsync(Order order, CancellationToken cancellationToken)
+        public async Task<Order> FindIsNewDeliveryHandlerAsync(Order order, CancellationToken cancellationToken)
         {
-            order.Delivery = await _delivery.FindIsActiveDelivery(order, cancellationToken);
+            order.Delivery = await _deliveryCommand.FindIsNewDelivery(order, cancellationToken);
             if (order.Delivery != null)
             {
                 await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, order.Delivery.Id));

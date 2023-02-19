@@ -25,7 +25,8 @@ namespace PublicApi.Commands
         {
             var order = await _orderHandler.CreatedHandlerAsync(_mapper.Map<OrderInfo>(request), request.UserId,
                 cancellationToken);
-            await _hubHelper.SendToDriverAsync(order.Delivery.RouteTrip.Driver.UserId, cancellationToken);
+            order = await _orderHandler.FindIsNewDeliveryHandlerAsync(order, cancellationToken);
+            await _hubHelper.SendToDriverAsync(order.Delivery?.Driver.UserId, cancellationToken);
         }
     }
 }

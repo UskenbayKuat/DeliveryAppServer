@@ -16,28 +16,26 @@ namespace Infrastructure.Services.Shared
     public class UserDataService : IUserData
     {
         private readonly AppIdentityDbContext _dbIdentity;
-        private readonly IContext _context;
+        private readonly IDriverContextBuilder _driverContext;
 
-        public UserDataService(AppIdentityDbContext dbIdentity, IContext context)
+        public UserDataService(AppIdentityDbContext dbIdentity, IDriverContextBuilder context)
         {
             _dbIdentity = dbIdentity;
-            _context = context;
+            _driverContext = context;
         }
 
         public async Task<ActionResult> GetDataAsync(string userId, CancellationToken cancellationToken)
         {
             var user = await _dbIdentity.Users.FirstAsync(u => u.Id == userId, cancellationToken);
-            if (user.IsDriver)
+            if (!user.IsDriver)
             {
-                var driver = await _context
-                    .Drivers()
-                    .IncludeCarBuilder()
-                    .FirstOrDefaultAsync(d => d.UserId == userId, cancellationToken);
-                return new ObjectResult(driver);
+                return new BadRequestResult();
             }
-            
-            var client = await _context.FindAsync<Client>(c => c.UserId == userId);
-            return new OkObjectResult(client);
+            var driver = await _driverContext
+                .CarBuilder()
+                .Build()
+                .FirstOrDefaultAsync(d => d.UserId == userId, cancellationToken);
+            return new ObjectResult(driver);
         }
     }
 }

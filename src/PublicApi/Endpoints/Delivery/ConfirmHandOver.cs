@@ -11,18 +11,18 @@ namespace PublicApi.Endpoints.Delivery
 {
     public class ConfirmHandOver : EndpointBaseAsync.WithRequest<ConfirmHandOverCommand>.WithActionResult
     {
-        private readonly IOrder _order;
+        private readonly IOrderCommand _orderCommand;
         private readonly IMapper _mapper;
 
-        public ConfirmHandOver(IOrder order, IMapper mapper)
+        public ConfirmHandOver(IOrderCommand orderCommand, IMapper mapper)
         {
-            _order = order;
+            _orderCommand = orderCommand;
             _mapper = mapper;
         }
 
         [HttpPost("api/driver/confirmHandOver")]
         public override async Task<ActionResult> HandleAsync([FromBody] ConfirmHandOverCommand request,
             CancellationToken cancellationToken = default) =>
-            await _order.ConfirmHandOverAsync(_mapper.Map<ConfirmHandOverInfo>(request), cancellationToken);
+            await _orderCommand.ConfirmHandOverAsync(_mapper.Map<ConfirmHandOverInfo>(request), cancellationToken);
     }
 }

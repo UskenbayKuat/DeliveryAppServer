@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Locations;
-using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Interfaces.ContextInterfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -14,18 +12,23 @@ namespace PublicApi.Commands
     public class LocationCommandHandler : AsyncRequestHandler<LocationCommand>
     {
         private readonly HubHelper _hubHelper;
+        private readonly IOrderContextBuilder _orderContextBuilder;
         private readonly IContext _context;
 
-        public LocationCommandHandler(HubHelper hubHelper, IContext context)
+        public LocationCommandHandler(HubHelper hubHelper, IOrderContextBuilder orderContextBuilder, IContext context)
         {
             _hubHelper = hubHelper;
+            _orderContextBuilder = orderContextBuilder;
             _context = context;
         }
 
         protected override async Task Handle(LocationCommand request, CancellationToken cancellationToken)
         {
-            var orders = await OrdersAsync(request.UserId);
-            var locationCommand =  await CurrentLocationAsync(orders.FirstOrDefault()!.Delivery.RouteTrip.Id, request, cancellationToken);
+            var orders = await _orderContextBuilder.ClientAndDeliveryBuilder()
+                .Build()
+                .Where(o => o.Delivery.Driver.UserId == request.UserId)
+                .ToListAsync(cancellationToken); ;
+            var locationCommand =  await CurrentLocationAsync(orders.FirstOrDefault()!.Delivery.Id, request, cancellationToken);
             await _hubHelper.SendDriverLocationToClientsAsync(orders, locationCommand);
         }
         
@@ -35,17 +38,10 @@ namespace PublicApi.Commands
             {
                 return locationCommand;
             }
-            var locationDate = await _context.FindAsync<LocationDate>(l => l.RouteTrip.Id == routeTripId);
+            var locationDate = await _context.FindAsync<LocationData>(l => l.Delivery.Id == routeTripId);
             locationCommand.Latitude = locationDate.Location.Latitude;
             locationCommand.Longitude = locationDate.Location.Longitude;
             return locationCommand;
         }
-        
-        private async Task<List<Order>> OrdersAsync(string userId) => 
-            await _context
-                .Orders()
-                .IncludeDeliveriesInfoBuilder()
-                .Where(o => o.Delivery.RouteTrip.Driver.UserId == userId)
-                .ToListAsync();
     }
 }

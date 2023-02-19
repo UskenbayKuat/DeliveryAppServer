@@ -38,7 +38,7 @@ namespace PublicApi.HubNotification
 
         public override async Task<Task> OnDisconnectedAsync(Exception exception)
         {
-            await _chatHub.DisconnectedAsync(Context.ConnectionId);
+            await _chatHub.DisconnectedAsync(Context.GetHttpContext().Items["UserId"]?.ToString(),Context.ConnectionId);
             return base.OnDisconnectedAsync(exception);
         }
     }

@@ -33,7 +33,7 @@ namespace ApplicationCore.Entities.AppEntities
             {
                 if (_car is not null)
                 {
-                    throw new CarExistsException("Car is already added");
+                    throw new CarExistsException();
                 }
                 _car = value;
             }

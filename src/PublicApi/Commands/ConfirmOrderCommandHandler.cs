@@ -11,19 +11,19 @@ namespace PublicApi.Commands
 {
     public class ConfirmOrderCommandHandler : AsyncRequestHandler<ConfirmOrderCommand>
     {
-        private readonly IDelivery _delivery;
+        private readonly IDeliveryCommand _deliveryCommand;
         private readonly HubHelper _hubHelper;
 
 
-        public ConfirmOrderCommandHandler(IDelivery delivery, HubHelper hubHelper)
+        public ConfirmOrderCommandHandler(IDeliveryCommand deliveryCommand, HubHelper hubHelper)
         {
-            _delivery = delivery;
+            _deliveryCommand = deliveryCommand;
             _hubHelper = hubHelper;
         }
 
         protected override async Task Handle(ConfirmOrderCommand request, CancellationToken cancellationToken)
         {
-            var order  = await _delivery.AddToDeliveryAsync(request.OrderId);
+            var order  = await _deliveryCommand.AddOrderAsync(request.OrderId);
             await _hubHelper.SendToClient(order.Client.UserId, cancellationToken);
         }
     }

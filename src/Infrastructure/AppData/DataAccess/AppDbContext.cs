@@ -25,12 +25,10 @@ namespace Infrastructure.AppData.DataAccess
         public DbSet<Route> Routes { get; set; }
         public DbSet<RoutePrice> RoutePrice { get; set; }
 
-        public DbSet<RouteTrip> RouteTrips { get; set; }
-
         //locations
         public DbSet<Location> Locations { get; set; }
 
-        public DbSet<LocationDate> LocationDate { get; set; }
+        public DbSet<LocationData> LocationData { get; set; }
 
         //orders
         public DbSet<Delivery> Deliveries { get; set; }

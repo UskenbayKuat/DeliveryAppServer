@@ -18,7 +18,7 @@ using Infrastructure.Services;
 using Infrastructure.Services.BackgroundServices;
 using Infrastructure.Services.ChatHubServices;
 using Infrastructure.Services.ClientServices;
-using Infrastructure.Services.ContextServices;
+using Infrastructure.Services.ContextBuilder;
 using Infrastructure.Services.DeliveryServices;
 using Infrastructure.Services.DriverServices;
 using Infrastructure.Services.RegisterServices;
@@ -28,8 +28,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PublicApi.Helpers;
-using IOrder = ApplicationCore.Interfaces.ClientInterfaces.IOrder;
-using OrderService = Infrastructure.Services.ClientServices.OrderService;
 
 namespace PublicApi.Extensions
 {
@@ -37,15 +35,27 @@ namespace PublicApi.Extensions
     {
         public static void GetServices(this IServiceCollection services, IConfiguration configuration)
         {
+            //backgroundService
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-            services.AddTransient<IOrder, OrderService>();
-            services.AddTransient<IDriver, DriverService>();
+
+            //context
+            services.AddTransient<IContext, ContextService>();
+            services.AddTransient<IDeliveryContextBuilder, DeliveryContextBuilder>();
+            services.AddTransient<IOrderContextBuilder, OrderContextBuilder>();
+            services.AddTransient<IDriverContextBuilder, DriverContextBuilder>();
+            services.AddTransient<ILocationDataContextBuilder, LocationDataContextBuilder>();
+
+            
+            services.AddTransient<IOrderCommand, OrderCommand>();
+            services.AddTransient<IOrderQuery, OrderQuery>();
+            services.AddTransient<IDeliveryCommand, DeliveryCommand>();
+            services.AddTransient<IDeliveryQuery, DeliveryQuery>(); 
+            
+      
             services.AddTransient<IChatHub, ChatHubService>();
-            services.AddTransient<IDelivery, DeliveryService>();
             services.AddTransient<IValidation, ValidationService>();
             services.AddTransient<IGenerateToken, TokenService>();
             services.AddTransient<IRefreshToken, TokenService>();
-            services.AddTransient<IRouteTrip, RouteTripService>();
             services.AddTransient<IRegistration, RegisterBySmsMockService>();
             services.AddTransient<IProceedRegistration, ProceedRegistrationService>();
             services.AddTransient<ICalculate, CalculateService>();
@@ -53,7 +63,6 @@ namespace PublicApi.Extensions
             services.AddTransient<IDeliveryAppData<DriverAppDataInfo>, DriverAppDataService>();
             services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
             services.AddTransient<IUserData, UserDataService>();
-            services.AddTransient<IContext, ContextService>();
             services.AddTransient<HubHelper>();
             services.AddTransient<IOrderHandler, OrderHandler>();
             services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.JwtSettings));
