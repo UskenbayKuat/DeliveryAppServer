@@ -67,7 +67,7 @@ namespace Infrastructure.Services.ClientServices
 
         public async Task<Order> RejectAsync(int orderId)
         {
-            var order = await _orderContextBuilder.StateAndDeliveryBuilder()
+            var order = await _orderContextBuilder.ForRejectBuilder()
                 .Build()
                 .FirstOrDefaultAsync(o => o.Id == orderId);
             await _context.AddAsync(new RejectedOrder

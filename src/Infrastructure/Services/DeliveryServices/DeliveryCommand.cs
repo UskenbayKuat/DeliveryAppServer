@@ -100,8 +100,7 @@ namespace Infrastructure.Services.DeliveryServices
                 .DriverBuilder()
                 .Build()
                 .Where(d =>
-                    d.Route.StartCity.Id == order.Route.StartCityId &&
-                    d.Route.FinishCity.Id == order.Route.FinishCityId &&
+                    d.Route.Id == order.Route.Id &&
                     d.DeliveryDate >= order.DeliveryDate &&
                     d.State.Id == (int)GeneralState.New)
                 .ToListAsync(cancellationToken);

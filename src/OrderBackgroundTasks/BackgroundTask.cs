@@ -52,7 +52,7 @@ namespace OrderBackgroundTasks
             {
                 var orderHandler = serviceProvider.GetService<IOrderHandler>();
                 var notify = serviceProvider.GetService<INotify>();
-                await orderHandler.RejectedHandlerAsync(order.Id, stoppingToken);
+                order = await orderHandler.RejectedHandlerAsync(order.Id, stoppingToken);
                 await notify.SendToDriverAsync(order.Delivery?.Driver?.UserId, stoppingToken);
                 _logger.LogInformation("Complete work!");
             }

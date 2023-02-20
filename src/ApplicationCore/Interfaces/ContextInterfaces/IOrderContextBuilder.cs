@@ -9,7 +9,7 @@ namespace ApplicationCore.Interfaces.ContextInterfaces
         public IOrderContextBuilder StateBuilder();
         public IOrderContextBuilder ClientBuilder();
         public IOrderContextBuilder DeliveriesInfoBuilder();
-        public IOrderContextBuilder StateAndDeliveryBuilder();
+        public IOrderContextBuilder ForRejectBuilder();
         public IOrderContextBuilder ClientAndDeliveryBuilder();
         public IQueryable<Order> Build();
     }
