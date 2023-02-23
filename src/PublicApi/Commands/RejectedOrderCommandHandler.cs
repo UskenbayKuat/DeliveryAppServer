@@ -20,7 +20,7 @@ namespace PublicApi.Commands
         protected override async Task Handle(RejectedOrderCommand request, CancellationToken cancellationToken)
         {
             var order = await _orderHandler.RejectedHandlerAsync(request.OrderId, cancellationToken);
-            await _notify.SendToDriverAsync(order.Delivery.Driver.UserId, cancellationToken);
+            await _notify.SendToDriverAsync(order.Delivery?.Driver.UserId, cancellationToken);
         }
     }
 }
