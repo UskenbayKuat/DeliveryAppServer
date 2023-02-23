@@ -7,7 +7,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
-      <ProjectReference Include="..\BackgroundTasks\BackgroundTasks.csproj" />
+      <ProjectReference Include="..\Notification\Notification.csproj" />
+      <ProjectReference Include="..\OrderBackgroundTasks\OrderBackgroundTasks.csproj" />
       <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 

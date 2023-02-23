@@ -8,15 +8,15 @@ namespace Infrastructure
 {
     public static class AutoMappingExtensions
     {
-        public static RouteTripInfo GetRouteTripInfo(this RouteTrip routeTrip) =>
+        public static RouteTripInfo SetRouteTripInfo(this Delivery delivery) =>
             new()
             {
-                StartCity = routeTrip.Route.StartCity,
-                FinishCity = routeTrip.Route.FinishCity,
-                DeliveryDate = routeTrip.DeliveryDate,
+                StartCity = delivery.Route.StartCity,
+                FinishCity = delivery.Route.FinishCity,
+                DeliveryDate = delivery.DeliveryDate,
             };    
 
-        public static OrderInfo GetOrderInfo(this Order order, User client) =>
+        public static OrderInfo SetOrderInfo(this Order order, User client) =>
             new()
             {
                 OrderId = order.Id,
@@ -27,14 +27,15 @@ namespace Infrastructure
                 IsSingle = order.IsSingle,
                 Price = order.Price,
                 StateName = order.State.Name,
-                DeliveryDate = order.Delivery?.RouteTrip?.DeliveryDate ?? order.DeliveryDate,
+                DeliveryDate = order.Delivery?.DeliveryDate ?? order.DeliveryDate,
                 Location = order.Location,
                 ClientName = client.Name,
                 ClientSurname = client.Surname,
-                ClientPhoneNumber = client.PhoneNumber
+                ClientPhoneNumber = client.PhoneNumber,
+                SecretCode = order.SecretCode
             };
 
-        public static DeliveryInfo GetDeliveryInfo(this Order order, User client, User driver) =>
+        public static DeliveryInfo SetDeliveryInfo(this Order order, User client, User driver) =>
             new()
             {
                 OrderId = order.Id,
@@ -45,14 +46,15 @@ namespace Infrastructure
                 IsSingle = order.IsSingle,
                 Price = order.Price,
                 StateName = order.State.Name,
-                DeliveryDate = order.Delivery?.RouteTrip?.DeliveryDate ?? order.DeliveryDate,
+                DeliveryDate = order.Delivery?.DeliveryDate ?? order.DeliveryDate,
                 Location = order.Location,
                 ClientName = client.Name,
                 ClientSurname = client.Surname,
                 ClientPhoneNumber = client.PhoneNumber,
                 DriverPhoneNumber = driver.PhoneNumber,
                 DriverName = driver.Name,
-                DriverSurname = driver.Surname
+                DriverSurname = driver.Surname,
+                SecretCode = order.SecretCode
             };
     }
 }

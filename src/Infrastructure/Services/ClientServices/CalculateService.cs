@@ -6,7 +6,6 @@ using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.ContextInterfaces;
 using Infrastructure.AppData.DataAccess;
-using Infrastructure.Services.ContextServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

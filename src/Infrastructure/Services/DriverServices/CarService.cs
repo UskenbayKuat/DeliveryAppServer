@@ -13,17 +13,21 @@ namespace Infrastructure.Services.DriverServices
     public class CarService: ICar
     {
         private readonly IContext _context;
+        private readonly IDriverContextBuilder _driverContextBuilder;
 
-        public CarService(IContext context)
+        public CarService(IContext context, IDriverContextBuilder driverContextBuilder)
         {
             _context = context;
+            _driverContextBuilder = driverContextBuilder;
         }
 
         public async Task<ActionResult> CreateAsync(CarInfo info, string userId, CancellationToken cancellationToken)
         {
             try
             {
-                var driver = await _context.Drivers().IncludeCarBuilder().FirstOrDefaultAsync(d => d.UserId == userId,cancellationToken);
+                var driver = await _driverContextBuilder.CarBuilder()
+                    .Build()
+                    .FirstOrDefaultAsync(d => d.UserId == userId,cancellationToken);
                 var carBrand = await _context.FindAsync<CarBrand>(b => b.Id == info.CarBrandId);
                 var carColor = await _context.FindAsync<CarColor>(b => b.Id == info.CarColorId);
                 var carType = await _context.FindAsync<CarType>(b => b.Id == info.CarTypeId);

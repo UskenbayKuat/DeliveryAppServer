@@ -1,30 +1,27 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.AppEntities;
-using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
-using ApplicationCore.Interfaces.HubInterfaces;
 using MediatR;
-using PublicApi.Helpers;
+using Notification.Interfaces;
 
 namespace PublicApi.Commands
 {
     public class ConfirmOrderCommandHandler : AsyncRequestHandler<ConfirmOrderCommand>
     {
-        private readonly IDelivery _delivery;
-        private readonly HubHelper _hubHelper;
+        private readonly IDeliveryCommand _deliveryCommand;
+        private readonly INotify _notify;
 
 
-        public ConfirmOrderCommandHandler(IDelivery delivery, HubHelper hubHelper)
+        public ConfirmOrderCommandHandler(IDeliveryCommand deliveryCommand, INotify notify)
         {
-            _delivery = delivery;
-            _hubHelper = hubHelper;
+            _deliveryCommand = deliveryCommand;
+            _notify = notify;
         }
 
         protected override async Task Handle(ConfirmOrderCommand request, CancellationToken cancellationToken)
         {
-            var order  = await _delivery.AddToDeliveryAsync(request.OrderId);
-            await _hubHelper.SendToClient(order.Client.UserId, cancellationToken);
+            var order  = await _deliveryCommand.AddOrderAsync(request.OrderId);
+            await _notify.SendToClient(order.Client.UserId, cancellationToken);
         }
     }
 }

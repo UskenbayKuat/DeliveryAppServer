@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.DriverInterfaces;
+using ApplicationCore.Interfaces.DeliveryInterfaces;
 using Ardalis.ApiEndpoints;
 using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
@@ -10,15 +10,15 @@ namespace PublicApi.Endpoints.Delivery
     [Authorize]
     public class GetOnReviewOrdersForDriver : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
-        private readonly IDriver _driver;
+        private readonly IDeliveryQuery _deliveryQuery;
 
-        public GetOnReviewOrdersForDriver(IDriver driver)
+        public GetOnReviewOrdersForDriver(IDeliveryQuery deliveryQuery)
         {
-            _driver = driver;
+            _deliveryQuery = deliveryQuery;
         }
         
         [HttpPost("api/driver/onReviewOrders")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default) => 
-            await _driver.GetOnReviewOrdersForDriverAsync(HttpContext.Items["UserId"]?.ToString());
+            await _deliveryQuery.GetOnReviewOrdersForDriverAsync(HttpContext.Items["UserId"]?.ToString());
     }
 }

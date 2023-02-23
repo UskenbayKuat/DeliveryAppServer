@@ -1,47 +1,26 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.Values;
-using ApplicationCore.Entities.Values.Enums;
-using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Interfaces.DeliveryInterfaces;
-using ApplicationCore.Interfaces.DriverInterfaces;
-using ApplicationCore.Interfaces.HubInterfaces;
-using AutoMapper;
-using BackgroundTasks.Interfaces;
-using BackgroundTasks.Model;
+using ApplicationCore;
 using MediatR;
-using PublicApi.Helpers;
+using Notification.Interfaces;
 
 namespace PublicApi.Commands
 {
     public class RejectedOrderCommandHandler : AsyncRequestHandler<RejectedOrderCommand>
     {
-        private readonly IDriver _driverService;
-        private readonly IDelivery _delivery;
-        private readonly IBackgroundTaskQueue _backgroundTask;
-        private readonly IOrder _order;
-        private readonly HubHelper _hubHelper;
+        private readonly IOrderHandler _orderHandler;
+        private readonly INotify _notify;
 
-        public RejectedOrderCommandHandler(IDriver driverService, IDelivery delivery, IBackgroundTaskQueue backgroundTask, IOrder order, HubHelper hubHelper)
+        public RejectedOrderCommandHandler(INotify notify, IOrderHandler orderHandler)
         {
-            _driverService = driverService;
-            _delivery = delivery;
-            _backgroundTask = backgroundTask;
-            _order = order;
-            _hubHelper = hubHelper;
+            _notify = notify;
+            _orderHandler = orderHandler;
         }
 
         protected override async Task Handle(RejectedOrderCommand request, CancellationToken cancellationToken)
         {
-            var order = await _driverService.RejectOrderAsync(request.OrderId);
-            var delivery = await _delivery.FindIsActiveDelivery(order, cancellationToken);
-            if (delivery is null)
-            {
-                return;
-            }
-            await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, delivery.Id));
-            await _order.UpdateOrderAsync(order, delivery, (int)GeneralState.OnReview);
-            await _hubHelper.SendToDriverAsync(delivery.RouteTrip.Driver.UserId, cancellationToken);
+            var order = await _orderHandler.RejectedHandlerAsync(request.OrderId, cancellationToken);
+            await _notify.SendToDriverAsync(order.Delivery?.Driver.UserId, cancellationToken);
         }
     }
 }

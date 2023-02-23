@@ -21,6 +21,7 @@ namespace PublicApi
             CreateMap<CreateDeliveryCommand, RouteTripInfo>();
             CreateMap<CarCommand, CarInfo>();
             CreateMap<CreateOrderCommand, OrderInfo>();
+            CreateMap<ConfirmHandOverCommand, ConfirmHandOverInfo>();
         }   
     }
 }

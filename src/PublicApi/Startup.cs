@@ -1,4 +1,4 @@
-using BackgroundTasks;
+using OrderBackgroundTasks;
 using Infrastructure.Config.Middlewares;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PublicApi.Extensions;
-using PublicApi.HubNotification;
 
 namespace PublicApi
 {
@@ -91,7 +90,7 @@ namespace PublicApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<Notification>("/api/notification");
+                endpoints.MapHub<Notification.Notification>("/api/notification");
             });
         }
     }

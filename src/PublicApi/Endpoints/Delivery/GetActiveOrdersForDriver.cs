@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore.Interfaces.DeliveryInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using Ardalis.ApiEndpoints;
 using Infrastructure.Config.Attributes;
@@ -10,15 +11,15 @@ namespace PublicApi.Endpoints.Delivery
     [Authorize]
     public class GetActiveOrdersForDriver : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
-        private readonly IDriver _driver;
+        private readonly IDeliveryQuery _deliveryQuery;
 
-        public GetActiveOrdersForDriver(IDriver driver)
+        public GetActiveOrdersForDriver(IDeliveryQuery deliveryQuery)
         {
-            _driver = driver;
+            _deliveryQuery = deliveryQuery;
         }
         
         [HttpPost("api/driver/activeOrders")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default) => 
-            await _driver.GetActiveOrdersForDriverAsync(HttpContext.Items["UserId"]?.ToString());
+            await _deliveryQuery.GetActiveOrdersForDriverAsync(HttpContext.Items["UserId"]?.ToString());
     }
 }

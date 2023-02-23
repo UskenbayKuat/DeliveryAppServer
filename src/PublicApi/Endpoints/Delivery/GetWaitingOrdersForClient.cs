@@ -10,17 +10,17 @@ namespace PublicApi.Endpoints.Delivery
     [Authorize]
     public class GetWaitingOrdersForClient : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
-        private readonly IOrder _order;
+        private readonly IOrderQuery _orderQuery;
 
-        public GetWaitingOrdersForClient(IOrder order)
+        public GetWaitingOrdersForClient(IOrderQuery orderQuery)
         {
-            _order = order;
+            _orderQuery = orderQuery;
         }
 
         [HttpPost("api/client/waitingOrders")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
-            return await _order.GetWaitingOrdersAsync(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
+            return await _orderQuery.GetWaitingOrdersAsync(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         }
     }
 }

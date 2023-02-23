@@ -1,47 +1,32 @@
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore;
 using ApplicationCore.Entities.Values;
-using ApplicationCore.Entities.Values.Enums;
-using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Interfaces.DeliveryInterfaces;
-using ApplicationCore.Interfaces.DriverInterfaces;
-using ApplicationCore.Interfaces.HubInterfaces;
 using AutoMapper;
-using BackgroundTasks.Interfaces;
-using BackgroundTasks.Model;
 using MediatR;
-using PublicApi.Helpers;
+using Notification.Interfaces;
 
 namespace PublicApi.Commands
 {
     public class CreateOrderCommandHandler : AsyncRequestHandler<CreateOrderCommand>
     {
-        private readonly IOrder _order;
-        private readonly IDelivery _delivery;
+        private readonly IOrderHandler _orderHandler;
         private readonly IMapper _mapper;
-        private readonly HubHelper _hubHelper;
-        private readonly IBackgroundTaskQueue _backgroundTask;
+        private readonly INotify _notify;
 
-        public CreateOrderCommandHandler(IOrder order, IMapper mapper, IDelivery delivery, HubHelper hubHelper, IBackgroundTaskQueue backgroundTask)
+        public CreateOrderCommandHandler(IMapper mapper, INotify notify, IOrderHandler orderHandler)
         {
-            _order = order;
             _mapper = mapper;
-            _delivery = delivery;
-            _hubHelper = hubHelper;
-            _backgroundTask = backgroundTask;
+            _notify = notify;
+            _orderHandler = orderHandler;
         }
 
         protected override async Task Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
-            var order = await _order.CreateAsync(_mapper.Map<OrderInfo>(request), request.UserId, cancellationToken);
-            var delivery = await _delivery.FindIsActiveDelivery(order, cancellationToken);
-            if (delivery is null)
-            {
-                return;
-            }
-            await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, delivery.Id));
-            await _order.UpdateOrderAsync(order, delivery, (int)GeneralState.OnReview);
-            await _hubHelper.SendToDriverAsync(delivery.RouteTrip.Driver.UserId, cancellationToken);
+            var order = await _orderHandler.CreatedHandlerAsync(_mapper.Map<OrderInfo>(request), request.UserId,
+                cancellationToken);
+            order = await _orderHandler.FindIsNewDeliveryHandlerAsync(order, cancellationToken);
+            await _notify.SendToDriverAsync(order.Delivery?.Driver.UserId, cancellationToken);
         }
     }
 }

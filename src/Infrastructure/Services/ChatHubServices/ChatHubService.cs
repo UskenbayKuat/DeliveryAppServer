@@ -9,6 +9,7 @@ using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
 using Infrastructure.AppData.DataAccess;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.ChatHubServices
@@ -46,10 +47,22 @@ namespace Infrastructure.Services.ChatHubServices
             return connectionIds;
         }
 
-        public async Task DisconnectedAsync(string connectId)
+        public async Task DisconnectedAsync(string userId, string connectId)
         {
-            var chatHub = await _context.FindAsync<ChatHub>(c => c.ConnectionId == connectId);
-            await _context.UpdateAsync(chatHub.RemoveConnectId());
+            ChatHub chatHub;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                chatHub = await _context.FindAsync<ChatHub>(c => c.UserId == userId);
+            }
+            else if (!string.IsNullOrEmpty(userId))
+            {
+                chatHub = await _context.FindAsync<ChatHub>(c => c.ConnectionId == connectId);
+            }
+            else
+            {
+                throw new HubException();
+            }
+            await _context.UpdateAsync(chatHub?.RemoveConnectId());
         }
         
         private async Task<ChatHub> CreateChatHubAsync(string userId, string connectId)

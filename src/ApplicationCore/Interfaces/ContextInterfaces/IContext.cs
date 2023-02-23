@@ -1,14 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using ApplicationCore.Entities;
-using ApplicationCore.Interfaces.ContextInterfaces.DeliveryBuilder;
-using ApplicationCore.Interfaces.ContextInterfaces.DriverBuilder;
-using ApplicationCore.Interfaces.ContextInterfaces.OrderBuilder;
-using ApplicationCore.Interfaces.ContextInterfaces.RouteBuilder;
-using ApplicationCore.Interfaces.ContextInterfaces.RouteTripBuilder;
 
 namespace ApplicationCore.Interfaces.ContextInterfaces
 {
@@ -21,11 +15,6 @@ namespace ApplicationCore.Interfaces.ContextInterfaces
         public Task UpdateAsync<T>(T entity) where T : BaseEntity;
         public Task AddAsync<T>(T entity) where T : BaseEntity;
         public Task RemoveAsync<T>(T entity) where T : BaseEntity;
-        public IDirectorOrderBuilder Orders();
-        public IDirectorRouteTripBuilder RouteTrips();
-        public IDirectorRouteBuilder Routes();
-        public IDirectorDeliveryBuilder Deliveries();
-        public IDirectorDriverBuilder Drivers();
 
     }
 }

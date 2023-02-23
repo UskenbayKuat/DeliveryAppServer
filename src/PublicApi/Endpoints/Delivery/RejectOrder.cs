@@ -4,7 +4,6 @@ using Ardalis.ApiEndpoints;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands;
-using PublicApi.Helpers;
 
 namespace PublicApi.Endpoints.Delivery
 {

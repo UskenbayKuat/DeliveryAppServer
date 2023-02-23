@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using Ardalis.ApiEndpoints;
 using Infrastructure.Config.Attributes;
@@ -10,16 +11,16 @@ namespace PublicApi.Endpoints.Delivery
     [Authorize]
     public class GetActiveOrdersForClient: EndpointBaseAsync.WithoutRequest.WithActionResult
     {
-        private readonly IDelivery _delivery;
+        private readonly IOrderQuery _orderQuery;
 
-        public GetActiveOrdersForClient(IDelivery delivery)
+        public GetActiveOrdersForClient(IOrderQuery orderQuery)
         {
-            _delivery = delivery;
+            _orderQuery = orderQuery;
         }
 
         [HttpPost("api/client/activeOrders")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default) =>
-            await _delivery.GetActiveOrdersForClientAsync(HttpContext.Items["UserId"]?.ToString());
+            await _orderQuery.GetActiveOrdersForClientAsync(HttpContext.Items["UserId"]?.ToString());
     }
 
 }
