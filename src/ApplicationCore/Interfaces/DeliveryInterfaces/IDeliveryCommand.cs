@@ -12,7 +12,8 @@ namespace ApplicationCore.Interfaces.DeliveryInterfaces
         public  Task<Delivery> FindIsNewDelivery(Order order, CancellationToken cancellationToken);
         public Task<Delivery> CreateAsync(RouteTripInfo tripInfo, string userId);
         public Task<Order> AddOrderAsync(int orderId);
-
-
+        public Task<ActionResult> CancellationAsync(string driverUserId);
+        public Task StartAsync(string driverUserId);
+        
     }
 }

@@ -42,7 +42,15 @@ namespace Infrastructure.Services.ClientServices
             var userClient = await _dbIdentityDbContext.Users.FirstAsync(u => u.Id == userClientId);
             return new OkObjectResult(await DeliveriesInfoAsync(userClient));
         }
-        
+
+        public async Task<List<Order>> GetOrdersAsync(string driverUserId)
+        {
+            return await _orderContextBuilder.ClientBuilder()
+                .Build()
+                .Where(o => o.Delivery.Driver.UserId == driverUserId)
+                .ToListAsync();
+        }
+
         private async Task<List<DeliveryInfo>> DeliveriesInfoAsync(User userClient)
         {
             var deliveriesInfo = new List<DeliveryInfo>();

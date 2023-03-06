@@ -48,5 +48,14 @@ namespace Notification.HubNotify
                 await _hubContext.Clients.Client(connectionId).SendCoreAsync("ReceiveDriverLocation", new[] { locationCommand });
             }
         }
+
+        public async Task SendInfoToClientsAsync(List<Order> orders)
+        {
+            var connectionIdList = await _chatHub.GetConnectionIdListAsync(orders);
+            foreach (var connectionId in connectionIdList)
+            {
+                await _hubContext.Clients.Client(connectionId).SendCoreAsync("SendToClient", new[] { "Водитель начал поездку" });
+            }
+        }
     }
 }

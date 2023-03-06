@@ -20,7 +20,7 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         public DateTime DeliveryDate { get; set; }
         public DateTime? CompletionDate { get; private set; }
         public DateTime? CancellationDate { get; private set; }
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted { get; set; } //TODO private
         public List<Order> Orders { get; private set; } = new();
 
 
@@ -28,13 +28,20 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         {
             Orders?.Add(order);
         }
-        public void UpdateCompletionDate(DateTime dateTime)
+        public Delivery SetCompletionDate(DateTime dateTime)
         {
             CompletionDate = dateTime;
+            return this;
         }
-        public void UpdateCancellationDate(DateTime dateTime)
+        public Delivery SetCancellationDate()
         {
-            CancellationDate = dateTime;
+            CancellationDate = DateTime.Now;
+            return this;
+        }
+        public Delivery SetDelete()
+        {
+            IsDeleted = true;
+            return this;
         }
     }
 }

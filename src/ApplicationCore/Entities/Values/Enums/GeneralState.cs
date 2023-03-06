@@ -10,6 +10,6 @@
         InProgress = 6, //moving
         Done = 7,
         Delayed = 8,
-        Canceled = 9
+        Canceled = 9 //Client Driver
     }
 }

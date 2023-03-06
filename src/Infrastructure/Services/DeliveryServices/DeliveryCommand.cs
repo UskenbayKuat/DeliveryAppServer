@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
@@ -14,7 +13,6 @@ using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
-using Infrastructure.AppData.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,6 +49,21 @@ namespace Infrastructure.Services.DeliveryServices
                 : await CreateDeliveryAsync(tripInfo, driver);
         }
         
+        public async Task<ActionResult> CancellationAsync(string driverUserId)
+        {
+            var delivery = await _deliveryContextBuilder.Build()
+                .Include(d => d.Orders)
+                .FirstOrDefaultAsync(d => 
+                    d.Driver.UserId == driverUserId && (
+                    d.State.Id == (int)GeneralState.New || d.State.Id == (int)GeneralState.InProgress));
+            if (delivery.Orders.Count > 0)
+            {
+                return new BadRequestObjectResult("У вас активные заказы");
+            }
+            delivery.State = await _context.FindAsync<State>(s => s.Id == (int)GeneralState.Canceled);
+            await _context.UpdateAsync(delivery.SetCancellationDate());
+            return new NoContentResult();
+        }
         
         public async Task<Order> AddOrderAsync(int orderId)
         {
@@ -62,6 +75,17 @@ namespace Infrastructure.Services.DeliveryServices
             await _context.UpdateAsync(order.SetSecretCode());
             return order;
         }
+
+        public async Task StartAsync(string driverUserId)
+        {
+            var delivery = await _context.FindAsync<Delivery>(d => d.Driver.UserId == driverUserId && d.State.Id == (int)GeneralState.New);
+            if (delivery != null)
+            {
+                delivery.State = await _context.FindAsync<State>(s => s.Id == (int)GeneralState.InProgress);
+                await _context.UpdateAsync(delivery);
+            }
+        }
+
         public async Task<Delivery> FindIsNewDelivery(Order order, CancellationToken cancellationToken)
         {
             var deliveries = await DeliveriesStateFromNewAsync(order, cancellationToken);

@@ -30,7 +30,7 @@ namespace ApplicationCore.Entities.AppEntities.Orders
 
         public Order SetSecretCode()
         {
-            SecretCode = Guid.NewGuid().ToString("N")[..8].ToUpper();
+            SecretCode = Guid.NewGuid().ToString("N")[..4].ToUpper();
             return this;
         }
         public Order SetSecretCodeEmpty()
