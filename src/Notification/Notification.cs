@@ -32,16 +32,8 @@ namespace Notification
 
         public async Task ReceiveDriverLocation(LocationInfo request)
         {
-            if (string.IsNullOrEmpty(Context.GetHttpContext().Items["UserId"].ToString()))
-            {
-                throw new HubException("Data not correct,request has not userId");
-            }
-            var orders = await _orderContextBuilder.ClientAndDeliveryBuilder()
-                .Build()
-                .Where(o => o.Delivery.Driver.UserId == Context.GetHttpContext().Items["UserId"].ToString())
-                .ToListAsync();
-            var locationInfo = await _location.SendDriverLocationAsync(request.SetUserId(Context.GetHttpContext().Items["UserId"]?.ToString()), orders.FirstOrDefault()!.Delivery.Id);
-            await _notify.SendDriverLocationToClientsAsync(orders, locationInfo);
+            var locationInfo = await _location.UpdateDriverLocationAsync(request.SetUserId(Context.GetHttpContext().Items["UserId"]?.ToString()));
+            await _notify.SendDriverLocationToClientsAsync(request.UserId, locationInfo);
             _logger.LogInformation($"{request.DriverName} : {DateTime.Now:G}");
         }
         

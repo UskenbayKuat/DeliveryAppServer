@@ -10,6 +10,6 @@ namespace ApplicationCore.Interfaces.HubInterfaces
         public Task ConnectedAsync(string userId, string connectId);
         public Task DisconnectedAsync(string userId, string connectId);
         public Task<string> GetConnectionIdAsync(string userId, CancellationToken cancellationToken);
-        public Task<List<string>> GetConnectionIdListAsync(List<Order> orders);
+        public Task<List<string>> GetConnectionIdListAsync(string driverUserId);
     }
 }

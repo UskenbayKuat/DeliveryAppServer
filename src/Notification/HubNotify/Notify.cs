@@ -1,8 +1,7 @@
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
+using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
 using Microsoft.AspNetCore.SignalR;
 using Notification.Interfaces;
@@ -13,11 +12,13 @@ namespace Notification.HubNotify
     {
         private readonly IHubContext<Notification> _hubContext;
         private readonly IChatHub _chatHub;
+        private readonly IOrderQuery _orderQuery;
 
-        public Notify(IHubContext<Notification> hubContext, IChatHub chatHub)
+        public Notify(IHubContext<Notification> hubContext, IChatHub chatHub, IOrderQuery orderQuery)
         {
             _hubContext = hubContext;
             _chatHub = chatHub;
+            _orderQuery = orderQuery;
         }
 
         public async Task SendToDriverAsync(string userId, CancellationToken cancellationToken)
@@ -40,18 +41,18 @@ namespace Notification.HubNotify
             }
         }
 
-        public async Task SendDriverLocationToClientsAsync(List<Order> orders, LocationInfo locationCommand)
+        public async Task SendDriverLocationToClientsAsync(string driverUserId, LocationInfo locationCommand)
         {
-            var connectionIdList = await _chatHub.GetConnectionIdListAsync(orders);
+            var connectionIdList = await _chatHub.GetConnectionIdListAsync(driverUserId);
             foreach (var connectionId in connectionIdList)
             {
                 await _hubContext.Clients.Client(connectionId).SendCoreAsync("ReceiveDriverLocation", new[] { locationCommand });
             }
         }
 
-        public async Task SendInfoToClientsAsync(List<Order> orders)
+        public async Task SendInfoToClientsAsync(string driverUserId)
         {
-            var connectionIdList = await _chatHub.GetConnectionIdListAsync(orders);
+            var connectionIdList = await _chatHub.GetConnectionIdListAsync(driverUserId);
             foreach (var connectionId in connectionIdList)
             {
                 await _hubContext.Clients.Client(connectionId).SendCoreAsync("SendToClient", new[] { "Водитель начал поездку" });

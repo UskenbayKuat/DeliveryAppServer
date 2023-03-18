@@ -45,7 +45,8 @@ namespace OrderBackgroundTasks
 
         private async Task OrderHandlerAsync(BackgroundOrder backgroundOrder, CancellationToken stoppingToken)
         {
-            var serviceProvider = _serviceProvider.CreateScope().ServiceProvider;
+            using var scope = _serviceProvider.CreateScope();
+            var serviceProvider = scope.ServiceProvider;
             var orderContextBuilder = serviceProvider.GetService<IOrderContextBuilder>();
             var order = await OrderAsync(orderContextBuilder, backgroundOrder);
             if (CheckOrderState(order, backgroundOrder))

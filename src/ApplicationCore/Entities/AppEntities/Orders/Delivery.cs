@@ -36,6 +36,7 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         public Delivery SetCancellationDate()
         {
             CancellationDate = DateTime.Now;
+            IsDeleted = true;
             return this;
         }
         public Delivery SetDelete()

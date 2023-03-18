@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values.Enums;
+using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
 using Infrastructure.AppData.DataAccess;
@@ -17,10 +18,12 @@ namespace Infrastructure.Services.ChatHubServices
     public class ChatHubService : IChatHub
     {
         private readonly IContext _context;
+        private readonly IOrderQuery _orderQuery;
 
-        public ChatHubService(IContext context)
+        public ChatHubService(IContext context, IOrderQuery orderQuery)
         {
             _context = context;
+            _orderQuery = orderQuery;
         }
 
         public async Task ConnectedAsync(string userId, string connectId)
@@ -36,9 +39,10 @@ namespace Infrastructure.Services.ChatHubServices
             return chatHub?.ConnectionId;
         }
 
-        public async Task<List<string>> GetConnectionIdListAsync(List<Order> orders)
+        public async Task<List<string>> GetConnectionIdListAsync(string driverUserId)
         {
             var connectionIds = new List<string>();
+            var orders = await _orderQuery.GetOrdersAsync(driverUserId);
             foreach (var order in orders)
             {
                 var chatHub = await  _context.FindAsync<ChatHub>(c => c.UserId == order.Client.UserId);
