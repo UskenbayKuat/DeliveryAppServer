@@ -24,7 +24,7 @@ namespace Infrastructure.Config.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Replace("Bearer", string.Empty).Trim();
             if (!string.IsNullOrEmpty(token))
                 AttachUserToContext(context, token);
             await _next(context);

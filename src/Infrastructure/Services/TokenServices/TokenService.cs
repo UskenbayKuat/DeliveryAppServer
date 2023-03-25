@@ -65,7 +65,7 @@ namespace Infrastructure.Services.TokenServices
             }
             catch
             {
-                return new BadRequestResult();
+                return new BadRequestObjectResult("Login out");
             }
         }
     }
