@@ -42,5 +42,11 @@ namespace Infrastructure.Services.ContextBuilder
             _deliveries = _db.Deliveries;
             return deliveries;
         }
+
+        public IDeliveryContextBuilder IncludeLocation()
+        {
+            _deliveries = _deliveries.Include(d => d.Location);
+            return this;
+        }
     }
 }

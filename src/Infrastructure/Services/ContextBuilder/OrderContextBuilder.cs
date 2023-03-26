@@ -20,6 +20,7 @@ namespace Infrastructure.Services.ContextBuilder
         public IOrderContextBuilder ForRejectBuilder()
         {
             _orders = _orders.Include(o => o.State)
+                .Include(o => o.Location)
                 .Include(o => o.Delivery.Driver)
                 .Include(o => o.Route)
                 .Include(o => o.Delivery);

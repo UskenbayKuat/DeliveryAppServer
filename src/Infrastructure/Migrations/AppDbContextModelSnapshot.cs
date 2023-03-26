@@ -288,6 +288,9 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<int?>("LocationId")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("RouteId")
                         .HasColumnType("integer");
 
@@ -297,6 +300,8 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DriverId");
+
+                    b.HasIndex("LocationId");
 
                     b.HasIndex("RouteId");
 
@@ -577,6 +582,10 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("DriverId");
 
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Locations.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+
                     b.HasOne("ApplicationCore.Entities.AppEntities.Routes.Route", "Route")
                         .WithMany()
                         .HasForeignKey("RouteId");
@@ -586,6 +595,8 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("StateId");
 
                     b.Navigation("Driver");
+
+                    b.Navigation("Location");
 
                     b.Navigation("Route");
 

@@ -19,15 +19,13 @@ namespace Notification
         private readonly ILocation _location;
         private readonly ILogger<Notification> _logger;
         private readonly INotify _notify;
-        private readonly IOrderContextBuilder _orderContextBuilder;
 
-        public Notification(IChatHub chatHub, ILogger<Notification> logger, ILocation location, INotify notify, IOrderContextBuilder orderContextBuilder)
+        public Notification(IChatHub chatHub, ILogger<Notification> logger, ILocation location, INotify notify)
         {
             _chatHub = chatHub;
             _logger = logger;
             _location = location;
             _notify = notify;
-            _orderContextBuilder = orderContextBuilder;
         }
 
         public async Task ReceiveDriverLocation(LocationInfo request)

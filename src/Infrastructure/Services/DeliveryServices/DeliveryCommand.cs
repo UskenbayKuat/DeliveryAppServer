@@ -108,14 +108,10 @@ namespace Infrastructure.Services.DeliveryServices
             {
                 State = state,
                 Driver = driver,
-                Route = route
+                Route = route,
+                Location = new Location(tripInfo.Location.Latitude, tripInfo.Location.Longitude)
             };
-            await _context.AddAsync(
-                new LocationData
-                {
-                    Location = new Location(tripInfo.Location.Latitude, tripInfo.Location.Longitude),
-                    Delivery = delivery
-                });
+            await _context.AddAsync(delivery);
             return delivery;
         }
 
@@ -123,6 +119,7 @@ namespace Infrastructure.Services.DeliveryServices
             await _deliveryContextBuilder
                 .DriverBuilder()
                 .Build()
+                .OrderBy(d => Math.Abs(d.Location.Latitude - order.Location.Latitude) + Math.Abs(d.Location.Longitude - order.Location.Longitude))
                 .Where(d =>
                     d.Route.Id == order.Route.Id &&
                     d.DeliveryDate >= order.DeliveryDate &&

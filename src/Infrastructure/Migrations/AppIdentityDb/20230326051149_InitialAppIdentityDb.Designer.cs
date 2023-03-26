@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations.AppIdentityDb
 {
     [DbContext(typeof(AppIdentityDbContext))]
-    [Migration("20230219095607_InitialAppIdentityDb")]
+    [Migration("20230326051149_InitialAppIdentityDb")]
     partial class InitialAppIdentityDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

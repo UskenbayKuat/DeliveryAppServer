@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Routes;
 
 namespace ApplicationCore.Entities.AppEntities.Orders
@@ -20,7 +21,8 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         public DateTime DeliveryDate { get; set; }
         public DateTime? CompletionDate { get; private set; }
         public DateTime? CancellationDate { get; private set; }
-        public bool IsDeleted { get; set; } //TODO private
+        public Location Location { get; set; }
+        public bool IsDeleted { get; private set; }
         public List<Order> Orders { get; private set; } = new();
 
 

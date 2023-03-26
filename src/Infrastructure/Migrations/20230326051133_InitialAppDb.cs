@@ -282,6 +282,7 @@ namespace Infrastructure.Migrations
                     DeliveryDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CompletionDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CancellationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LocationId = table.Column<int>(type: "integer", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -291,6 +292,12 @@ namespace Infrastructure.Migrations
                         name: "FK_Deliveries_Drivers_DriverId",
                         column: x => x.DriverId,
                         principalTable: "Drivers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Deliveries_Locations_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -474,6 +481,11 @@ namespace Infrastructure.Migrations
                 column: "DriverId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Deliveries_LocationId",
+                table: "Deliveries",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Deliveries_RouteId",
                 table: "Deliveries",
                 column: "RouteId");
@@ -602,13 +614,13 @@ namespace Infrastructure.Migrations
                 name: "Deliveries");
 
             migrationBuilder.DropTable(
-                name: "Locations");
-
-            migrationBuilder.DropTable(
                 name: "Packages");
 
             migrationBuilder.DropTable(
                 name: "Drivers");
+
+            migrationBuilder.DropTable(
+                name: "Locations");
 
             migrationBuilder.DropTable(
                 name: "Routes");
