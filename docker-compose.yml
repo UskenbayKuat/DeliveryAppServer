@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  appdeliverypublicapi:
+  appdelivery:
     image: publicapi
     restart: always
     build:
