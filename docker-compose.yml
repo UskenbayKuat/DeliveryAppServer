@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   appdeliverypublicapi:
-    image: appdeliverypublicapi
+    image: publicapi
     restart: always
     build:
       context: .
