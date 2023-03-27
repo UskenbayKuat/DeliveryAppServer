@@ -5,6 +5,7 @@ services:
     image: publicapi
     restart: always
     build:
+      context: .
       dockerfile: src/PublicApi/Dockerfile
     depends_on:
       - "postgres"
