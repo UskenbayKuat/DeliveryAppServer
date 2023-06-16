@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Routes;
@@ -8,18 +9,22 @@ namespace ApplicationCore.Entities.AppEntities.Orders
 {
     public class Order : BaseEntity
     {
-        public Order(bool isSingle, decimal price, DateTime deliveryDate)
+        [NotMapped]
+        public const string StorageAddress = "Досклада";
+        public Order(bool isSingle, decimal price, DateTime deliveryDate, string description, bool isStorage, string addressTo, string addressFrom = "Досклада")
         {
             DeliveryDate = deliveryDate;
             IsSingle = isSingle;
-            CreatedAt = DateTime.Now;
             Price = price;
+            Description = description;
+            IsStorage = isStorage;
+            AddressTo = addressTo;
+            AddressFrom = string.IsNullOrEmpty(addressFrom) ? StorageAddress : addressFrom;
         }
         public CarType CarType { get;  set;}
         public Client Client { get;  set;}
         public Package Package { get;  set;}
         public bool IsSingle { get; private set;}
-        public DateTime CreatedAt { get; private set; }
         public DateTime DeliveryDate { get; private set; }
         public State State { get; set; }
         public decimal Price { get; private set;}
@@ -27,6 +32,10 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         public Location Location { get;  set;}
         public Route Route { get; set;}
         public Delivery Delivery { get;  set;}
+        public bool IsStorage { get; set; }
+        public string AddressTo { get; private set; }
+        public string AddressFrom { get; private set; }
+        public string Description { get; private set; }
 
         public Order SetSecretCode()
         {

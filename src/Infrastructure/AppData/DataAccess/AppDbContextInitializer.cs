@@ -6,6 +6,7 @@ using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values.Enums;
+using ApplicationCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -143,23 +144,23 @@ namespace Infrastructure.AppData.DataAccess
         private static IEnumerable<Kit> GetPreconfiguredKits() =>
             new List<Kit>
             {
-                new(1, "Light", 5, false),
-                new(2, "Standard ", 10, false),
-                new(3, "Premium", 15, false),
-                new(4, "Unlimited", 999999, true)
+                new(1, "Light", 5, false, 4000),
+                new(2, "Standard ", 10, false, 7000),
+                new(3, "Premium", 15, false, 9000),
+                new(4, "Unlimited", 1000, true, 11000)
             };
         private static IEnumerable<State> GetPreconfiguredStates() =>
             new List<State>
             {
-                new((int)GeneralState.New, "Новый", ""),
-                new((int)GeneralState.Waiting, "Ожидает рассмотрения", ""),
-                new((int)GeneralState.OnReview, "На рассмотрении", ""),
-                new((int)GeneralState.PendingForHandOver, "Ожидает передачи", ""),
-                new((int)GeneralState.ReceivedByDriver, "Передан", ""),
-                new((int)GeneralState.InProgress, "В пути", ""),
-                new((int)GeneralState.Done, "", ""),
-                new((int)GeneralState.Delayed, "", ""),
-                new((int)GeneralState.Canceled, "", "")
+                new((int)GeneralState.WaitingOrder, GeneralState.WaitingOrder.GetDisplayName(), ""),
+                new((int)GeneralState.Waiting, GeneralState.Waiting.GetDisplayName(), ""),
+                new((int)GeneralState.OnReview, GeneralState.OnReview.GetDisplayName(), ""),
+                new((int)GeneralState.PendingForHandOver, GeneralState.PendingForHandOver.GetDisplayName(), ""),
+                new((int)GeneralState.ReceivedByDriver, GeneralState.ReceivedByDriver.GetDisplayName(), ""),
+                new((int)GeneralState.InProgress, GeneralState.InProgress.GetDisplayName(), ""),
+                new((int)GeneralState.Done, GeneralState.Done.GetDisplayName(), ""),
+                new((int)GeneralState.Delayed, GeneralState.Delayed.GetDisplayName(), ""),
+                new((int)GeneralState.Canceled, GeneralState.Canceled.GetDisplayName(), "")
             };
         
     }

@@ -6,13 +6,13 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands;
 
-namespace PublicApi.Endpoints.Clients.Order
+namespace PublicApi.Endpoints.Clients
 {
     [Authorize]
-    public class CreateOrder : EndpointBaseAsync.WithRequest<CreateOrderCommand>.WithActionResult
+    public class CreateOrderEndpoint : EndpointBaseAsync.WithRequest<CreateOrderCommand>.WithActionResult
     {
         private readonly IMediator _mediator;
-        public CreateOrder(IMediator mediator)
+        public CreateOrderEndpoint(IMediator mediator)
         {
             _mediator = mediator;
         }

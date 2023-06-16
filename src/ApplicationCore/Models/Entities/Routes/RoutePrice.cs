@@ -4,7 +4,7 @@ namespace ApplicationCore.Entities.AppEntities.Routes
 {
     public class RoutePrice : BaseEntity
     {
-        public RoutePrice(int id, int routeId, decimal price)
+        public RoutePrice(int id, int routeId, double price)
         {
             Id = id;
             RouteId = routeId;
@@ -13,11 +13,6 @@ namespace ApplicationCore.Entities.AppEntities.Routes
         public int RouteId { get; private set; }
 
         public Route Route { get; set;}
-        public decimal Price { get; private set; }
-
-        public void UpdatePrice(decimal price)
-        {
-            Price = price;
-        }
+        public double Price { get; private set; }
     }
 }
