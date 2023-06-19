@@ -1,6 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore;
+using ApplicationCore.Interfaces.ClientInterfaces;
+using ApplicationCore.Interfaces.DeliveryInterfaces;
 using MediatR;
 using Notification.Interfaces;
 
@@ -8,19 +10,26 @@ namespace PublicApi.Commands
 {
     public class RejectedOrderCommandHandler : AsyncRequestHandler<RejectedOrderCommand>
     {
-        private readonly IOrderHandler _orderHandler;
+        private readonly IDeliveryCommand _deliveryCommand;
+        private readonly IOrderCommand _orderCommand;
         private readonly INotify _notify;
 
-        public RejectedOrderCommandHandler(INotify notify, IOrderHandler orderHandler)
+        public RejectedOrderCommandHandler(INotify notify, IDeliveryCommand deliveryCommand, IOrderCommand orderCommand)
         {
             _notify = notify;
-            _orderHandler = orderHandler;
+            _deliveryCommand = deliveryCommand;
+            _orderCommand = orderCommand;
         }
 
         protected override async Task Handle(RejectedOrderCommand request, CancellationToken cancellationToken)
         {
-            var order = await _orderHandler.RejectedHandlerAsync(request.OrderId, cancellationToken);
-            await _notify.SendToDriverAsync(order.Delivery?.Driver.UserId, cancellationToken);
+            var order = await _orderCommand.RejectAsync(request.OrderId);
+            var delivery = await _deliveryCommand.FindIsNewDelivery(order);
+            if (delivery != null)
+            {
+                await _orderCommand.SetDeliveryAsync(order, delivery);
+                await _notify.SendToDriverAsync(delivery.Driver.UserId, cancellationToken);
+            }
         }
     }
 }

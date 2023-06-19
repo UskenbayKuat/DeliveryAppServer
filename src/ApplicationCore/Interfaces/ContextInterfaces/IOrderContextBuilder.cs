@@ -1,5 +1,6 @@
 using System.Linq;
 using ApplicationCore.Entities.AppEntities.Orders;
+using ApplicationCore.Models.Entities.Orders;
 
 namespace ApplicationCore.Interfaces.ContextInterfaces
 {

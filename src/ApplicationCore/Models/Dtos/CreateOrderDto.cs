@@ -16,6 +16,7 @@ namespace ApplicationCore.Models.Dtos
         public Location Location { get; set; }
         public string AddressTo { get; set; }
         public string AddressFrom { get; set; } = string.Empty;
+        public string Description { get; set; }
         public string UserId { get; set; }
 
     }

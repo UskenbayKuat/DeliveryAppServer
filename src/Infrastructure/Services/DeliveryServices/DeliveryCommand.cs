@@ -8,11 +8,12 @@ using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values;
-using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
+using ApplicationCore.Models.Entities.Orders;
+using ApplicationCore.Models.Values.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -86,7 +87,7 @@ namespace Infrastructure.Services.DeliveryServices
             }
         }
 
-        public async Task<Delivery> FindIsNewDelivery(Order order, CancellationToken cancellationToken)
+        public async Task<Delivery> FindIsNewDelivery(Order order)
         {
             var deliveries = await DeliveriesStateFromNewAsync(order, cancellationToken);
             foreach (var delivery in deliveries)

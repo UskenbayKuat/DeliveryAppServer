@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
+using ApplicationCore.Models.Entities.Orders;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationCore.Interfaces.ClientInterfaces

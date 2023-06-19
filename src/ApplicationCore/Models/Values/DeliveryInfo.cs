@@ -2,7 +2,6 @@ using System;
 using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
-using ApplicationCore.Entities.Values.Enums;
 
 namespace ApplicationCore.Entities.Values
 {

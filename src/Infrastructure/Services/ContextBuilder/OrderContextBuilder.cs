@@ -1,6 +1,7 @@
 using System.Linq;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Interfaces.ContextInterfaces;
+using ApplicationCore.Models.Entities.Orders;
 using Infrastructure.AppData.DataAccess;
 using Microsoft.EntityFrameworkCore;
 

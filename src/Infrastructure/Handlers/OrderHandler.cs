@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using ApplicationCore;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
-using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
-using ApplicationCore.Interfaces.DriverInterfaces;
+using ApplicationCore.Models.Entities.Orders;
+using ApplicationCore.Models.Values.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Handlers
@@ -56,22 +56,6 @@ namespace Infrastructure.Handlers
         {
             var order = await _orderCommand.RejectAsync(orderId);
             return await FindIsNewDeliveryHandlerAsync(order, cancellationToken);
-        }
-        public async Task<Order> CreatedHandlerAsync(OrderInfo orderInfo,string userId, CancellationToken cancellationToken)
-        {
-            return await _orderCommand.CreateAsync(orderInfo, userId, cancellationToken);
-        }
-        public async Task<Order> FindIsNewDeliveryHandlerAsync(Order order, CancellationToken cancellationToken)
-        {
-            order.Delivery = await _deliveryCommand.FindIsNewDelivery(order, cancellationToken);
-            if (order.Delivery == null)
-            {
-                return order;
-            }
-            await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, order.Delivery.Id));
-            order.State = await _context.FindAsync<State>((int)GeneralState.OnReview);
-            await _context.UpdateAsync(order);
-            return order;
         }
     }
 }

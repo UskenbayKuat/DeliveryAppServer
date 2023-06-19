@@ -4,6 +4,7 @@ using ApplicationCore;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.ClientInterfaces;
+using ApplicationCore.Interfaces.DeliveryInterfaces;
 using ApplicationCore.Models.Dtos;
 using AutoMapper;
 using MediatR;
@@ -13,25 +14,29 @@ namespace PublicApi.Commands
 {
     public class CreateOrderCommandHandler : AsyncRequestHandler<CreateOrderCommand>
     {
-        private readonly IOrderHandler _orderHandler;
+        private readonly IDeliveryCommand _deliveryCommand;
         private readonly IMapper _mapper;
         private readonly INotify _notify;
         private readonly IOrderCommand _orderCommand;
 
 
-        public CreateOrderCommandHandler(IMapper mapper, INotify notify, IOrderHandler orderHandler, IOrderCommand orderCommand)
+        public CreateOrderCommandHandler(IMapper mapper, INotify notify, IOrderCommand orderCommand, IDeliveryCommand deliveryCommand)
         {
             _mapper = mapper;
             _notify = notify;
-            _orderHandler = orderHandler;
             _orderCommand = orderCommand;
+            _deliveryCommand = deliveryCommand;
         }
 
         protected override async Task Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
             var order = await _orderCommand.CreateAsync(_mapper.Map<CreateOrderDto>(request), request.UserId, cancellationToken);
-            order = await _orderHandler.FindIsNewDeliveryHandlerAsync(order, cancellationToken);
-            await _notify.SendToDriverAsync(order.Delivery?.Driver.UserId, cancellationToken);
+            var delivery = await _deliveryCommand.FindIsNewDelivery(order, cancellationToken);
+            if (delivery != null)
+            {
+                await _orderCommand.SetDeliveryAsync(order, delivery);
+                await _notify.SendToDriverAsync(delivery.Driver.UserId, cancellationToken);
+            }
         }
     }
 }

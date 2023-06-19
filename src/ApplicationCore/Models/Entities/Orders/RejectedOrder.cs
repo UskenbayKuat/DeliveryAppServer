@@ -1,3 +1,5 @@
+using ApplicationCore.Models.Entities.Orders;
+
 namespace ApplicationCore.Entities.AppEntities.Orders
 {
     public class RejectedOrder : BaseEntity

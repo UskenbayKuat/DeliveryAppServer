@@ -5,8 +5,9 @@ using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
-using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Extensions;
+using ApplicationCore.Models.Entities.Orders;
+using ApplicationCore.Models.Values.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -152,15 +153,15 @@ namespace Infrastructure.AppData.DataAccess
         private static IEnumerable<State> GetPreconfiguredStates() =>
             new List<State>
             {
-                new((int)GeneralState.WaitingOrder, GeneralState.WaitingOrder.GetDisplayName(), ""),
-                new((int)GeneralState.Waiting, GeneralState.Waiting.GetDisplayName(), ""),
-                new((int)GeneralState.OnReview, GeneralState.OnReview.GetDisplayName(), ""),
-                new((int)GeneralState.PendingForHandOver, GeneralState.PendingForHandOver.GetDisplayName(), ""),
-                new((int)GeneralState.ReceivedByDriver, GeneralState.ReceivedByDriver.GetDisplayName(), ""),
-                new((int)GeneralState.InProgress, GeneralState.InProgress.GetDisplayName(), ""),
-                new((int)GeneralState.Done, GeneralState.Done.GetDisplayName(), ""),
-                new((int)GeneralState.Delayed, GeneralState.Delayed.GetDisplayName(), ""),
-                new((int)GeneralState.Canceled, GeneralState.Canceled.GetDisplayName(), "")
+                new(GeneralState.WaitingOrder, GeneralState.WaitingOrder.GetDisplayName()),
+                new(GeneralState.Waiting, GeneralState.Waiting.GetDisplayName()),
+                new(GeneralState.OnReview, GeneralState.OnReview.GetDisplayName()),
+                new(GeneralState.PendingForHandOver, GeneralState.PendingForHandOver.GetDisplayName()),
+                new(GeneralState.ReceivedByDriver, GeneralState.ReceivedByDriver.GetDisplayName()),
+                new(GeneralState.InProgress, GeneralState.InProgress.GetDisplayName()),
+                new(GeneralState.Done, GeneralState.Done.GetDisplayName()),
+                new(GeneralState.Delayed, GeneralState.Delayed.GetDisplayName()),
+                new(GeneralState.Canceled, GeneralState.Canceled.GetDisplayName())
             };
         
     }

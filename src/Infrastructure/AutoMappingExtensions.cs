@@ -3,6 +3,7 @@ using ApplicationCore.Entities;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
+using ApplicationCore.Models.Entities.Orders;
 
 namespace Infrastructure
 {

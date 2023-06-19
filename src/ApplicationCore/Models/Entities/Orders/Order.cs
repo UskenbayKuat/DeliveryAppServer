@@ -1,23 +1,24 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using ApplicationCore.Entities;
+using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Locations;
+using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
-using ApplicationCore.Entities.Values.Enums;
 
-namespace ApplicationCore.Entities.AppEntities.Orders
+namespace ApplicationCore.Models.Entities.Orders
 {
     public class Order : BaseEntity
     {
         [NotMapped]
         public const string StorageAddress = "Досклада";
-        public Order(bool isSingle, decimal price, DateTime deliveryDate, string description, bool isStorage, string addressTo, string addressFrom = "Досклада")
+        public Order(bool isSingle, double price, DateTime deliveryDate, string description, string addressTo, string addressFrom)
         {
             DeliveryDate = deliveryDate;
             IsSingle = isSingle;
             Price = price;
             Description = description;
-            IsStorage = isStorage;
             AddressTo = addressTo;
             AddressFrom = string.IsNullOrEmpty(addressFrom) ? StorageAddress : addressFrom;
         }
@@ -27,12 +28,11 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         public bool IsSingle { get; private set;}
         public DateTime DeliveryDate { get; private set; }
         public State State { get; set; }
-        public decimal Price { get; private set;}
+        public double Price { get; private set;}
         public string SecretCode { get; private set;}
         public Location Location { get;  set;}
         public Route Route { get; set;}
         public Delivery Delivery { get;  set;}
-        public bool IsStorage { get; set; }
         public string AddressTo { get; private set; }
         public string AddressFrom { get; private set; }
         public string Description { get; private set; }

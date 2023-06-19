@@ -9,10 +9,12 @@ using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values;
-using ApplicationCore.Entities.Values.Enums;
+using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.ContextInterfaces;
-using Infrastructure.AppData.Identity;
+using ApplicationCore.Models.Dtos;
+using ApplicationCore.Models.Entities.Orders;
+using ApplicationCore.Models.Values.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,29 +24,32 @@ namespace Infrastructure.Services.ClientServices
     {
         private readonly IContext _context;
         private readonly IOrderContextBuilder _orderContextBuilder;
+        private readonly IBackgroundTaskQueue _backgroundTask;
 
-        public OrderCommand(IContext context, IOrderContextBuilder orderContextBuilder)
+
+        public OrderCommand(IContext context, IOrderContextBuilder orderContextBuilder, IBackgroundTaskQueue backgroundTask)
         {
             _context = context;
             _orderContextBuilder = orderContextBuilder;
+            _backgroundTask = backgroundTask;
         }
 
-        public async Task<Order> CreateAsync(OrderInfo info, string clientUserId, CancellationToken cancellationToken)
+        public async Task<Order> CreateAsync(CreateOrderDto dto, string clientUserId, CancellationToken cancellationToken)
         {
             var client = await _context.FindAsync<Client>(c => c.UserId == clientUserId);
-            var carType = await _context.FindAsync<CarType>(c => c.Id == info.CarType.Id);
+            var carType = await _context.FindAsync<CarType>(c => c.Name == dto.CarTypeName);
             var route = await _context.FindAsync<Route>(r =>
-                r.StartCityId == info.StartCity.Id &&
-                r.FinishCityId == info.FinishCity.Id);
+                r.StartCity.Name == dto.StartCityName &&
+                r.FinishCity.Name == dto.FinishCityName);
             var state = await _context.FindAsync<State>((int)GeneralState.Waiting);
-            var order = new Order(info.IsSingle, info.Price, info.DeliveryDate)
+            var order = new Order(dto.IsSingle, dto.Price, dto.DeliveryDate, dto.Description, dto.AddressTo, dto.AddressFrom)
             {
                 Client = client,
-                Package = info.Package,
+                Package = dto.Package,
                 CarType = carType,
                 Route = route,
                 State = state,
-                Location = new Location(info.Location.Latitude, info.Location.Longitude)
+                Location = new Location(dto.Location.Latitude, dto.Location.Longitude)
             };
             await _context.AddAsync(order);
             return order;
@@ -80,6 +85,25 @@ namespace Infrastructure.Services.ClientServices
             await _context.UpdateAsync(order);
             return order;
         }
-        
+
+        public async Task SetDeliveryAsync(Order order, Delivery delivery)
+        {
+            order.State = await _context.FindAsync<State>((int)GeneralState.OnReview);
+            order.Delivery = delivery;
+            await _context.UpdateAsync(order);
+            await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, order.Delivery.Id));
+        }
+
+        public async Task<bool> IsOnReview(BackgroundOrder backgroundOrder)
+        {
+            var order = await _orderContextBuilder
+                .ForRejectBuilder()
+                .Build()
+                .FirstOrDefaultAsync(o =>
+                    o.Id == backgroundOrder.OrderId && 
+                    o.Delivery.Id == backgroundOrder.DeliveryId);
+            return order?.State.StateValue == GeneralState.OnReview && 
+                   order.Delivery.Id == backgroundOrder.DeliveryId;
+        }
     }
 }

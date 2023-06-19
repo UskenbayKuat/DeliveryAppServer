@@ -1,14 +1,17 @@
-namespace ApplicationCore.Entities.AppEntities.Orders
+using ApplicationCore.Entities;
+using ApplicationCore.Models.Values.Enums;
+
+namespace ApplicationCore.Models.Entities.Orders
 {
     public class State : BaseEntity
     {
-        public State(int id, string name, string description)
+        public State(GeneralState stateValue, string name)
         {
-            Id = id;
+            StateValue = stateValue;
             Name = name;
-            Description = description;
         }
+
+        public GeneralState StateValue { get; private set; }
         public string Name { get; private set; }
-        public string Description { get; private set; }
     }
 }
