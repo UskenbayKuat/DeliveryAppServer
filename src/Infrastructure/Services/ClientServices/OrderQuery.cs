@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -7,8 +8,10 @@ using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.ContextInterfaces;
+using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Values.Enums;
+using ApplicationCore.Specifications;
 using Infrastructure.AppData.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +22,13 @@ namespace Infrastructure.Services.ClientServices
     {
         private readonly AppIdentityDbContext _dbIdentityDbContext;
         private readonly IOrderContextBuilder _orderContextBuilder;
+        private readonly IAsyncRepository<Order> _context;
 
-        public OrderQuery(IOrderContextBuilder orderContextBuilder, AppIdentityDbContext dbIdentityDbContext)
+        public OrderQuery(IOrderContextBuilder orderContextBuilder, AppIdentityDbContext dbIdentityDbContext, IAsyncRepository<Order> context)
         {
             _orderContextBuilder = orderContextBuilder;
             _dbIdentityDbContext = dbIdentityDbContext;
+            _context = context;
         }
         public async Task<ActionResult> GetWaitingOrdersAsync(string clientUserId, CancellationToken cancellationToken)
         {
@@ -50,6 +55,12 @@ namespace Infrastructure.Services.ClientServices
                 .Build()
                 .Where(o => o.Delivery.Driver.UserId == driverUserId)
                 .ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<Order>> GetWaitingOrders(int routeId, DateTime dateTime)
+        {
+            var orderSpec = new OrderWithStateSpecification(routeId, dateTime);
+            return await _context.ListAsync(orderSpec);
         }
 
         private async Task<List<DeliveryInfo>> DeliveriesInfoAsync(User userClient)

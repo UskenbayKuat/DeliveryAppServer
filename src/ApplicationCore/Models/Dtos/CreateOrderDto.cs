@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
 using System;
+using ApplicationCore.Models.Entities.Locations;
 
 namespace ApplicationCore.Models.Dtos
 {

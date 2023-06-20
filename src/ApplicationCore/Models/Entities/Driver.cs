@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Exceptions;
+using ApplicationCore.Models.Entities.Cars;
 using Microsoft.AspNetCore.Http;
 
 namespace ApplicationCore.Entities.AppEntities

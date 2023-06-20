@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,5 +14,6 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
         public Task<ActionResult> GetWaitingOrdersAsync(string clientUserId, CancellationToken cancellationToken);
         public Task<ActionResult> GetActiveOrdersForClientAsync(string userClientId);
         public Task<List<Order>> GetOrdersAsync(string driverUserId);
+        Task<IReadOnlyList<Order>> GetWaitingOrders(int routeId, DateTime dateTime);
     }
 }

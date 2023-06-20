@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Routes;
+using ApplicationCore.Models.Entities.Locations;
 using ApplicationCore.Models.Entities.Orders;
 
 namespace ApplicationCore.Entities.AppEntities.Orders
@@ -40,11 +41,13 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         {
             CancellationDate = DateTime.Now;
             IsDeleted = true;
+            ModifiedDate = DateTime.Now;
             return this;
         }
         public Delivery SetDelete()
         {
             IsDeleted = true;
+            ModifiedDate = DateTime.Now;
             return this;
         }
     }

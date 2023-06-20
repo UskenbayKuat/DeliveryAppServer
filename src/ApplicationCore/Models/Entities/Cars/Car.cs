@@ -1,4 +1,7 @@
-﻿namespace ApplicationCore.Entities.AppEntities.Cars
+﻿using ApplicationCore.Entities;
+using ApplicationCore.Entities.AppEntities.Cars;
+
+namespace ApplicationCore.Models.Entities.Cars
 {
     public class Car : BaseEntity
     {
@@ -14,9 +17,6 @@
         public CarBrand CarBrand { get; set; }
         public CarType CarType { get; set; }
         public CarColor CarColor { get; set; }
-        public bool IsDeleted { get; private set; }
-
-        
 
         public void DeleteCar()
         {

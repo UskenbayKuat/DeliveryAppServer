@@ -4,6 +4,7 @@ using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.ContextInterfaces;
+using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
@@ -47,7 +48,7 @@ namespace PublicApi.Extensions
             services.AddTransient<IOrderContextBuilder, OrderContextBuilder>();
             services.AddTransient<IDriverContextBuilder, DriverContextBuilder>();
             services.AddTransient<ILocationDataContextBuilder, LocationDataContextBuilder>();
-
+            services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
             
             services.AddTransient<IOrderCommand, OrderCommand>();
             services.AddTransient<IOrderQuery, OrderQuery>();

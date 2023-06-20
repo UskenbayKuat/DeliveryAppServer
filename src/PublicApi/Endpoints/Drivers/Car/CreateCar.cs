@@ -1,7 +1,10 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.Values;
+using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces.DriverInterfaces;
+using ApplicationCore.Models.Values;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Infrastructure.Config.Attributes;
@@ -13,20 +16,33 @@ namespace PublicApi.Endpoints.Drivers.Car
     public class CreateCar: EndpointBaseAsync.WithRequest<CarCommand>.WithActionResult
     {
         private readonly IMapper _mapper;
-        private readonly ICar _car;
+        private readonly IDriver _driver;
 
-        public CreateCar(IMapper mapper, ICar car)
+        public CreateCar(IMapper mapper, IDriver driver)
         {
             _mapper = mapper;
-            _car = car;
+            _driver = driver;
         }
 
         [HttpPost("api/driver/createCar")]
         public override async Task<ActionResult> HandleAsync([FromBody]CarCommand request,
             CancellationToken cancellationToken = new CancellationToken())
         {
-                return await _car.CreateAsync(_mapper.Map<CarInfo>(request),
-                    HttpContext.Items["UserId"]?.ToString(), cancellationToken);
+            try
+            {
+                var userId = HttpContext.Items["UserId"]?.ToString();
+                var createCarDto = _mapper.Map<CreateCarDto>(request).SetUserId(userId);
+                await _driver.AddCarAsync(createCarDto);
+                return new NoContentResult();
+            }            
+            catch(CarExistsException ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+            }
+            catch
+            {
+                return new BadRequestObjectResult("Not correct data");
+            }
         }
     }
 }

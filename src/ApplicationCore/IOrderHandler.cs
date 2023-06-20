@@ -11,6 +11,5 @@ namespace ApplicationCore
     {
 
         public Task<Order> RejectedHandlerAsync(int orderId, CancellationToken cancellationToken);
-        public Task<List<Order>> AddWaitingOrdersToDeliveryAsync(Delivery delivery, CancellationToken cancellationToken);
     }
 }

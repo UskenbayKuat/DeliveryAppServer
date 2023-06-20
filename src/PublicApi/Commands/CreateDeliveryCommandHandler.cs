@@ -28,7 +28,8 @@ namespace PublicApi.Commands
 
         protected override async Task Handle(CreateDeliveryCommand request, CancellationToken cancellationToken)
         {
-            var delivery = await _deliveryCommand.CreateAsync(_mapper.Map<CreateDeliveryDto>(request), request.UserId);
+            var delivery = await _deliveryCommand.CreateAsync(_mapper.Map<CreateDeliveryDto>(request));
+            var orders =await _deliveryCommand.AddWaitingOrderAsync(delivery);
             var orders = await _orderHandler.AddWaitingOrdersToDeliveryAsync(delivery, cancellationToken);
             if (orders.Any())
             {

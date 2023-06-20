@@ -1,10 +1,11 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using Ardalis.ApiEndpoints;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PublicApi.Endpoints.Delivery
+namespace PublicApi.Endpoints.Delivery.Command
 {
     public class CancelDelivery : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
@@ -16,9 +17,21 @@ namespace PublicApi.Endpoints.Delivery
         }
 
         [HttpPost("api/driver/cancelDelivery")]
-        public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
-            return await _deliveryCommand.CancellationAsync(HttpContext.Items["UserId"].ToString());
+            try
+            {
+                await _deliveryCommand.CancellationAsync(HttpContext.Items["UserId"].ToString());
+                return new NoContentResult();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Ошибка");
+            }
         }
     }
 }

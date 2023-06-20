@@ -8,6 +8,5 @@ namespace PublicApi.Endpoints.Drivers.Car
         public int ProductionYear { get; set; }
         public string RegistrationCertificate { get; set; }
         public string LicensePlate { get; set; }
-        public bool IsDeleted { get; set; }
     }
 }

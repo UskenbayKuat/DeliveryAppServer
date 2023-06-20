@@ -1,6 +1,6 @@
-namespace ApplicationCore.Entities.Values
+namespace ApplicationCore.Models.Values
 {
-    public class CarInfo
+    public class CreateCarDto
     {
         public int CarBrandId { get; set; }
         public int CarTypeId { get; set; }
@@ -8,6 +8,12 @@ namespace ApplicationCore.Entities.Values
         public int ProductionYear { get; set; }
         public string RegistrationCertificate { get; set; }
         public string LicensePlate { get; set; }
-        public bool IsDeleted { get; set; }
+        public string UserId { get; private set; }
+
+        public CreateCarDto SetUserId(string userId)
+        {
+            UserId = userId;
+            return this;
+        }
     }
 }

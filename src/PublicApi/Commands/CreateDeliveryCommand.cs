@@ -1,6 +1,7 @@
 ﻿using System;
 using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Routes;
+using ApplicationCore.Models.Entities.Locations;
 using MediatR;
 
 namespace PublicApi.Commands

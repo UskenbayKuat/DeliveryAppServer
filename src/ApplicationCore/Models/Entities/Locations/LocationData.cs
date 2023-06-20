@@ -1,5 +1,6 @@
 using System;
 using ApplicationCore.Entities.AppEntities.Orders;
+using ApplicationCore.Models.Entities.Locations;
 
 namespace ApplicationCore.Entities.AppEntities.Locations
 {

@@ -12,9 +12,13 @@ using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.ContextInterfaces;
+using ApplicationCore.Interfaces.DataContextInterface;
+using ApplicationCore.Interfaces.StateInterfaces;
 using ApplicationCore.Models.Dtos;
+using ApplicationCore.Models.Entities.Locations;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Values.Enums;
+using ApplicationCore.Specifications;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,16 +26,17 @@ namespace Infrastructure.Services.ClientServices
 {
     public class OrderCommand : IOrderCommand
     {
-        private readonly IContext _context;
+        private readonly IAsyncRepository<Order> _context;
         private readonly IOrderContextBuilder _orderContextBuilder;
         private readonly IBackgroundTaskQueue _backgroundTask;
+        private readonly IState _state;
 
-
-        public OrderCommand(IContext context, IOrderContextBuilder orderContextBuilder, IBackgroundTaskQueue backgroundTask)
+        public OrderCommand(IAsyncRepository<Order> context, IOrderContextBuilder orderContextBuilder, IBackgroundTaskQueue backgroundTask, IState state)
         {
             _context = context;
             _orderContextBuilder = orderContextBuilder;
             _backgroundTask = backgroundTask;
+            _state = state;
         }
 
         public async Task<Order> CreateAsync(CreateOrderDto dto, string clientUserId, CancellationToken cancellationToken)
@@ -104,6 +109,27 @@ namespace Infrastructure.Services.ClientServices
                     o.Delivery.Id == backgroundOrder.DeliveryId);
             return order?.State.StateValue == GeneralState.OnReview && 
                    order.Delivery.Id == backgroundOrder.DeliveryId;
+        }
+
+        public async Task<List<Order>> AddWaitingOrdersToDeliveryAsync(Delivery delivery)
+        {
+            var stateOnReview = await _state.GetByStateAsync(GeneralState.OnReview);
+            var orderSpec = new OrderWithStateSpecification(delivery.Route.Id, delivery.DeliveryDate);
+            var orders = await _context.ListAsync(orderSpec);
+            foreach (var order in orders)
+            {
+                order.State = stateOnReview;
+                delivery.AddOrder(order);
+                await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, delivery.Id));
+            }
+            await _context.UpdateAsync(delivery);
+            return orders;
+        }
+
+        public async Task<IReadOnlyList<Order>> GetWaitingOrders(int routeId, DateTime dateTime)
+        {
+            var orderSpec = new OrderWithStateSpecification(routeId, dateTime);
+            return await _context.ListAsync(orderSpec);
         }
     }
 }

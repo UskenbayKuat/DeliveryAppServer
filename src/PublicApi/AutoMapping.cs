@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ApplicationCore.Entities.Values;
+using ApplicationCore.Models.Values;
 using PublicApi.Commands;
 using PublicApi.Endpoints.Drivers.Car;
 using PublicApi.Endpoints.RegisterApi.ConfirmRegister;
@@ -18,7 +19,7 @@ namespace PublicApi
             CreateMap<ProceedRegisterCommand, ProceedRegistrationInfo>();
             CreateMap<RefreshCommand, RefreshTokenInfo>();
             CreateMap<CreateDeliveryCommand, RouteTripInfo>();
-            CreateMap<CarCommand, CarInfo>();
+            CreateMap<CarCommand, CreateCarDto>();
             CreateMap<CreateOrderCommand, OrderInfo>();
             CreateMap<ConfirmHandOverCommand, ConfirmHandOverInfo>();
         }   

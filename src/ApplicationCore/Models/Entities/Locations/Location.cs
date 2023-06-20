@@ -1,4 +1,6 @@
-namespace ApplicationCore.Entities.AppEntities.Locations
+using ApplicationCore.Entities;
+
+namespace ApplicationCore.Models.Entities.Locations
 {
     public class Location : BaseEntity
     {

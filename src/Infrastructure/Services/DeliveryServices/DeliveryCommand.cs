@@ -9,12 +9,19 @@ using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Exceptions;
+using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
+using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.ContextInterfaces;
+using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Interfaces.DriverInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
+using ApplicationCore.Interfaces.RouteInterfaces;
+using ApplicationCore.Interfaces.StateInterfaces;
 using ApplicationCore.Models.Dtos;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Values.Enums;
+using ApplicationCore.Specifications;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,53 +29,74 @@ namespace Infrastructure.Services.DeliveryServices
 {
     public class DeliveryCommand : IDeliveryCommand
     {
-        private readonly IContext _context;
+        private readonly IAsyncRepository<Delivery> _context;
+        private readonly IBackgroundTaskQueue _backgroundTask;
         private readonly IChatHub _chatHub;
+        private readonly IDriver _driver;
+        private readonly IState _state;
+        private readonly IRoute _route;
+        private readonly IOrderQuery _orderQuery;
         private readonly IOrderContextBuilder _orderContextBuilder;
-        private readonly IDeliveryContextBuilder _deliveryContextBuilder;
-        private readonly IDriverContextBuilder _driverContextBuilder;
-
-        public DeliveryCommand(IContext context, IChatHub chatHub, IOrderContextBuilder orderContextBuilder, IDeliveryContextBuilder deliveryContextBuilder, IDriverContextBuilder driverContextBuilder)
+        public DeliveryCommand(
+            IAsyncRepository<Delivery> context,
+            IBackgroundTaskQueue backgroundTask,
+            IChatHub chatHub, 
+            IRoute route, 
+            IState state, 
+            IDriver driver, 
+            IOrderQuery orderQuery)
         {
-            _context = context;
             _chatHub = chatHub;
-            _orderContextBuilder = orderContextBuilder;
-            _deliveryContextBuilder = deliveryContextBuilder;
-            _driverContextBuilder = driverContextBuilder;
+            _context = context;
+            _route = route;
+            _state = state;
+            _driver = driver;
+            _orderQuery = orderQuery;
+            _backgroundTask = backgroundTask;
         }
-        public async Task<Delivery> CreateAsync(CreateDeliveryDto tripInfo, string userId)
+        public async Task<Delivery> CreateAsync(CreateDeliveryDto dto)
         {
-            var driver = await _driverContextBuilder.CarBuilder()
-                .Build()
-                .FirstOrDefaultAsync(d => d.UserId == userId);
-            if (driver?.Car is null) throw new CarNotExistsException();
-            return await _deliveryContextBuilder.Build()
-                .AnyAsync(d =>
-                    d.Driver.Id == driver.Id && (
-                        d.State.Id == (int)GeneralState.New ||
-                        d.State.Id == (int)GeneralState.InProgress))
-                ? throw new NotSupportedException()
-                : await CreateDeliveryAsync(tripInfo, driver);
+            var driver = await _driver.GetByUserIdAsync(dto.UserId);
+            if (driver?.Car is null)
+            {
+                throw new CarNotExistsException();
+            }
+            var deliverySpec = new DeliveryWithStateSpecification(driver.Id);
+            return await _context.AnyAsync(deliverySpec)
+                ? throw new ArgumentException("У вас уже есть поездка")
+                : await CreateDeliveryAsync(dto, driver);
         }
-        
+
+        public async Task<IReadOnlyList<Order>> AddWaitingOrderAsync(Delivery delivery)
+        {
+            var orders = await _orderQuery.GetWaitingOrders(delivery.Route.Id, delivery.DeliveryDate);
+            var stateOnReview = await _state.GetByStateAsync(GeneralState.OnReview);
+            foreach (var order in orders)
+            {
+                order.State = stateOnReview;
+                delivery.AddOrder(order);
+                await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, delivery.Id));
+            }
+            await _context.UpdateAsync(delivery);
+            return orders;
+        }
+
         public async Task<ActionResult> CancellationAsync(string driverUserId)
         {
-            var delivery = await _deliveryContextBuilder.Build()
-                .Include(d => d.Orders)
-                .FirstOrDefaultAsync(d => 
-                    d.Driver.UserId == driverUserId && (
-                    d.State.Id == (int)GeneralState.New || d.State.Id == (int)GeneralState.InProgress));
+            var deliverySpec = new DeliveryWithStateSpecification(driverUserId);
+            var delivery = await _context.FirstOrDefaultAsync(deliverySpec);
             if (delivery.Orders.Count > 0)
             {
-                return new BadRequestObjectResult("У вас активные заказы");
+                throw new ArgumentException("У вас активные заказы");
             }
-            delivery.State = await _context.FindAsync<State>(s => s.Id == (int)GeneralState.Canceled);
+            delivery.State = await _state.GetByStateAsync(GeneralState.Canceled);
             await _context.UpdateAsync(delivery.SetCancellationDate());
             return new NoContentResult();
         }
         
         public async Task<Order> AddOrderAsync(int orderId)
         {
+            var orderSpec = new OrderWithClientSpecification(orderId);
             var order = await _orderContextBuilder
                 .ClientBuilder()
                 .Build()
@@ -100,18 +128,16 @@ namespace Infrastructure.Services.DeliveryServices
             return default;
         }
         
-        private async Task<Delivery> CreateDeliveryAsync(RouteTripInfo tripInfo, Driver driver)
+        private async Task<Delivery> CreateDeliveryAsync(CreateDeliveryDto dto, Driver driver)
         {
-            var route = await _context.FindAsync<Route>(r =>
-                r.StartCityId == tripInfo.StartCity.Id &&
-                r.FinishCityId == tripInfo.FinishCity.Id);
-            var state = await _context.FindAsync<State>((int)GeneralState.New);
-            var delivery = new Delivery(tripInfo.DeliveryDate)
+            var route = await _route.GetByCitiesIdAsync(dto.StartCityId, dto.FinishCityId);
+            var state = await _state.GetByStateAsync(GeneralState.Waiting);
+            var delivery = new Delivery(dto.DeliveryDate)
             {
                 State = state,
                 Driver = driver,
                 Route = route,
-                Location = new Location(tripInfo.Location.Latitude, tripInfo.Location.Longitude)
+                Location = dto.Location
             };
             await _context.AddAsync(delivery);
             return delivery;

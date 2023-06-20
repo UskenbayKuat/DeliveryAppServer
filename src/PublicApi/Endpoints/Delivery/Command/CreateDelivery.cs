@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Exceptions;
@@ -22,7 +23,7 @@ namespace PublicApi.Endpoints.Drivers.RouteTrip
 
         [HttpPost("api/driver/createDelivery")]
         public override async Task<ActionResult> HandleAsync([FromBody] CreateDeliveryCommand request,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             try
             {
@@ -33,9 +34,13 @@ namespace PublicApi.Endpoints.Drivers.RouteTrip
             {
                 return new BadRequestObjectResult(ex.Message);
             }
+            catch(ArgumentException ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+            }
             catch
             {
-                return new BadRequestObjectResult("Сначала завершите текущий маршрут");
+                return new BadRequestObjectResult("Ошибка");
             }
         }
     }
