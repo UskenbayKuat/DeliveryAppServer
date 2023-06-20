@@ -11,9 +11,9 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
 {
     public interface IOrderQuery
     {
-        public Task<ActionResult> GetWaitingOrdersAsync(string clientUserId, CancellationToken cancellationToken);
+        public Task<List<OrderInfo>> GetWaitingOrdersAsync(string clientUserId);
         public Task<ActionResult> GetActiveOrdersForClientAsync(string userClientId);
-        public Task<List<Order>> GetOrdersAsync(string driverUserId);
+        public Task<IReadOnlyList<Order>> GetByDriverUserIdAsync(string driverUserId);
         Task<IReadOnlyList<Order>> GetWaitingOrders(int routeId, DateTime dateTime);
     }
 }

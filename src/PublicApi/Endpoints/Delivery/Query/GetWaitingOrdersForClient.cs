@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces.ClientInterfaces;
@@ -20,7 +21,15 @@ namespace PublicApi.Endpoints.Delivery
         [HttpPost("api/client/waitingOrders")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
-            return await _orderQuery.GetWaitingOrdersAsync(HttpContext.Items["UserId"]?.ToString(), cancellationToken);
+            try
+            {
+                var orders = await _orderQuery.GetWaitingOrdersAsync(HttpContext.Items["UserId"]?.ToString());
+                return Ok(orders);
+            }
+            catch
+            {
+                return BadRequest("Ошибка системы");
+            }        
         }
     }
 }

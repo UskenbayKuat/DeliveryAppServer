@@ -10,5 +10,10 @@ namespace ApplicationCore.Specifications.Orders
             Query.Include(o => o.Client)
                 .Where(o => o.Id == orderId);
         }
+        public OrderWithClientSpecification(string userId)
+        {
+            Query.Include(o => o.Client)
+                .Where(o => o.Delivery.Driver.UserId == userId);
+        }
     }
 }

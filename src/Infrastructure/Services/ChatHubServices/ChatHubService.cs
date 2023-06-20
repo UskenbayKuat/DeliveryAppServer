@@ -41,7 +41,7 @@ namespace Infrastructure.Services.ChatHubServices
         public async Task<List<string>> GetConnectionIdListAsync(string driverUserId)
         {
             var connectionIds = new List<string>();
-            var orders = await _orderQuery.GetOrdersAsync(driverUserId);
+            var orders = await _orderQuery.GetByDriverUserIdAsync(driverUserId);
             foreach (var order in orders)
             {
                 var chatHub = await  _context.FindAsync<ChatHub>(c => c.UserId == order.Client.UserId);

@@ -27,6 +27,12 @@ namespace Infrastructure.AppData.DataAccess
             return await _dbContext.Set<T>().FindAsync(keyValues, cancellationToken);
         }
 
+        public IQueryable<T> GetQueryableAsync(ISpecification<T> spec, CancellationToken cancellationToken = default)
+        {
+            var specificationResult = ApplySpecification(spec);
+            return specificationResult;
+        }
+
         public async Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default)
         {
             return await _dbContext.Set<T>().ToListAsync(cancellationToken);
