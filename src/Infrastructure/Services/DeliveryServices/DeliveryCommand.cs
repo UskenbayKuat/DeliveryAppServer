@@ -12,6 +12,7 @@ using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
+using ApplicationCore.Models.Dtos;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Values.Enums;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +36,7 @@ namespace Infrastructure.Services.DeliveryServices
             _deliveryContextBuilder = deliveryContextBuilder;
             _driverContextBuilder = driverContextBuilder;
         }
-        public async Task<Delivery> CreateAsync(RouteTripInfo tripInfo, string userId)
+        public async Task<Delivery> CreateAsync(CreateDeliveryDto tripInfo, string userId)
         {
             var driver = await _driverContextBuilder.CarBuilder()
                 .Build()

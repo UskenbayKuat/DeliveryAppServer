@@ -20,7 +20,7 @@ namespace PublicApi.Endpoints.Drivers.RouteTrip
             _mediator = mediator;
         }
 
-        [HttpPost("api/driver/createRouteTrip")]
+        [HttpPost("api/driver/createDelivery")]
         public override async Task<ActionResult> HandleAsync([FromBody] CreateDeliveryCommand request,
             CancellationToken cancellationToken = new CancellationToken())
         {

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ApplicationCore;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Models.Dtos;
 using AutoMapper;
 using MediatR;
 using Notification.Interfaces;
@@ -27,7 +28,7 @@ namespace PublicApi.Commands
 
         protected override async Task Handle(CreateDeliveryCommand request, CancellationToken cancellationToken)
         {
-            var delivery = await _deliveryCommand.CreateAsync(_mapper.Map<RouteTripInfo>(request), request.UserId);
+            var delivery = await _deliveryCommand.CreateAsync(_mapper.Map<CreateDeliveryDto>(request), request.UserId);
             var orders = await _orderHandler.AddWaitingOrdersToDeliveryAsync(delivery, cancellationToken);
             if (orders.Any())
             {

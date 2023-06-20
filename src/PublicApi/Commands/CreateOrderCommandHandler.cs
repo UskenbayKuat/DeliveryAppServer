@@ -31,7 +31,7 @@ namespace PublicApi.Commands
         protected override async Task Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
             var order = await _orderCommand.CreateAsync(_mapper.Map<CreateOrderDto>(request), request.UserId, cancellationToken);
-            var delivery = await _deliveryCommand.FindIsNewDelivery(order, cancellationToken);
+            var delivery = await _deliveryCommand.FindIsNewDelivery(order);
             if (delivery != null)
             {
                 await _orderCommand.SetDeliveryAsync(order, delivery);

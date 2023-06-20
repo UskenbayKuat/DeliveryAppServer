@@ -7,8 +7,8 @@ namespace PublicApi.Commands
 {
     public class CreateDeliveryCommand : IRequest
     {
-        public City StartCity { get; set; }
-        public City FinishCity { get; set; }
+        public int StartCityId { get; set; }
+        public int FinishCityId { get; set; }
         public DateTime DeliveryDate { get; set; }
         public Location Location { get; set; }
         public string UserId { get; private set; }
