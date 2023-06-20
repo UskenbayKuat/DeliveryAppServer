@@ -12,6 +12,7 @@ using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Values.Enums;
 using ApplicationCore.Specifications;
+using ApplicationCore.Specifications.Orders;
 using Infrastructure.AppData.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +38,7 @@ namespace Infrastructure.Services.ClientServices
             await _orderContextBuilder.OrdersInfoBuilder()
                 .Build()
                 .Where(o => o.Client.UserId == clientUserId && 
-                            (o.State.Id == (int)GeneralState.Waiting || 
+                            (o.State.Id == (int)GeneralState.WaitingOnReview || 
                              o.State.Id == (int)GeneralState.OnReview))
                 .ForEachAsync(o => ordersInfo.Add(o.SetOrderInfo(userClient)), cancellationToken);
             return new OkObjectResult(ordersInfo);

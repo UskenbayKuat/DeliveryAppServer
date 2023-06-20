@@ -1,7 +1,7 @@
 using ApplicationCore.Models.Entities.Orders;
 using Ardalis.Specification;
 
-namespace ApplicationCore.Specifications
+namespace ApplicationCore.Specifications.Orders
 {
     public sealed class OrderWithClientSpecification : Specification<Order>
     {

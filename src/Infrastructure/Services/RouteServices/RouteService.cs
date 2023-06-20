@@ -18,5 +18,10 @@ namespace Infrastructure.Services.RouteServices
             await _context.FirstOrDefaultAsync(r =>
                 r.StartCityId == startCityId &&
                 r.FinishCityId == finishCityId);
+
+        public async Task<Route> GetByCitiesNameAsync(string startCityName, string finishCityName)=>
+            await _context.FirstOrDefaultAsync(r =>
+                r.StartCity.Name == startCityName &&
+                r.FinishCity.Name == finishCityName);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ApplicationCore.Entities.Values;
+using ApplicationCore.Models.Dtos;
 using ApplicationCore.Models.Values;
 using PublicApi.Commands;
 using PublicApi.Endpoints.Drivers.Car;
@@ -21,7 +22,7 @@ namespace PublicApi
             CreateMap<CreateDeliveryCommand, RouteTripInfo>();
             CreateMap<CarCommand, CreateCarDto>();
             CreateMap<CreateOrderCommand, OrderInfo>();
-            CreateMap<ConfirmHandOverCommand, ConfirmHandOverInfo>();
+            CreateMap<ConfirmHandOverCommand, ConfirmHandOverDto>();
         }   
     }
 }

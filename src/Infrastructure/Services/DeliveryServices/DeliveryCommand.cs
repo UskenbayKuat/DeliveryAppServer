@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
-using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
-using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
@@ -16,14 +14,15 @@ using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
+using ApplicationCore.Interfaces.RejectedInterfaces;
 using ApplicationCore.Interfaces.RouteInterfaces;
 using ApplicationCore.Interfaces.StateInterfaces;
 using ApplicationCore.Models.Dtos;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Values.Enums;
 using ApplicationCore.Specifications;
+using ApplicationCore.Specifications.Deliveries;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.DeliveryServices
 {
@@ -36,7 +35,7 @@ namespace Infrastructure.Services.DeliveryServices
         private readonly IState _state;
         private readonly IRoute _route;
         private readonly IOrderQuery _orderQuery;
-        private readonly IOrderContextBuilder _orderContextBuilder;
+        private readonly IRejected _rejected;
         public DeliveryCommand(
             IAsyncRepository<Delivery> context,
             IBackgroundTaskQueue backgroundTask,
@@ -44,7 +43,7 @@ namespace Infrastructure.Services.DeliveryServices
             IRoute route, 
             IState state, 
             IDriver driver, 
-            IOrderQuery orderQuery)
+            IOrderQuery orderQuery, IRejected rejected)
         {
             _chatHub = chatHub;
             _context = context;
@@ -52,6 +51,7 @@ namespace Infrastructure.Services.DeliveryServices
             _state = state;
             _driver = driver;
             _orderQuery = orderQuery;
+            _rejected = rejected;
             _backgroundTask = backgroundTask;
         }
         public async Task<Delivery> CreateAsync(CreateDeliveryDto dto)
@@ -67,7 +67,7 @@ namespace Infrastructure.Services.DeliveryServices
                 : await CreateDeliveryAsync(dto, driver);
         }
 
-        public async Task<IReadOnlyList<Order>> AddWaitingOrderAsync(Delivery delivery)
+        public async Task<IReadOnlyList<Order>> AddWaitingOrdersAsync(Delivery delivery)
         {
             var orders = await _orderQuery.GetWaitingOrders(delivery.Route.Id, delivery.DeliveryDate);
             var stateOnReview = await _state.GetByStateAsync(GeneralState.OnReview);
@@ -93,36 +93,26 @@ namespace Infrastructure.Services.DeliveryServices
             await _context.UpdateAsync(delivery.SetCancellationDate());
             return new NoContentResult();
         }
-        
-        public async Task<Order> AddOrderAsync(int orderId)
-        {
-            var orderSpec = new OrderWithClientSpecification(orderId);
-            var order = await _orderContextBuilder
-                .ClientBuilder()
-                .Build()
-                .FirstAsync(c => c.Id == orderId);
-            order.State = await _context.FindAsync<State>((int)GeneralState.PendingForHandOver);
-            await _context.UpdateAsync(order.SetSecretCode());
-            return order;
-        }
 
         public async Task StartAsync(string driverUserId)
         {
-            var delivery = await _context.FindAsync<Delivery>(d => d.Driver.UserId == driverUserId && d.State.Id == (int)GeneralState.New);
+            var deliverySpec = new DeliveryWithStateSpecification(driverUserId, GeneralState.WaitingOrder);
+            var delivery = await _context.FirstOrDefaultAsync(deliverySpec);
             if (delivery != null)
             {
-                delivery.State = await _context.FindAsync<State>(s => s.Id == (int)GeneralState.InProgress);
+                delivery.State = await _state.GetByStateAsync(GeneralState.InProgress);
                 await _context.UpdateAsync(delivery);
             }
         }
 
         public async Task<Delivery> FindIsNewDelivery(Order order)
         {
-            var deliveries = await DeliveriesStateFromNewAsync(order, cancellationToken);
+            var deliverySpec = new DeliveryWithDriverSpecification(order.Route.Id, order.DeliveryDate, order.Location);
+            var deliveries = await _context.ListAsync(deliverySpec);
             foreach (var delivery in deliveries)
             {
-                if (await CheckRejectedAsync(delivery, order)) continue;
-                var connectionId = await _chatHub.GetConnectionIdAsync(delivery.Driver.UserId, cancellationToken);
+                if (await _rejected.CheckRejectedAsync(delivery.Id, order.Id)) continue;
+                var connectionId = await _chatHub.GetConnectionIdAsync(delivery.Driver.UserId, default);
                 if (!string.IsNullOrEmpty(connectionId)) return delivery;
             }
             return default;
@@ -131,7 +121,7 @@ namespace Infrastructure.Services.DeliveryServices
         private async Task<Delivery> CreateDeliveryAsync(CreateDeliveryDto dto, Driver driver)
         {
             var route = await _route.GetByCitiesIdAsync(dto.StartCityId, dto.FinishCityId);
-            var state = await _state.GetByStateAsync(GeneralState.Waiting);
+            var state = await _state.GetByStateAsync(GeneralState.WaitingOnReview);
             var delivery = new Delivery(dto.DeliveryDate)
             {
                 State = state,
@@ -142,23 +132,5 @@ namespace Infrastructure.Services.DeliveryServices
             await _context.AddAsync(delivery);
             return delivery;
         }
-
-        private async Task<List<Delivery>> DeliveriesStateFromNewAsync(Order order, CancellationToken cancellationToken) =>
-            await _deliveryContextBuilder
-                .DriverBuilder()
-                .Build()
-                .OrderBy(d => Math.Abs(d.Location.Latitude - order.Location.Latitude) + Math.Abs(d.Location.Longitude - order.Location.Longitude))
-                .Where(d =>
-                    d.Route.Id == order.Route.Id &&
-                    d.DeliveryDate >= order.DeliveryDate &&
-                    d.State.Id == (int)GeneralState.New)
-                .ToListAsync(cancellationToken);
-
-        private async Task<bool> CheckRejectedAsync(Delivery delivery, Order order) =>
-            await _context
-                .AnyAsync<RejectedOrder>(r =>
-                    r.Delivery.Id == delivery.Id &&
-                    r.Order.Id == order.Id);
-
     }
 }

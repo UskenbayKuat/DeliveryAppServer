@@ -7,7 +7,7 @@ namespace ApplicationCore.Models.Values.Enums
         [Display(Name = "Ожидает заказ")]
         WaitingOrder = 1,
         [Display(Name = "Ожидает рассмотрения")]
-        Waiting = 2,
+        WaitingOnReview = 2,
         [Display(Name = "На рассмотрении")]
         OnReview = 3,
         [Display(Name = "Ожидает передачи")]

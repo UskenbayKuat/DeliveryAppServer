@@ -154,7 +154,7 @@ namespace Infrastructure.AppData.DataAccess
             new List<State>
             {
                 new(GeneralState.WaitingOrder, GeneralState.WaitingOrder.GetDisplayName()),
-                new(GeneralState.Waiting, GeneralState.Waiting.GetDisplayName()),
+                new(GeneralState.WaitingOnReview, GeneralState.WaitingOnReview.GetDisplayName()),
                 new(GeneralState.OnReview, GeneralState.OnReview.GetDisplayName()),
                 new(GeneralState.PendingForHandOver, GeneralState.PendingForHandOver.GetDisplayName()),
                 new(GeneralState.ReceivedByDriver, GeneralState.ReceivedByDriver.GetDisplayName()),

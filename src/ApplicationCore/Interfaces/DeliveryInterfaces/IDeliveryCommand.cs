@@ -14,8 +14,7 @@ namespace ApplicationCore.Interfaces.DeliveryInterfaces
     {
         public  Task<Delivery> FindIsNewDelivery(Order order);
         public Task<Delivery> CreateAsync(CreateDeliveryDto dto);
-        public Task<Order> AddOrderAsync(int orderId);
-        Task<IReadOnlyList<Order>> AddWaitingOrderAsync(Delivery delivery);
+        Task<IReadOnlyList<Order>> AddWaitingOrdersAsync(Delivery delivery);
         public Task<ActionResult> CancellationAsync(string driverUserId);
         public Task StartAsync(string driverUserId);
         

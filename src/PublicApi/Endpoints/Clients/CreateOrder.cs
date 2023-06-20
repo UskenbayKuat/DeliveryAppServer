@@ -9,10 +9,10 @@ using PublicApi.Commands;
 namespace PublicApi.Endpoints.Clients
 {
     [Authorize]
-    public class CreateOrderEndpoint : EndpointBaseAsync.WithRequest<CreateOrderCommand>.WithActionResult
+    public class CreateOrder : EndpointBaseAsync.WithRequest<CreateOrderCommand>.WithActionResult
     {
         private readonly IMediator _mediator;
-        public CreateOrderEndpoint(IMediator mediator)
+        public CreateOrder(IMediator mediator)
         {
             _mediator = mediator;
         }
@@ -28,7 +28,7 @@ namespace PublicApi.Endpoints.Clients
             }
             catch
             {
-                return new BadRequestResult();
+                return BadRequest("Ошибка системы");
             }
         }
     }

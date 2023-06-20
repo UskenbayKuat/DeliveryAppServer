@@ -34,7 +34,7 @@ namespace Infrastructure.Services.DeliveryServices
                 .Build()
                 .FirstOrDefaultAsync(d =>
                     d.Driver.UserId == driverUserId &&
-                    (d.State.Id == (int)GeneralState.New ||
+                    (d.State.Id == (int)GeneralState.WaitingOrder ||
                      d.State.Id == (int)GeneralState.InProgress));
             return new OkObjectResult(delivery?.SetRouteTripInfo());
         }
