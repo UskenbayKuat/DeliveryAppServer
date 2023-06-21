@@ -29,9 +29,16 @@ namespace ApplicationCore.Specifications.Orders
                 .Include(o => o.Package)
                 .Include(o => o.CarType)
                 .Include(o => o.Location)
-                .Where(o => o.Client.UserId == userId && 
-                            (o.State.Id == (int)GeneralState.WaitingOnReview || 
-                             o.State.Id == (int)GeneralState.OnReview));
+                .Where(o => o.Client.UserId == userId)
+                .Where(o => 
+                    o.State.StateValue == GeneralState.WaitingOnReview || 
+                    o.State.StateValue == GeneralState.OnReview)
+                .Where(o => 
+                    o.Delivery.State.StateValue == GeneralState.WaitingOrder ||
+                    o.Delivery.State.StateValue == GeneralState.InProgress)
+                .Where(o => 
+                    o.State.StateValue == GeneralState.PendingForHandOver ||
+                    o.State.StateValue == GeneralState.ReceivedByDriver);
         }
     }
 }

@@ -1,12 +1,11 @@
 using System;
-using ApplicationCore.Models.Entities.Orders;
+using ApplicationCore.Entities;
 
-namespace ApplicationCore.Entities.AppEntities.Orders
+namespace ApplicationCore.Models.Entities.Orders
 {
-    public class OrderStateHistory
+    public class OrderStateHistory : BaseEntity
     {
         public Order Order { get; set; }
         public State State { get; set; }
-        public DateTime CreatedAt { get; set; }
     }
 }

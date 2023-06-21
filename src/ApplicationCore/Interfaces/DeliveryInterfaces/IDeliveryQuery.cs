@@ -1,12 +1,11 @@
 using System.Threading.Tasks;
+using ApplicationCore.Models.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationCore.Interfaces.DeliveryInterfaces
 {
     public interface IDeliveryQuery
     {
-        public Task<ActionResult> GetOnReviewOrdersForDriverAsync(string userDriverId);
-        public Task<ActionResult> GetActiveOrdersForDriverAsync(string userDriverId);
-        public Task<ActionResult> GetDeliveryIsActiveAsync(string driverUserId);
+        public Task<DeliveryDto> GetDeliveryIsActiveAsync(string driverUserId);
     }
 }

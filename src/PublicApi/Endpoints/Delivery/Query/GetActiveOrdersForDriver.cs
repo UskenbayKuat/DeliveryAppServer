@@ -1,12 +1,12 @@
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
-using ApplicationCore.Interfaces.DriverInterfaces;
 using Ardalis.ApiEndpoints;
 using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PublicApi.Endpoints.Delivery
+namespace PublicApi.Endpoints.Delivery.Query
 {
     [Authorize]
     public class GetActiveOrdersForDriver : EndpointBaseAsync.WithoutRequest.WithActionResult
@@ -18,8 +18,19 @@ namespace PublicApi.Endpoints.Delivery
             _deliveryQuery = deliveryQuery;
         }
         
-        [HttpPost("api/driver/activeOrders")]
-        public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default) => 
-            await _deliveryQuery.GetActiveOrdersForDriverAsync(HttpContext.Items["UserId"]?.ToString());
+        [HttpPost("api/driver/activeDelivery")]
+        public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var deliveryDto =
+                    await _deliveryQuery.GetDeliveryIsActiveAsync(HttpContext.Items["UserId"]?.ToString());
+                return Ok(deliveryDto);
+            }
+            catch
+            {
+                return BadRequest("Ошибка системы");
+            }
+        }
     }
 }

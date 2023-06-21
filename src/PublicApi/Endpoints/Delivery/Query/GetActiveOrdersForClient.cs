@@ -1,12 +1,12 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Interfaces.DeliveryInterfaces;
 using Ardalis.ApiEndpoints;
 using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PublicApi.Endpoints.Delivery
+namespace PublicApi.Endpoints.Delivery.Query
 {
     [Authorize]
     public class GetActiveOrdersForClient: EndpointBaseAsync.WithoutRequest.WithActionResult
@@ -19,8 +19,18 @@ namespace PublicApi.Endpoints.Delivery
         }
 
         [HttpPost("api/client/activeOrders")]
-        public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default) =>
-            await _orderQuery.GetActiveOrdersForClientAsync(HttpContext.Items["UserId"]?.ToString());
+        public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var deliveryInfos = await _orderQuery.GetActiveOrdersForClientAsync(HttpContext.Items["UserId"]?.ToString());
+                return Ok(deliveryInfos);
+            }
+            catch
+            {
+                return BadRequest("Ошибка системы");
+            }
+        }
     }
 
 }

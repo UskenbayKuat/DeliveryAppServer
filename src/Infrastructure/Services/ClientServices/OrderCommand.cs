@@ -79,7 +79,7 @@ namespace Infrastructure.Services.ClientServices
                 throw new ArgumentException("Не совпадает код");
             }
             order.State = await _state.GetByStateAsync(GeneralState.ReceivedByDriver);
-            await _context.UpdateAsync(order);
+            await _context.UpdateAsync(order.SetSecretCodeEmpty());
         }
 
         public async Task<Order> RejectAsync(int orderId)
@@ -89,7 +89,7 @@ namespace Infrastructure.Services.ClientServices
             await _rejected.AddAsync(order);
             order.Delivery = default;
             order.State = await _state.GetByStateAsync(GeneralState.WaitingOnReview);
-            await _context.UpdateAsync(order);
+            await _context.UpdateAsync(order.SetSecretCodeEmpty());
             return order;
         }
     

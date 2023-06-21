@@ -1,12 +1,10 @@
 using System;
-using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
-using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Models.Entities.Locations;
 
-namespace ApplicationCore.Entities.Values
+namespace ApplicationCore.Models.Values
 {
     public class OrderInfo
     {
@@ -16,7 +14,7 @@ namespace ApplicationCore.Entities.Values
         public Package Package { get; set; }
         public CarType CarType { get; set; }
         public bool IsSingle { get; set; }
-        public decimal Price { get; set; }
+        public double Price { get; set; }
         public string StateName { get; set; }
         public string ClientPhoneNumber { get; set; }
         public DateTime DeliveryDate { get; set; }
