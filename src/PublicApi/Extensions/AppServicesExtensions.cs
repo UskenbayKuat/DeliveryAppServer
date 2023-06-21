@@ -42,11 +42,11 @@ namespace PublicApi.Extensions
             //context
             services.AddTransient<IContext, ContextService>();
             services.AddTransient<IDeliveryContextBuilder, DeliveryContextBuilder>();
-            services.AddTransient<IOrderContextBuilder, OrderContextBuilder>();
             services.AddTransient<IDriverContextBuilder, DriverContextBuilder>();
-            services.AddTransient<ILocationDataContextBuilder, LocationDataContextBuilder>();
             services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
-            
+            //TODO check
+            services.AddTransient(typeof(IDeliveryAppData<>), typeof(DriverAppDataService));
+
             services.AddTransient<IOrderCommand, OrderCommand>();
             services.AddTransient<IOrderQuery, OrderQuery>();
             services.AddTransient<IDeliveryCommand, DeliveryCommand>();
@@ -61,9 +61,6 @@ namespace PublicApi.Extensions
             services.AddTransient<IRegistration, RegisterBySmsMockService>();
             services.AddTransient<IProceedRegistration, ProceedRegistrationService>();
             services.AddTransient<ICalculate, CalculateService>();
-            services.AddTransient<IDeliveryAppData<DriverAppDataInfo>, DriverAppDataService>();
-            services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
-            services.AddTransient<IUserData, UserDataService>();
             services.AddTransient<INotify, Notify>();
             services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.JwtSettings));
             services.ConfigureDbContextServices(configuration);

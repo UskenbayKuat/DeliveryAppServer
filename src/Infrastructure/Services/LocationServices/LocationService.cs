@@ -26,7 +26,7 @@ namespace Infrastructure.Services.LocationServices
             if (request.Latitude != 0 && request.Longitude != 0)
             {
                 delivery?.Location.UpdateLocation(request.Latitude, request.Longitude);
-                await _context.UpdateAsync(delivery.Location);
+                await _context.UpdateAsync(delivery?.Location);
                 return request;
             }
             request.Latitude = delivery.Location.Latitude;
