@@ -3,14 +3,14 @@ using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Routes;
 
-namespace ApplicationCore.Entities.Values
+namespace ApplicationCore.Models.Values
 {
     public class DriverAppDataInfo
     {
-        public List<City> Cities { get; set; }
-        public List<Kit> Kits { get; set; }
-        public List<CarType> CarTypes { get; set; }
-        public List<CarBrand> CarBrands { get; set; }
-        public List<CarColor> CarColors { get; set; }
+        public IReadOnlyList<City> Cities { get; set; }
+        public IReadOnlyList<Kit> Kits { get; set; }
+        public IReadOnlyList<CarType> CarTypes { get; set; }
+        public IReadOnlyList<CarBrand> CarBrands { get; set; }
+        public IReadOnlyList<CarColor> CarColors { get; set; }
     }
 }

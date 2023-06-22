@@ -1,16 +1,13 @@
-﻿using ApplicationCore;
-using ApplicationCore.Entities.Values;
-using ApplicationCore.Interfaces;
+﻿using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
-using ApplicationCore.Interfaces.LocationInterfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using ApplicationCore.Interfaces.SharedInterfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
+using ApplicationCore.Models.Values;
 using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
 using Infrastructure.Config;
@@ -18,9 +15,7 @@ using Infrastructure.Services;
 using Infrastructure.Services.BackgroundServices;
 using Infrastructure.Services.ChatHubServices;
 using Infrastructure.Services.ClientServices;
-using Infrastructure.Services.ContextBuilder;
 using Infrastructure.Services.DeliveryServices;
-using Infrastructure.Services.LocationServices;
 using Infrastructure.Services.RegisterServices;
 using Infrastructure.Services.Shared;
 using Infrastructure.Services.TokenServices;
@@ -40,8 +35,6 @@ namespace PublicApi.Extensions
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
             //context
-            services.AddTransient<IContext, ContextService>();
-            services.AddTransient<IDeliveryContextBuilder, DeliveryContextBuilder>();
             services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
             
 
@@ -55,7 +48,6 @@ namespace PublicApi.Extensions
             
       
             services.AddTransient<IChatHub, ChatHubService>();
-            services.AddTransient<ILocation, LocationService>();
             services.AddTransient<IValidation, ValidationService>();
             services.AddTransient<IGenerateToken, TokenService>();
             services.AddTransient<IRefreshToken, TokenService>();

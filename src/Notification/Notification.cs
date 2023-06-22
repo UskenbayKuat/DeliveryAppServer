@@ -1,14 +1,9 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.Values;
-using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
-using ApplicationCore.Interfaces.LocationInterfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Notification.Interfaces;
 

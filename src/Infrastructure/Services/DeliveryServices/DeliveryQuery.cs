@@ -1,21 +1,11 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Orders;
-using ApplicationCore.Entities.Values;
-using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using ApplicationCore.Models.Dtos;
-using ApplicationCore.Models.Entities.Orders;
-using ApplicationCore.Models.Values;
-using ApplicationCore.Models.Values.Enums;
 using ApplicationCore.Specifications.Deliveries;
 using Infrastructure.AppData.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.DeliveryServices
 {

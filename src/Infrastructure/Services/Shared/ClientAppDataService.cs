@@ -3,26 +3,26 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Routes;
-using ApplicationCore.Entities.Values;
-using ApplicationCore.Interfaces.ContextInterfaces;
+using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.SharedInterfaces;
-using Infrastructure.AppData.DataAccess;
+using ApplicationCore.Models.Values;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.Shared
 {
     public class ClientAppDataService : IDeliveryAppData<ClientAppDataInfo>
     {
-        private readonly IContext _context;
-        public ClientAppDataService(IContext context)
+        private readonly IAsyncRepository<City> _contextCity;
+        private readonly IAsyncRepository<CarType> _contextCarType;
+        public ClientAppDataService(IAsyncRepository<City> contextCity, IAsyncRepository<CarType> contextCarType)
         {
-            _context = context;
+            _contextCity = contextCity;
+            _contextCarType = contextCarType;
         }
         public async Task<ActionResult> SendDataAsync(CancellationToken cancellationToken)
         {
-            var cities = await _context.GetAll<City>().ToListAsync(cancellationToken);
-            var carTypes = await _context.GetAll<CarType>().ToListAsync(cancellationToken);
+            var cities = await _contextCity.ListAllAsync(cancellationToken);
+            var carTypes = await _contextCarType.ListAllAsync(cancellationToken);
             var info = new ClientAppDataInfo
             {
                 Cities = cities,

@@ -3,9 +3,8 @@ using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Exceptions;
-using ApplicationCore.Interfaces.ContextInterfaces;
+using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.RegisterInterfaces;
-using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,12 +14,13 @@ namespace Infrastructure.Services.RegisterServices
     public class ProceedRegistrationService : IProceedRegistration
     {
         private readonly AppIdentityDbContext _identityDb;
-        private readonly IContext _context;
-
-        public ProceedRegistrationService(AppIdentityDbContext identityDb, IContext context)
+        private readonly IAsyncRepository<Driver> _contextDriver;
+        private readonly IAsyncRepository<Client> _contextClient;
+        public ProceedRegistrationService(AppIdentityDbContext identityDb, IAsyncRepository<Driver> contextDriver, IAsyncRepository<Client> contextClient)
         {
             _identityDb = identityDb;
-            _context = context;
+            _contextDriver = contextDriver;
+            _contextClient = contextClient;
         }
 
         public async Task<ActionResult> ProceedRegistration(ProceedRegistrationInfo info, string userId,
@@ -33,11 +33,11 @@ namespace Infrastructure.Services.RegisterServices
             {
                 var driver = new Driver(user.Id, info.IdentificationNumber, info.IdentificationSeries,
                     info.IdentityCardCreateDate, info.DriverLicenceScanPath, info.IdentityCardPhotoPath);
-                await _context.AddAsync(driver);
+                await _contextDriver.AddAsync(driver, cancellationToken);
             }
             else
             {
-                await _context.AddAsync(new Client(user.Id));
+                await _contextClient.AddAsync(new Client(user.Id), cancellationToken);
             }
 
             _identityDb.Users.Update(user);

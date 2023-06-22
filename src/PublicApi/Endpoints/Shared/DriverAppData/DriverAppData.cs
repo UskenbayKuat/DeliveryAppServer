@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.SharedInterfaces;
+using ApplicationCore.Models.Values;
 using Ardalis.ApiEndpoints;
 using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;

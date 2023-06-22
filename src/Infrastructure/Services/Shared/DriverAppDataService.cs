@@ -1,36 +1,47 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Routes;
-using ApplicationCore.Entities.Values;
-using ApplicationCore.Interfaces.ContextInterfaces;
+using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.SharedInterfaces;
-using Infrastructure.AppData.DataAccess;
+using ApplicationCore.Models.Values;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Infrastructure.Services.Shared
 {
     public class DriverAppDataService : IDeliveryAppData<DriverAppDataInfo>
     {
-        private readonly IContext _context;
+        private readonly IAsyncRepository<City> _contextCity;
+        private readonly IAsyncRepository<Kit> _contextKit;
+        private readonly IAsyncRepository<CarBrand> _contextCarBrand;
+        private readonly IAsyncRepository<CarType> _contextCarType;
+        private readonly IAsyncRepository<CarColor> _contextCarColor;
 
-        public DriverAppDataService(IContext context)
+        public DriverAppDataService(
+            IAsyncRepository<City> contextCity, 
+            IAsyncRepository<Kit> contextKit, 
+            IAsyncRepository<CarBrand> contextCarBrand, 
+            IAsyncRepository<CarType> contextCarType, 
+            IAsyncRepository<CarColor> contextCarColor)
         {
-            _context = context;
+            _contextCity = contextCity;
+            _contextKit = contextKit;
+            _contextCarBrand = contextCarBrand;
+            _contextCarType = contextCarType;
+            _contextCarColor = contextCarColor;
         }
-        public Task<ActionResult> SendDataAsync(CancellationToken cancellationToken)
+        public async Task<ActionResult> SendDataAsync(CancellationToken cancellationToken)
         {
             var info = new DriverAppDataInfo
             {
-                Cities = _context.GetAll<City>().ToList(),
-                Kits = _context.GetAll<Kit>().ToList(),
-                CarBrands = _context.GetAll<CarBrand>().ToList(),
-                CarTypes = _context.GetAll<CarType>().ToList(),
-                CarColors = _context.GetAll<CarColor>().ToList()
+                Cities =  await _contextCity.ListAllAsync(cancellationToken),
+                Kits =  await _contextKit.ListAllAsync(cancellationToken),
+                CarBrands =  await _contextCarBrand.ListAllAsync(cancellationToken),
+                CarTypes =  await _contextCarType.ListAllAsync(cancellationToken),
+                CarColors =  await _contextCarColor.ListAllAsync(cancellationToken)
             };
-            return Task.FromResult<ActionResult>(new OkObjectResult(info));
+            return new OkObjectResult(info);
         }
     }
 }

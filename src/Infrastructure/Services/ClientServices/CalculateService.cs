@@ -3,16 +3,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Interfaces.ContextInterfaces;
 using ApplicationCore.Models.Dtos;
 using System;
+using ApplicationCore.Interfaces.DataContextInterface;
 
 namespace Infrastructure.Services.ClientServices
 {
     public class CalculateService : ICalculate
     {
-        private readonly IContext _context;
-        public CalculateService(IContext context)
+        private readonly IAsyncRepository<RoutePrice> _context;
+        public CalculateService(IAsyncRepository<RoutePrice> context)
         {
             _context = context;
         }
@@ -41,7 +41,7 @@ namespace Infrastructure.Services.ClientServices
 
         private async Task<double> SetRoutePrice(CreateOrderDto model)
         {
-            var route = await _context.FindAsync<RoutePrice>(r => r.Route.StartCity.Name == model.StartCityName &&
+            var route = await _context.FirstOrDefaultAsync(r => r.Route.StartCity.Name == model.StartCityName &&
                                      r.Route.FinishCity.Name == model.FinishCityName);
             return route?.Price ?? throw new ArgumentException("Не найден такой маршурт");
         } 
