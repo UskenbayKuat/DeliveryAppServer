@@ -17,6 +17,6 @@ namespace ApplicationCore.Interfaces.DeliveryInterfaces
         Task<IReadOnlyList<Order>> AddWaitingOrdersAsync(Delivery delivery);
         public Task<ActionResult> CancellationAsync(string driverUserId);
         public Task StartAsync(string driverUserId);
-        
+        Task<LocationDto> UpdateLocationAsync(LocationDto request);
     }
 }

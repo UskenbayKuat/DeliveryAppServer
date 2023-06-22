@@ -8,6 +8,6 @@ namespace ApplicationCore.Interfaces.LocationInterfaces
 {
     public interface ILocation
     {
-        public Task<LocationInfo> UpdateDriverLocationAsync(LocationInfo locationInfo);
+        public Task<LocationDto> UpdateDriverLocationAsync(LocationDto locationDto);
     }
 }

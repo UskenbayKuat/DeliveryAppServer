@@ -10,7 +10,7 @@ namespace Notification.Interfaces
     {
         public Task SendToDriverAsync(string userId, CancellationToken cancellationToken);
         public Task SendToClient(string userId, CancellationToken cancellationToken);
-        public Task SendDriverLocationToClientsAsync(string driverUserId, LocationInfo locationCommand);
+        public Task SendDriverLocationToClientsAsync(string driverUserId, LocationDto locationCommand);
         public Task SendInfoToClientsAsync(string driverUserId);
 
     }

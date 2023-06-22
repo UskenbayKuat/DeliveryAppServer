@@ -11,7 +11,6 @@ namespace ApplicationCore.Interfaces.DataContextInterface
 {
     public interface IAsyncRepository<T> where T : BaseEntity
     {
-        Task<T> GetByIdAsync(int id, CancellationToken cancellationToken = default);
         IQueryable<T> GetQueryableAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);
         Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default);
         Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);

@@ -19,9 +19,9 @@ namespace PublicApi
             CreateMap<ConfirmRegisterCommand, ConfirmRegistrationInfo>();
             CreateMap<ProceedRegisterCommand, ProceedRegistrationInfo>();
             CreateMap<RefreshCommand, RefreshTokenInfo>();
-            CreateMap<CreateDeliveryCommand, RouteTripInfo>();
+            CreateMap<CreateDeliveryCommand, CreateDeliveryDto>();
             CreateMap<CarCommand, CreateCarDto>();
-            CreateMap<CreateOrderCommand, OrderInfo>();
+            CreateMap<CreateOrderCommand, CreateOrderDto>();
             CreateMap<ConfirmHandOverCommand, ConfirmHandOverDto>();
         }   
     }

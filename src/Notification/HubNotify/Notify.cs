@@ -12,13 +12,11 @@ namespace Notification.HubNotify
     {
         private readonly IHubContext<Notification> _hubContext;
         private readonly IChatHub _chatHub;
-        private readonly IOrderQuery _orderQuery;
 
-        public Notify(IHubContext<Notification> hubContext, IChatHub chatHub, IOrderQuery orderQuery)
+        public Notify(IHubContext<Notification> hubContext, IChatHub chatHub)
         {
             _hubContext = hubContext;
             _chatHub = chatHub;
-            _orderQuery = orderQuery;
         }
 
         public async Task SendToDriverAsync(string userId, CancellationToken cancellationToken)
@@ -41,7 +39,7 @@ namespace Notification.HubNotify
             }
         }
 
-        public async Task SendDriverLocationToClientsAsync(string driverUserId, LocationInfo locationCommand)
+        public async Task SendDriverLocationToClientsAsync(string driverUserId, LocationDto locationCommand)
         {
             var connectionIdList = await _chatHub.GetConnectionIdListAsync(driverUserId);
             foreach (var connectionId in connectionIdList)

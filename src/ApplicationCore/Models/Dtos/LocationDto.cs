@@ -1,6 +1,6 @@
 namespace ApplicationCore.Entities.Values
 {
-    public class LocationInfo
+    public class LocationDto
     {
         public double Latitude { get;  set; }
         public double Longitude { get;  set; }
@@ -8,7 +8,7 @@ namespace ApplicationCore.Entities.Values
         public string DriverName { get;  set; }
         public string DriverSurname { get;  set; }
         public string DriverPhoneNumber { get;  set; }
-        public LocationInfo SetUserId(string userId)
+        public LocationDto SetUserId(string userId)
         {
             UserId = userId;
             return this;

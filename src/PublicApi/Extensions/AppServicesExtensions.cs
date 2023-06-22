@@ -42,11 +42,12 @@ namespace PublicApi.Extensions
             //context
             services.AddTransient<IContext, ContextService>();
             services.AddTransient<IDeliveryContextBuilder, DeliveryContextBuilder>();
-            services.AddTransient<IDriverContextBuilder, DriverContextBuilder>();
             services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
-            //TODO check
-            services.AddTransient(typeof(IDeliveryAppData<>), typeof(DriverAppDataService));
+            
 
+            services.AddTransient<IDeliveryAppData<DriverAppDataInfo>, DriverAppDataService>();
+            services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
+            
             services.AddTransient<IOrderCommand, OrderCommand>();
             services.AddTransient<IOrderQuery, OrderQuery>();
             services.AddTransient<IDeliveryCommand, DeliveryCommand>();

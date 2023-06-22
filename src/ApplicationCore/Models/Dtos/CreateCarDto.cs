@@ -1,4 +1,4 @@
-namespace ApplicationCore.Models.Values
+namespace ApplicationCore.Models.Dtos
 {
     public class CreateCarDto
     {

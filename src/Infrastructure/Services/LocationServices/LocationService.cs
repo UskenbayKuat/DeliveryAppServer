@@ -18,7 +18,7 @@ namespace Infrastructure.Services.LocationServices
             _context = context;
         }
 
-        public async Task<LocationInfo> UpdateDriverLocationAsync(LocationInfo request)
+        public async Task<LocationDto> UpdateDriverLocationAsync(LocationDto request)
         {
             var delivery = await _deliveryContextBuilder.IncludeLocation()
                 .Build()

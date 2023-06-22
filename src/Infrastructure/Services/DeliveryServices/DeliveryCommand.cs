@@ -104,6 +104,21 @@ namespace Infrastructure.Services.DeliveryServices
             }
         }
 
+        public async Task<LocationDto> UpdateLocationAsync(LocationDto request)
+        {
+            var deliverySpec = new DeliveryWithLocationSpecification(request.UserId);
+            var delivery = await _context.FirstOrDefaultAsync(deliverySpec);
+            if (request.Latitude != 0 && request.Longitude != 0)
+            {
+                delivery?.Location.UpdateLocation(request.Latitude, request.Longitude);
+                await _context.UpdateAsync(delivery);
+                return request;
+            }
+            request.Latitude = delivery.Location.Latitude;
+            request.Longitude = delivery.Location.Longitude;
+            return request;
+        }
+
         public async Task<Delivery> FindIsNewDelivery(Order order)
         {
             var deliverySpec = new DeliveryWithDriverSpecification(order.Route.Id, order.DeliveryDate, order.Location);
