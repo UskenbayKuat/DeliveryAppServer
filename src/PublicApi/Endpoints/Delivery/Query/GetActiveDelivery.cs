@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace PublicApi.Endpoints.Delivery.Query
 {
     [Authorize]
-    public class GetActiveOrdersForDriver : EndpointBaseAsync.WithoutRequest.WithActionResult
+    public class GetActiveDelivery : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
         private readonly IDeliveryQuery _deliveryQuery;
 
-        public GetActiveOrdersForDriver(IDeliveryQuery deliveryQuery)
+        public GetActiveDelivery(IDeliveryQuery deliveryQuery)
         {
             _deliveryQuery = deliveryQuery;
         }

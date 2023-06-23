@@ -1,23 +1,22 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Models.Dtos;
+using ApplicationCore.Models.Dtos.Orders;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands;
 
-namespace PublicApi.Endpoints.Clients
+namespace PublicApi.Endpoints.Clients.Command
 {
-    public class CalculateOrderEndpoint : EndpointBaseAsync.WithRequest<CreateOrderCommand>.WithActionResult
+    public class CalculateOrder : EndpointBaseAsync.WithRequest<CreateOrderCommand>.WithActionResult
     {
         private readonly ICalculate _calculate;
         private readonly IMapper _mapper;
 
 
-        public CalculateOrderEndpoint(ICalculate calculate, IMapper mapper)
+        public CalculateOrder(ICalculate calculate, IMapper mapper)
         {
             _calculate = calculate;
             _mapper = mapper;
@@ -33,7 +32,7 @@ namespace PublicApi.Endpoints.Clients
             }
             catch(ArgumentException ex)
             {
-                return BadRequest($"Не правильное рассчет калькулаций: {ex.Message}");
+                return BadRequest($"РќРµ РїСЂР°РІРёР»СЊРЅРѕРµ СЂР°СЃСЃС‡РµС‚ РєР°Р»СЊРєСѓР»Р°С†РёР№: {ex.Message}");
             }
         }
     }

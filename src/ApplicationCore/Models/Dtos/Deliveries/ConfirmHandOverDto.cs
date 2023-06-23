@@ -1,4 +1,4 @@
-namespace ApplicationCore.Models.Dtos
+namespace ApplicationCore.Models.Dtos.Deliveries
 {
     public class ConfirmHandOverDto
     {

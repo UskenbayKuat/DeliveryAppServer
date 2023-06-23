@@ -1,10 +1,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Models.Dtos;
+using ApplicationCore.Models.Dtos.Shared;
+using ApplicationCore.Models.Values;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

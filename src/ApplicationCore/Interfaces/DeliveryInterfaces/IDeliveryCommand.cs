@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Orders;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Models.Dtos;
+using ApplicationCore.Models.Dtos.Deliveries;
+using ApplicationCore.Models.Dtos.Shared;
 using ApplicationCore.Models.Entities.Orders;
 using Microsoft.AspNetCore.Mvc;
 

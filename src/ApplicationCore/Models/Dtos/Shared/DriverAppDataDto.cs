@@ -3,9 +3,9 @@ using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Routes;
 
-namespace ApplicationCore.Models.Values
+namespace ApplicationCore.Models.Dtos.Shared
 {
-    public class DriverAppDataInfo
+    public class DriverAppDataDto
     {
         public IReadOnlyList<City> Cities { get; set; }
         public IReadOnlyList<Kit> Kits { get; set; }

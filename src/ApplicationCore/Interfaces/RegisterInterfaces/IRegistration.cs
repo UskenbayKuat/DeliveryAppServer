@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.Values;
+using ApplicationCore.Models.Dtos.Register;
 using ApplicationCore.Models.Values;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,8 +8,8 @@ namespace ApplicationCore.Interfaces.RegisterInterfaces
 {
     public interface IRegistration
     {
-        public Task<ActionResult> SendTokenAsync(RegistrationInfo info);
+        public Task<ActionResult> SendTokenAsync(RegistrationDto dto);
 
-        public Task<ActionResult> Confirm(ConfirmRegistrationInfo info, CancellationToken cancellationToken);
+        public Task<ActionResult> Confirm(ConfirmRegistrationDto dto, CancellationToken cancellationToken);
     }
 }

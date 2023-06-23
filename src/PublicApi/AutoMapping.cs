@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Models.Dtos;
+using ApplicationCore.Models.Dtos.Deliveries;
+using ApplicationCore.Models.Dtos.Orders;
+using ApplicationCore.Models.Dtos.Register;
+using ApplicationCore.Models.Dtos.Shared;
 using ApplicationCore.Models.Values;
 using PublicApi.Commands;
 using PublicApi.Endpoints.RegisterApi.ConfirmRegister;
@@ -14,10 +17,10 @@ namespace PublicApi
     {
         public AutoMapping()
         {
-            CreateMap<RegisterCommand, RegistrationInfo>();
-            CreateMap<ConfirmRegisterCommand, ConfirmRegistrationInfo>();
-            CreateMap<ProceedRegisterCommand, ProceedRegistrationInfo>();
-            CreateMap<RefreshCommand, RefreshTokenInfo>();
+            CreateMap<RegisterCommand, RegistrationDto>();
+            CreateMap<ConfirmRegisterCommand, ConfirmRegistrationDto>();
+            CreateMap<ProceedRegisterCommand, ProceedRegistrationDto>();
+            CreateMap<RefreshCommand, RefreshTokenDto>();
             CreateMap<CreateDeliveryCommand, CreateDeliveryDto>();
             CreateMap<CreateCarCommand, CreateCarDto>();
             CreateMap<CreateOrderCommand, CreateOrderDto>();

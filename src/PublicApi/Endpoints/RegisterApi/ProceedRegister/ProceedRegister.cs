@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
+using ApplicationCore.Models.Dtos.Register;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Infrastructure.Config.Attributes;
@@ -28,7 +28,7 @@ namespace PublicApi.Endpoints.RegisterApi.ProceedRegister
         public override async Task<ActionResult> HandleAsync([FromBody]ProceedRegisterCommand request, CancellationToken cancellationToken = default)
         {
             return await _proceedRegistration.ProceedRegistration(_mapper.
-                Map<ProceedRegistrationInfo>(request), HttpContext.Items["UserId"]?.ToString(), cancellationToken);
+                Map<ProceedRegistrationDto>(request), HttpContext.Items["UserId"]?.ToString(), cancellationToken);
         }
 
     }

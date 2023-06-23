@@ -1,10 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.RegisterInterfaces;
+using ApplicationCore.Models.Dtos.Register;
 using Infrastructure.AppData.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,16 +23,16 @@ namespace Infrastructure.Services.RegisterServices
             _contextClient = contextClient;
         }
 
-        public async Task<ActionResult> ProceedRegistration(ProceedRegistrationInfo info, string userId,
+        public async Task<ActionResult> ProceedRegistration(ProceedRegistrationDto dto, string userId,
             CancellationToken cancellationToken)
         {
             var user = (await _identityDb.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken))
-                       .AddFullName(info.Name, info.Surname) ??
+                       .AddFullName(dto.Name, dto.Surname) ??
                        throw new NotExistUserException("User is not found");
             if (user.IsDriver)
             {
-                var driver = new Driver(user.Id, info.IdentificationNumber, info.IdentificationSeries,
-                    info.IdentityCardCreateDate, info.DriverLicenceScanPath, info.IdentityCardPhotoPath);
+                var driver = new Driver(user.Id, dto.IdentificationNumber, dto.IdentificationSeries,
+                    dto.IdentityCardCreateDate, dto.DriverLicenceScanPath, dto.IdentityCardPhotoPath);
                 await _contextDriver.AddAsync(driver, cancellationToken);
             }
             else

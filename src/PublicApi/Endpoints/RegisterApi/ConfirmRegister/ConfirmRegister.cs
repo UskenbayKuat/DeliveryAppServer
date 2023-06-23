@@ -1,9 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
+using ApplicationCore.Models.Dtos.Register;
+using ApplicationCore.Models.Values;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +32,7 @@ namespace PublicApi.Endpoints.RegisterApi.ConfirmRegister
                 return BadRequest();
             }
             return await _registration.Confirm(_mapper.
-                Map<ConfirmRegistrationInfo>(request), cancellationToken);;
+                Map<ConfirmRegistrationDto>(request), cancellationToken);;
         }
     }
 }

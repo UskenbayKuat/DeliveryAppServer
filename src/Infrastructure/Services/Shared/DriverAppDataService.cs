@@ -5,12 +5,13 @@ using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.SharedInterfaces;
+using ApplicationCore.Models.Dtos.Shared;
 using ApplicationCore.Models.Values;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Infrastructure.Services.Shared
 {
-    public class DriverAppDataService : IDeliveryAppData<DriverAppDataInfo>
+    public class DriverAppDataService : IDeliveryAppData<DriverAppDataDto>
     {
         private readonly IAsyncRepository<City> _contextCity;
         private readonly IAsyncRepository<Kit> _contextKit;
@@ -33,7 +34,7 @@ namespace Infrastructure.Services.Shared
         }
         public async Task<ActionResult> SendDataAsync(CancellationToken cancellationToken)
         {
-            var info = new DriverAppDataInfo
+            var info = new DriverAppDataDto
             {
                 Cities =  await _contextCity.ListAllAsync(cancellationToken),
                 Kits =  await _contextKit.ListAllAsync(cancellationToken),

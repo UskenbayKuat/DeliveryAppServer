@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Models.Dtos;
+using ApplicationCore.Models.Dtos.Orders;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationCore.Interfaces.ClientInterfaces

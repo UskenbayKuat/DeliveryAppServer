@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DataContextInterface;
+using ApplicationCore.Models.Dtos.Deliveries;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Values;
 using ApplicationCore.Specifications.Orders;
@@ -27,11 +27,11 @@ namespace Infrastructure.Services.ClientServices
             _context = context;
         }
         
-        public async Task<List<DeliveryInfo>> GetActiveOrdersForClientAsync(string clientUserId)
+        public async Task<List<DeliveryDto>> GetActiveOrdersForClientAsync(string clientUserId)
         {
             var userClient = await _dbIdentityDbContext.Users
                 .FirstOrDefaultAsync(u => u.Id == clientUserId);
-            var deliveriesInfo = new List<DeliveryInfo>();
+            var deliveriesInfo = new List<DeliveryDto>();
             var orderSpec = new OrderWithStateSpecification(clientUserId);
             await _context
                 .GetQueryableAsync(orderSpec)

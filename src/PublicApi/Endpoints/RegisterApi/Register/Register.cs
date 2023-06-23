@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using ApplicationCore.Models.Values;
@@ -37,7 +36,7 @@ namespace PublicApi.Endpoints.RegisterApi.Register
             }
             _logger.Info("POST Обращение в RegisterApi");
             return await _registration.SendTokenAsync(_mapper
-                .Map<RegistrationInfo>(request));
+                .Map<RegistrationDto>(request));
         }
     }
 }

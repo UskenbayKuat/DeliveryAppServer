@@ -1,16 +1,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Models.Dtos;
-using ApplicationCore.Models.Values;
+using ApplicationCore.Models.Dtos.Deliveries;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands;
 
-namespace PublicApi.Endpoints.Delivery
+namespace PublicApi.Endpoints.Delivery.Command
 {
     public class ConfirmHandOver : EndpointBaseAsync.WithRequest<ConfirmHandOverCommand>.WithActionResult
     {

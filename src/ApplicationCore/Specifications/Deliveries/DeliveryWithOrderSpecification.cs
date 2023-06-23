@@ -1,5 +1,5 @@
 using ApplicationCore.Entities.AppEntities.Orders;
-using ApplicationCore.Models.Values.Enums;
+using ApplicationCore.Models.Enums;
 using Ardalis.Specification;
 
 namespace ApplicationCore.Specifications.Deliveries

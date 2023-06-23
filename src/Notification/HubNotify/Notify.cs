@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
+using ApplicationCore.Models.Dtos.Shared;
 using Microsoft.AspNetCore.SignalR;
 using Notification.Interfaces;
 

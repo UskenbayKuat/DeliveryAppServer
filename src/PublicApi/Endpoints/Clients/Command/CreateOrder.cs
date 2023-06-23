@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands;
 
-namespace PublicApi.Endpoints.Clients
+namespace PublicApi.Endpoints.Clients.Command
 {
     [Authorize]
     public class CreateOrder : EndpointBaseAsync.WithRequest<CreateOrderCommand>.WithActionResult

@@ -1,8 +1,7 @@
 using System;
-using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Models.Entities.Locations;
 
-namespace ApplicationCore.Models.Dtos
+namespace ApplicationCore.Models.Dtos.Deliveries
 {
     public class CreateDeliveryDto
     {

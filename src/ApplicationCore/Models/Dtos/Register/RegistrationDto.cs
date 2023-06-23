@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Models.Values
 {
-    public class RegistrationInfo
+    public class RegistrationDto
     {
         public string PhoneNumber { get; set; }
     }

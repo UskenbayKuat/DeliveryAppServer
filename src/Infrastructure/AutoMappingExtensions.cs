@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using ApplicationCore.Entities;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Orders;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Extensions;
 using ApplicationCore.Models.Dtos;
+using ApplicationCore.Models.Dtos.Deliveries;
+using ApplicationCore.Models.Dtos.Orders;
 using ApplicationCore.Models.Entities.Orders;
+using ApplicationCore.Models.Enums;
 using ApplicationCore.Models.Values;
-using ApplicationCore.Models.Values.Enums;
+using DeliveryDto = ApplicationCore.Models.Dtos.Deliveries.DeliveryDto;
 
 namespace Infrastructure
 {
     public static class AutoMappingExtensions
     {
-        public static DeliveryDto GetDeliveryDto(this Delivery delivery, List<OrderInfo> orderInfos)
+        public static IsActiveDeliveryDto GetDeliveryDto(this Delivery delivery, List<OrderDto> orderInfos)
         {
             var handOverCount = 0;
             var activeCount = 0;
@@ -38,7 +40,7 @@ namespace Infrastructure
             };
         }
 
-        public static OrderInfo SetOrderInfo(this Order order, User client) =>
+        public static OrderDto SetOrderInfo(this Order order, User client) =>
             new()
             {
                 OrderId = order.Id,
@@ -57,7 +59,7 @@ namespace Infrastructure
                 SecretCode = order.SecretCode
             };
 
-        public static DeliveryInfo SetDeliveryInfo(this Order order, User client, User driver) =>
+        public static DeliveryDto SetDeliveryInfo(this Order order, User client, User driver) =>
             new()
             {
                 OrderId = order.Id,

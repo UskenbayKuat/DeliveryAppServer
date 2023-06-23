@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ApplicationCore.Models.Values.Enums
+namespace ApplicationCore.Models.Enums
 {
     public enum GeneralState
     {

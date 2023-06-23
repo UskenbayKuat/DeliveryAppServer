@@ -1,9 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
+using ApplicationCore.Models.Dtos.Shared;
+using ApplicationCore.Models.Values;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,6 @@ namespace PublicApi.Endpoints.Shared.RefreshToken
         [HttpPost("api/refreshToken")]
         public override async Task<ActionResult> HandleAsync([FromBody] RefreshCommand command,
             CancellationToken cancellationToken = default) => await 
-            _refreshToken.RefreshTokenAsync(_mapper.Map<RefreshTokenInfo>(command));
+            _refreshToken.RefreshTokenAsync(_mapper.Map<RefreshTokenDto>(command));
     }
 }

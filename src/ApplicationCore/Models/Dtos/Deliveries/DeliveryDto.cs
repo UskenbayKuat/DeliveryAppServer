@@ -1,6 +1,8 @@
-namespace ApplicationCore.Models.Values
+using ApplicationCore.Models.Dtos.Orders;
+
+namespace ApplicationCore.Models.Dtos.Deliveries
 {
-    public class DeliveryInfo : OrderInfo
+    public class DeliveryDto : OrderDto
     {
         public string DeliveryState { get; set; }
         public string DriverName { get; set; }

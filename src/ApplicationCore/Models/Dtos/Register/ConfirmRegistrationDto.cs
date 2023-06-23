@@ -1,6 +1,6 @@
-﻿namespace ApplicationCore.Entities.Values
+﻿namespace ApplicationCore.Models.Dtos.Register
 {
-    public class ConfirmRegistrationInfo
+    public class ConfirmRegistrationDto
     {
         public string PhoneNumber { get; set; }
         public string SmsCode { get; set; }

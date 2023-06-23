@@ -1,6 +1,6 @@
 using System;
 
-namespace ApplicationCore.Entities.Values
+namespace ApplicationCore.Models.Dtos.Shared
 {
     public class BackgroundOrder
     {

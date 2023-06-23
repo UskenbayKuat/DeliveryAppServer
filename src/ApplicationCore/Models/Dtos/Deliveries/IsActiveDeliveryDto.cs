@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using ApplicationCore.Entities.Values;
-using ApplicationCore.Models.Values;
+using ApplicationCore.Models.Dtos.Orders;
 
-namespace ApplicationCore.Models.Dtos
+namespace ApplicationCore.Models.Dtos.Deliveries
 {
-    public class DeliveryDto
+    public class IsActiveDeliveryDto
     {
         public string StartCityName { get; set; }
         public string FinishCityName { get; set; }
@@ -14,6 +13,6 @@ namespace ApplicationCore.Models.Dtos
         public int HandOverCount { get; set; }
         public int ActiveCount { get; set; }
         public int OrderCount { get; set; }
-        public List<OrderInfo> OrderInfos { get; set; }
+        public List<OrderDto> OrderInfos { get; set; }
     }
 }

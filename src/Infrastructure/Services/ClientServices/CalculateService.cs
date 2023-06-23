@@ -6,6 +6,7 @@ using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Models.Dtos;
 using System;
 using ApplicationCore.Interfaces.DataContextInterface;
+using ApplicationCore.Models.Dtos.Orders;
 
 namespace Infrastructure.Services.ClientServices
 {

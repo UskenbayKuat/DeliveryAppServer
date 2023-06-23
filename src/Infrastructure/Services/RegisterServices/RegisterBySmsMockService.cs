@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities;
 using ApplicationCore.Entities.AppEntities;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
+using ApplicationCore.Models.Dtos.Register;
 using ApplicationCore.Models.Values;
 using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
@@ -25,19 +25,19 @@ namespace Infrastructure.Services.RegisterServices
             _generateToken = generateToken;
         }
 
-        public async Task<ActionResult> SendTokenAsync(RegistrationInfo info) => 
-            await RandomSms(info);
+        public async Task<ActionResult> SendTokenAsync(RegistrationDto dto) => 
+            await RandomSms(dto);
 
-        private Task<ActionResult> RandomSms(RegistrationInfo info) =>
-            Task.FromResult<ActionResult>(new OkObjectResult(info));
+        private Task<ActionResult> RandomSms(RegistrationDto dto) =>
+            Task.FromResult<ActionResult>(new OkObjectResult(dto));
         
-        public async Task<ActionResult> Confirm(ConfirmRegistrationInfo info, CancellationToken cancellationToken)
+        public async Task<ActionResult> Confirm(ConfirmRegistrationDto dto, CancellationToken cancellationToken)
         {
              var user = await _identityDb.Users.FirstOrDefaultAsync(
-                u => u.PhoneNumber == info.PhoneNumber && u.IsDriver == info.IsDriver, cancellationToken);
+                u => u.PhoneNumber == dto.PhoneNumber && u.IsDriver == dto.IsDriver, cancellationToken);
             if (user is null)
             {
-                user = new User(info.PhoneNumber, info.IsDriver);
+                user = new User(dto.PhoneNumber, dto.IsDriver);
                 await _identityDb.Users.AddAsync(user, cancellationToken);
                 await _identityDb.SaveChangesAsync(cancellationToken);
             }

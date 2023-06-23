@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.StateInterfaces;
 using ApplicationCore.Models.Entities.Orders;
-using ApplicationCore.Models.Values.Enums;
+using ApplicationCore.Models.Enums;
 
 namespace Infrastructure.Services.StateServices
 {

@@ -1,5 +1,5 @@
 using ApplicationCore.Entities;
-using ApplicationCore.Models.Values.Enums;
+using ApplicationCore.Models.Enums;
 
 namespace ApplicationCore.Models.Entities.Orders
 {

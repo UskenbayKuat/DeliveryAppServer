@@ -7,7 +7,7 @@ using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Extensions;
 using ApplicationCore.Models.Entities.Orders;
-using ApplicationCore.Models.Values.Enums;
+using ApplicationCore.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;

@@ -5,7 +5,7 @@ using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using ApplicationCore.Models.Dtos;
-using ApplicationCore.Models.Values.Enums;
+using ApplicationCore.Models.Dtos.Deliveries;
 using ApplicationCore.Specifications.Deliveries;
 using Infrastructure.AppData.Identity;
 
@@ -21,7 +21,7 @@ namespace Infrastructure.Services.DeliveryServices
             _identityDbContext = identityDbContext;
             _context = context;
         }
-        public async Task<DeliveryDto> GetDeliveryIsActiveAsync(string driverUserId)
+        public async Task<IsActiveDeliveryDto> GetDeliveryIsActiveAsync(string driverUserId)
         {
             var deliverySpec = new DeliveryWithOrderSpecification(driverUserId);
             var delivery = await _context.FirstOrDefaultAsync(deliverySpec) ?? throw new ArgumentException("Не найден поездка");

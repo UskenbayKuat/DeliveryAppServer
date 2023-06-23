@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces.ClientInterfaces;
@@ -6,14 +5,14 @@ using Ardalis.ApiEndpoints;
 using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PublicApi.Endpoints.Delivery.Query
+namespace PublicApi.Endpoints.Clients.Query
 {
     [Authorize]
-    public class GetActiveOrdersForClient: EndpointBaseAsync.WithoutRequest.WithActionResult
+    public class GetActiveOrders: EndpointBaseAsync.WithoutRequest.WithActionResult
     {
         private readonly IOrderQuery _orderQuery;
 
-        public GetActiveOrdersForClient(IOrderQuery orderQuery)
+        public GetActiveOrders(IOrderQuery orderQuery)
         {
             _orderQuery = orderQuery;
         }

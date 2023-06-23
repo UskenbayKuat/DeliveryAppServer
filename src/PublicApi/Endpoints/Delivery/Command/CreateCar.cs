@@ -9,7 +9,7 @@ using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands;
 
-namespace PublicApi.Endpoints.Drivers
+namespace PublicApi.Endpoints.Delivery.Command
 {
     [Authorize]
     public class CreateCar: EndpointBaseAsync.WithRequest<CreateCarCommand>.WithActionResult

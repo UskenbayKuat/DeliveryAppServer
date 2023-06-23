@@ -1,4 +1,4 @@
-namespace ApplicationCore.Entities.Values
+namespace ApplicationCore.Models.Dtos.Shared
 {
     public class LocationDto
     {

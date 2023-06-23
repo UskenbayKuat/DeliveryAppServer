@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Orders;
-using ApplicationCore.Entities.Values;
+using ApplicationCore.Models.Dtos.Shared;
 
 namespace Notification.Interfaces
 {

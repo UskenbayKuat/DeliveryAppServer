@@ -11,6 +11,8 @@ using ApplicationCore.Interfaces.RouteInterfaces;
 using ApplicationCore.Interfaces.SharedInterfaces;
 using ApplicationCore.Interfaces.StateInterfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
+using ApplicationCore.Models.Dtos;
+using ApplicationCore.Models.Dtos.Shared;
 using ApplicationCore.Models.Values;
 using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
@@ -46,8 +48,8 @@ namespace PublicApi.Extensions
             services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
             
             //services
-            services.AddTransient<IDeliveryAppData<DriverAppDataInfo>, DriverAppDataService>();
-            services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
+            services.AddTransient<IDeliveryAppData<DriverAppDataDto>, DriverAppDataService>();
+            services.AddTransient<IDeliveryAppData<ClientAppDataDto>, ClientAppDataService>();
             
             services.AddTransient<IOrderCommand, OrderCommand>();
             services.AddTransient<IOrderQuery, OrderQuery>();

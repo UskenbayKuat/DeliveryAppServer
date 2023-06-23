@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ApplicationCore.Entities.Values
+namespace ApplicationCore.Models.Dtos.Register
 {
-    public class ProceedRegistrationInfo
+    public class ProceedRegistrationDto
     {
         public string PhoneNumber { get; set; }
         public string Name { get; set; }

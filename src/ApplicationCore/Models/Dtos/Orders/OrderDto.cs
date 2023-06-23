@@ -4,9 +4,9 @@ using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Models.Entities.Locations;
 
-namespace ApplicationCore.Models.Values
+namespace ApplicationCore.Models.Dtos.Orders
 {
-    public class OrderInfo
+    public class OrderDto
     {
         public int OrderId { get; set; }
         public City StartCity { get; set; }

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using ApplicationCore.Models.Entities.Orders;
-using ApplicationCore.Models.Values.Enums;
+using ApplicationCore.Models.Enums;
 
 namespace ApplicationCore.Interfaces.StateInterfaces
 {
