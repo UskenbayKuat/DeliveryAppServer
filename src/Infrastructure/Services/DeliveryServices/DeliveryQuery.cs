@@ -31,7 +31,7 @@ namespace Infrastructure.Services.DeliveryServices
             var orderDtoList = (
                 from order in delivery.Orders 
                 let user = _identityDbContext.Users.AsNoTracking().FirstOrDefault(u => u.Id == order.Client.UserId) 
-                select order.SetOrderInfo(user)).ToList();
+                select order.GetOrderDto(user)).ToList();
             return delivery.GetDeliveryDto(orderDtoList);
         }
     }

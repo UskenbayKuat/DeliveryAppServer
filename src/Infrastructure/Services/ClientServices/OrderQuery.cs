@@ -42,7 +42,7 @@ namespace Infrastructure.Services.ClientServices
                     var userDriver = _dbIdentityDbContext.Users
                         .AsNoTracking()
                         .FirstOrDefault(u => u.Id == o.Delivery.Driver.UserId);
-                    deliveriesInfo.Add(o.GetDeliveryInfo(userClient, userDriver));
+                    deliveriesInfo.Add(o.GetDeliveryDto(userClient, userDriver));
                 });
             return deliveriesInfo;
         }

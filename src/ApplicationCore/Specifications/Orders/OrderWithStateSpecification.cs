@@ -24,13 +24,14 @@ namespace ApplicationCore.Specifications.Orders
         {
             Query.Include(o => o.State)
                 .Include(o => o.Route.StartCity)
-                .Include(o => o.Client)
                 .Include(o => o.Route.FinishCity)
                 .Include(o => o.Package)
-                .Include(o => o.CarType)
-                .Include(o => o.Location)
                 .Include(o => o.Delivery)
                 .Include(o => o.Delivery.Driver)
+                .Include(o => o.Client)
+                .Include(o => o.Delivery.Driver.Car)
+                .Include(o => o.Delivery.State)
+                .Include(o => o.Location)
                 .Where(o => o.Client.UserId == userId)
                 .Where(o =>
                     o.State.StateValue == GeneralState.WaitingOnReview ||

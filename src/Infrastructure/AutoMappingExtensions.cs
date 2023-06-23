@@ -40,45 +40,49 @@ namespace Infrastructure
             };
         }
 
-        public static OrderDto SetOrderInfo(this Order order, User client) =>
+        public static OrderDto GetOrderDto(this Order order, User client) =>
             new()
             {
                 OrderId = order.Id,
-                StartCity = order.Route.StartCity,
-                FinishCity = order.Route.FinishCity,
+                StartCityName = order.Route.StartCity.Name,
+                FinishCityName = order.Route.FinishCity.Name,
                 Package = order.Package,
-                CarType = order.CarType,
+                CarTypeName = order.CarType?.Name,
                 IsSingle = order.IsSingle,
                 Price = order.Price,
                 StateName = order.State.Name,
                 DeliveryDate = order.Delivery?.DeliveryDate ?? order.DeliveryDate,
-                Location = order.Location,
                 ClientName = client.Name,
                 ClientSurname = client.Surname,
                 ClientPhoneNumber = client.PhoneNumber,
-                SecretCode = order.SecretCode
+                Latitude = order.Location.Latitude,
+                Longitude = order.Location.Longitude,
+                AddressFrom = order.AddressFrom,
+                AddressTo = order.AddressTo,
+                Description = order.Description
             };
 
-        public static DeliveryDto GetDeliveryInfo(this Order order, User client, User driver) =>
+        public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver) =>
             new()
-            {
+            {  
+                StartCityName = order.Route.StartCity.Name,
+                FinishCityName = order.Route.FinishCity.Name,
+                AddressFrom = order.AddressFrom,
+                AddressTo = order.AddressTo,
+                Description = order.Description,
                 OrderId = order.Id,
-                StartCity = order.Route.StartCity,
-                FinishCity = order.Route.FinishCity,
                 Package = order.Package,
-                CarType = order.CarType,
                 IsSingle = order.IsSingle,
                 Price = order.Price,
-                StateName = order.State.Name,
-                DeliveryDate = order.Delivery?.DeliveryDate ?? order.DeliveryDate,
-                Location = order.Location,
                 ClientName = client.Name,
                 ClientSurname = client.Surname,
                 ClientPhoneNumber = client.PhoneNumber,
                 DriverPhoneNumber = driver.PhoneNumber,
                 DriverName = driver.Name,
                 DriverSurname = driver.Surname,
-                SecretCode = order.SecretCode
+                CarNumber = order.Delivery.Driver.Car.CarNumber,
+                DeliveryState = order.Delivery.State.StateValue.GetDisplayName(),
+                SecretCode = order.SecretCode,
             };
     }
 }
