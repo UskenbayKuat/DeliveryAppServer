@@ -59,7 +59,7 @@ namespace Infrastructure
                 SecretCode = order.SecretCode
             };
 
-        public static DeliveryDto SetDeliveryInfo(this Order order, User client, User driver) =>
+        public static DeliveryDto GetDeliveryInfo(this Order order, User client, User driver) =>
             new()
             {
                 OrderId = order.Id,

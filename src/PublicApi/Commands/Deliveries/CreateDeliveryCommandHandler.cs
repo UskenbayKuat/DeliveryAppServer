@@ -1,15 +1,13 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
-using ApplicationCore.Models.Dtos;
 using ApplicationCore.Models.Dtos.Deliveries;
 using AutoMapper;
 using MediatR;
 using Notification.Interfaces;
 
-namespace PublicApi.Commands
+namespace PublicApi.Commands.Deliveries
 {
     public class CreateDeliveryCommandHandler : AsyncRequestHandler<CreateDeliveryCommand>
     {

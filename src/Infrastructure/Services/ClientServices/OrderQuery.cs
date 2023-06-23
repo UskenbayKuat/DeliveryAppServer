@@ -30,16 +30,19 @@ namespace Infrastructure.Services.ClientServices
         public async Task<List<DeliveryDto>> GetActiveOrdersForClientAsync(string clientUserId)
         {
             var userClient = await _dbIdentityDbContext.Users
+                .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == clientUserId);
             var deliveriesInfo = new List<DeliveryDto>();
             var orderSpec = new OrderWithStateSpecification(clientUserId);
             await _context
                 .GetQueryableAsync(orderSpec)
+                .AsNoTracking()
                 .ForEachAsync(o =>
                 {
-                    var userDriver = _dbIdentityDbContext.Users.First(u => u.Id == o.Delivery.Driver.UserId);
-                    var deliveryInfo = o.SetDeliveryInfo(userClient, userDriver);
-                    deliveriesInfo.Add(deliveryInfo);
+                    var userDriver = _dbIdentityDbContext.Users
+                        .AsNoTracking()
+                        .FirstOrDefault(u => u.Id == o.Delivery.Driver.UserId);
+                    deliveriesInfo.Add(o.GetDeliveryInfo(userClient, userDriver));
                 });
             return deliveriesInfo;
         }

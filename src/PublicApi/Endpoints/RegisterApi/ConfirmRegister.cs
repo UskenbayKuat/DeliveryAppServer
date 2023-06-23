@@ -1,15 +1,14 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using ApplicationCore.Models.Dtos.Register;
-using ApplicationCore.Models.Values;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using PublicApi.Commands.Register;
 
-namespace PublicApi.Endpoints.RegisterApi.ConfirmRegister
+namespace PublicApi.Endpoints.RegisterApi
 {
     public class ConfirmRegister : EndpointBaseAsync.WithRequest<ConfirmRegisterCommand>.WithActionResult
     {

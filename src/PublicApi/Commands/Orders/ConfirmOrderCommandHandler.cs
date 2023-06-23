@@ -5,7 +5,7 @@ using ApplicationCore.Interfaces.DeliveryInterfaces;
 using MediatR;
 using Notification.Interfaces;
 
-namespace PublicApi.Commands
+namespace PublicApi.Commands.Orders
 {
     public class ConfirmOrderCommandHandler : AsyncRequestHandler<ConfirmOrderCommand>
     {

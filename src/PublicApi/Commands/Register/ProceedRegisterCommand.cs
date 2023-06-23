@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace PublicApi.Endpoints.RegisterApi.ProceedRegister
+namespace PublicApi.Commands.Register
 {
     public class ProceedRegisterCommand
     {
-        public string PhoneNumber { get; set; } = null!;
-        public string Name { get; set; } = null!;
-        public string Surname { get; set; } = null!;
+        public string PhoneNumber { get; set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
         public string IdentificationNumber { get; set; }
         public string IdentificationSeries { get; set; }
         public DateTime IdentityCardCreateDate { get; set; }

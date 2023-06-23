@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PublicApi.Endpoints.RegisterApi.Register
+namespace PublicApi.Commands.Register
 {
     public class RegisterCommand
     {
         [Required]
-        public string PhoneNumber { get; set; } = null!;
+        public string PhoneNumber { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using Infrastructure.Config.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands;
+using PublicApi.Commands.Orders;
 
 namespace PublicApi.Endpoints.Delivery
 {

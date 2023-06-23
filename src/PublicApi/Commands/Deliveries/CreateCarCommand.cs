@@ -1,4 +1,4 @@
-namespace PublicApi.Commands
+namespace PublicApi.Commands.Deliveries
 {
     public class CreateCarCommand
     {

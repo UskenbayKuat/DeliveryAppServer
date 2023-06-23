@@ -7,8 +7,9 @@ using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
+using PublicApi.Commands.Register;
 
-namespace PublicApi.Endpoints.RegisterApi.ProceedRegister
+namespace PublicApi.Endpoints.RegisterApi
 {
     [Authorize]
     public class ProceedRegister : EndpointBaseAsync.WithRequest<ProceedRegisterCommand>.WithActionResult

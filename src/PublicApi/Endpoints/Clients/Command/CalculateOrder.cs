@@ -7,6 +7,7 @@ using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands;
+using PublicApi.Commands.Orders;
 
 namespace PublicApi.Endpoints.Clients.Command
 {

@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
-using ApplicationCore.Models.Dtos;
 using ApplicationCore.Models.Dtos.Deliveries;
 using ApplicationCore.Specifications.Deliveries;
 using Infrastructure.AppData.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.DeliveryServices
 {
@@ -24,10 +24,13 @@ namespace Infrastructure.Services.DeliveryServices
         public async Task<IsActiveDeliveryDto> GetDeliveryIsActiveAsync(string driverUserId)
         {
             var deliverySpec = new DeliveryWithOrderSpecification(driverUserId);
-            var delivery = await _context.FirstOrDefaultAsync(deliverySpec) ?? throw new ArgumentException("Не найден поездка");
+            var delivery = await _context
+                .GetQueryableAsync(deliverySpec)
+                .AsNoTracking()
+                .FirstOrDefaultAsync() ?? throw new ArgumentException("Не найден поездка");
             var orderDtoList = (
                 from order in delivery.Orders 
-                let user = _identityDbContext.Users.FirstOrDefault(u => u.Id == order.Client.UserId) 
+                let user = _identityDbContext.Users.AsNoTracking().FirstOrDefault(u => u.Id == order.Client.UserId) 
                 select order.SetOrderInfo(user)).ToList();
             return delivery.GetDeliveryDto(orderDtoList);
         }

@@ -8,6 +8,7 @@ using Infrastructure.Config.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands;
+using PublicApi.Commands.Deliveries;
 
 namespace PublicApi.Endpoints.Delivery.Command
 {

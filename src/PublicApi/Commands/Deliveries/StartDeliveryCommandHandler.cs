@@ -1,12 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using Notification.Interfaces;
 
-namespace PublicApi.Commands
+namespace PublicApi.Commands.Deliveries
 {
     public class StartDeliveryCommandHandler : AsyncRequestHandler<StartDeliveryCommand>
     {

@@ -1,7 +1,6 @@
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
-namespace PublicApi.Commands
+namespace PublicApi.Commands.Deliveries
 {
     public class StartDeliveryCommand : IRequest
     {

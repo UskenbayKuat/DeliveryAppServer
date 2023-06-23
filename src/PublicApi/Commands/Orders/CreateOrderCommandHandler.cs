@@ -1,31 +1,33 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Models.Dtos.Orders;
+using AutoMapper;
 using MediatR;
 using Notification.Interfaces;
 
-namespace PublicApi.Commands
+namespace PublicApi.Commands.Orders
 {
-    public class RejectedOrderCommandHandler : AsyncRequestHandler<RejectedOrderCommand>
+    public class CreateOrderCommandHandler : AsyncRequestHandler<CreateOrderCommand>
     {
         private readonly IDeliveryCommand _deliveryCommand;
-        private readonly IOrderCommand _orderCommand;
+        private readonly IMapper _mapper;
         private readonly INotify _notify;
+        private readonly IOrderCommand _orderCommand;
 
-        public RejectedOrderCommandHandler(INotify notify, IDeliveryCommand deliveryCommand, IOrderCommand orderCommand)
+
+        public CreateOrderCommandHandler(IMapper mapper, INotify notify, IOrderCommand orderCommand, IDeliveryCommand deliveryCommand)
         {
+            _mapper = mapper;
             _notify = notify;
-            _deliveryCommand = deliveryCommand;
             _orderCommand = orderCommand;
+            _deliveryCommand = deliveryCommand;
         }
 
-        protected override async Task Handle(RejectedOrderCommand request, CancellationToken cancellationToken)
+        protected override async Task Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
-            var order = await _orderCommand.RejectAsync(request.OrderId) 
-                        ?? throw new ArgumentException("Ошибка, заказ передан");
+            var order = await _orderCommand.CreateAsync(_mapper.Map<CreateOrderDto>(request), request.UserId);
             var delivery = await _deliveryCommand.FindIsNewDelivery(order);
             if (delivery != null)
             {

@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using ApplicationCore.Models.Values;
@@ -8,8 +7,9 @@ using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
+using PublicApi.Commands.Register;
 
-namespace PublicApi.Endpoints.RegisterApi.Register
+namespace PublicApi.Endpoints.RegisterApi
 
 {
     public class Register : EndpointBaseAsync.WithRequest<RegisterCommand>.WithActionResult
