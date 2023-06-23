@@ -6,6 +6,7 @@ using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.RegisterInterfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
+using ApplicationCore.Models.Values;
 using Infrastructure.AppData.DataAccess;
 using Infrastructure.AppData.Identity;
 using Microsoft.AspNetCore.Mvc;

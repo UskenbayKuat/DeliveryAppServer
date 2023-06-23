@@ -132,7 +132,7 @@ namespace Infrastructure.Services.DeliveryServices
         private async Task<Delivery> CreateDeliveryAsync(CreateDeliveryDto dto, Driver driver)
         {
             var route = await _route.GetByCitiesIdAsync(dto.StartCityId, dto.FinishCityId);
-            var state = await _state.GetByStateAsync(GeneralState.WaitingOnReview);
+            var state = await _state.GetByStateAsync(GeneralState.WaitingOrder);
             var delivery = new Delivery(dto.DeliveryDate)
             {
                 State = state,

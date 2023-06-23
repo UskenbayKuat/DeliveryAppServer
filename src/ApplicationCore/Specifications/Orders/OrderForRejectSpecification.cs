@@ -1,4 +1,5 @@
 using ApplicationCore.Models.Entities.Orders;
+using ApplicationCore.Models.Values.Enums;
 using Ardalis.Specification;
 
 namespace ApplicationCore.Specifications.Orders
@@ -12,7 +13,9 @@ namespace ApplicationCore.Specifications.Orders
                 .Include(o => o.Delivery.Driver)
                 .Include(o => o.Route)
                 .Include(o => o.Delivery)
-                .Where(o => o.Id == orderId);
+                .Where(o => o.Id == orderId)
+                .Where(o => o.State.StateValue == GeneralState.OnReview ||
+                                 o.State.StateValue == GeneralState.PendingForHandOver);
         }
     }
 }

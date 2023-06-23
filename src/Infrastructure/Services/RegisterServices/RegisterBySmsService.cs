@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.RegisterInterfaces;
+using ApplicationCore.Models.Values;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Infrastructure.Services.RegisterServices

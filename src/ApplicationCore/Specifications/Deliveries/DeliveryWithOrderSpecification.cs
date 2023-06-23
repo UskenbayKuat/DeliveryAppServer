@@ -11,6 +11,7 @@ namespace ApplicationCore.Specifications.Deliveries
             Query
                 .Include(d => d.Route.StartCity)
                 .Include(d => d.Route.FinishCity)
+                .Include(d => d.State)
                 .Include(d => d.Orders)
                 .ThenInclude(o => o.State)
                 .Include(d => d.Orders)
@@ -26,9 +27,8 @@ namespace ApplicationCore.Specifications.Deliveries
                 .Include(d => d.Orders)
                 .ThenInclude(o => o.Location)
                 .Where(d => d.Driver.UserId == userId)
-                .Where(o => o.State.StateValue == GeneralState.InProgress ||
-                            o.State.StateValue == GeneralState.WaitingOrder)
-                ;
+                .Where(d => d.State.StateValue == GeneralState.InProgress ||
+                            d.State.StateValue == GeneralState.WaitingOrder);
         }
     }
 }

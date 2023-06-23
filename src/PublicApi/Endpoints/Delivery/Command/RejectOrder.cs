@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.ApiEndpoints;
@@ -5,7 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands;
 
-namespace PublicApi.Endpoints.Delivery
+namespace PublicApi.Endpoints.Delivery.Command
 {
     public class RejectOrder : EndpointBaseAsync.WithRequest<RejectedOrderCommand>.WithActionResult
     {
@@ -25,9 +26,13 @@ namespace PublicApi.Endpoints.Delivery
                 await _mediator.Send(request, cancellationToken);
                 return new NoContentResult();
             }
+            catch(ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch
             {
-                return new BadRequestResult();
+                return BadRequest("Ошибка системы");
             }
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore;
@@ -23,7 +24,8 @@ namespace PublicApi.Commands
 
         protected override async Task Handle(RejectedOrderCommand request, CancellationToken cancellationToken)
         {
-            var order = await _orderCommand.RejectAsync(request.OrderId);
+            var order = await _orderCommand.RejectAsync(request.OrderId) 
+                        ?? throw new ArgumentException("Ошибка, заказ передан");
             var delivery = await _deliveryCommand.FindIsNewDelivery(order);
             if (delivery != null)
             {

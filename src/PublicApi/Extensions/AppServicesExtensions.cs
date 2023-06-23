@@ -3,9 +3,13 @@ using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Interfaces.DriverInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
+using ApplicationCore.Interfaces.RejectedInterfaces;
+using ApplicationCore.Interfaces.RouteInterfaces;
 using ApplicationCore.Interfaces.SharedInterfaces;
+using ApplicationCore.Interfaces.StateInterfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
 using ApplicationCore.Models.Values;
 using Infrastructure.AppData.DataAccess;
@@ -16,8 +20,12 @@ using Infrastructure.Services.BackgroundServices;
 using Infrastructure.Services.ChatHubServices;
 using Infrastructure.Services.ClientServices;
 using Infrastructure.Services.DeliveryServices;
+using Infrastructure.Services.DriverServices;
 using Infrastructure.Services.RegisterServices;
+using Infrastructure.Services.RejectedService;
+using Infrastructure.Services.RouteServices;
 using Infrastructure.Services.Shared;
+using Infrastructure.Services.StateServices;
 using Infrastructure.Services.TokenServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -37,7 +45,7 @@ namespace PublicApi.Extensions
             //context
             services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
             
-
+            //services
             services.AddTransient<IDeliveryAppData<DriverAppDataInfo>, DriverAppDataService>();
             services.AddTransient<IDeliveryAppData<ClientAppDataInfo>, ClientAppDataService>();
             
@@ -45,8 +53,12 @@ namespace PublicApi.Extensions
             services.AddTransient<IOrderQuery, OrderQuery>();
             services.AddTransient<IDeliveryCommand, DeliveryCommand>();
             services.AddTransient<IDeliveryQuery, DeliveryQuery>(); 
-            
       
+            services.AddTransient<IRejected, RejectedService>();
+            services.AddTransient<IState, StateService>();
+            services.AddTransient<IRoute, RouteService>();
+            services.AddTransient<IDriver, DriverService>();
+            services.AddTransient<IClient, ClientService>();
             services.AddTransient<IChatHub, ChatHubService>();
             services.AddTransient<IValidation, ValidationService>();
             services.AddTransient<IGenerateToken, TokenService>();

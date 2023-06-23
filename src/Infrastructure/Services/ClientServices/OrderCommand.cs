@@ -85,6 +85,10 @@ namespace Infrastructure.Services.ClientServices
         {
             var orderSpec = new OrderForRejectSpecification(orderId);
             var order = await _context.FirstOrDefaultAsync(orderSpec);
+            if (order == null)
+            {
+                return default;
+            }
             await _rejected.AddAsync(order);
             order.Delivery = default;
             order.State = await _state.GetByStateAsync(GeneralState.WaitingOnReview);

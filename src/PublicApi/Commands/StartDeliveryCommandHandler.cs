@@ -8,7 +8,7 @@ using Notification.Interfaces;
 
 namespace PublicApi.Commands
 {
-    public class StartDeliveryCommandHandler : IRequestHandler<StartDeliveryCommand, ActionResult>
+    public class StartDeliveryCommandHandler : AsyncRequestHandler<StartDeliveryCommand>
     {
         private readonly IDeliveryCommand _deliveryCommand;
         private readonly INotify _notify;
@@ -19,11 +19,10 @@ namespace PublicApi.Commands
             _notify = notify;
         }
 
-        public async Task<ActionResult> Handle(StartDeliveryCommand request, CancellationToken cancellationToken)
+        protected override async Task Handle(StartDeliveryCommand request, CancellationToken cancellationToken)
         {
             await _deliveryCommand.StartAsync(request.UserId);
             await _notify.SendInfoToClientsAsync(request.UserId);
-            return new NoContentResult();
         }
     }
 }

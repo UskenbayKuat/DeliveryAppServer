@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces.ClientInterfaces;
@@ -26,6 +27,10 @@ namespace PublicApi.Endpoints.Delivery.Query
                 var deliveryDto =
                     await _deliveryQuery.GetDeliveryIsActiveAsync(HttpContext.Items["UserId"]?.ToString());
                 return Ok(deliveryDto);
+            }
+            catch(ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch
             {

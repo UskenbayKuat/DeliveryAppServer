@@ -1,20 +1,18 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces.DriverInterfaces;
 using ApplicationCore.Models.Dtos;
-using ApplicationCore.Models.Values;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
+using PublicApi.Commands;
 
-namespace PublicApi.Endpoints.Drivers.Car
+namespace PublicApi.Endpoints.Drivers
 {
     [Authorize]
-    public class CreateCar: EndpointBaseAsync.WithRequest<CarCommand>.WithActionResult
+    public class CreateCar: EndpointBaseAsync.WithRequest<CreateCarCommand>.WithActionResult
     {
         private readonly IMapper _mapper;
         private readonly IDriver _driver;
@@ -26,8 +24,8 @@ namespace PublicApi.Endpoints.Drivers.Car
         }
 
         [HttpPost("api/driver/createCar")]
-        public override async Task<ActionResult> HandleAsync([FromBody]CarCommand request,
-            CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult> HandleAsync([FromBody]CreateCarCommand request,
+            CancellationToken cancellationToken = default)
         {
             try
             {
@@ -38,11 +36,11 @@ namespace PublicApi.Endpoints.Drivers.Car
             }            
             catch(CarExistsException ex)
             {
-                return new BadRequestObjectResult(ex.Message);
+                return BadRequest(ex.Message);
             }
             catch
             {
-                return new BadRequestObjectResult("Not correct data");
+                return BadRequest("Ошибка");
             }
         }
     }

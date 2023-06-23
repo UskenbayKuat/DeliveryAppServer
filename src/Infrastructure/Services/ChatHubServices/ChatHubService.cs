@@ -43,7 +43,10 @@ namespace Infrastructure.Services.ChatHubServices
             foreach (var order in orders)
             {
                 var chatHub = await  _context.FirstOrDefaultAsync(c => c.UserId == order.Client.UserId);
-                connectionIds.Add(chatHub?.ConnectionId);
+                if (chatHub != null && string.IsNullOrEmpty(chatHub.ConnectionId))
+                {
+                    connectionIds.Add(chatHub.ConnectionId);
+                }
             }
             return connectionIds;
         }

@@ -1,6 +1,6 @@
-namespace PublicApi.Endpoints.Drivers.Car
+namespace PublicApi.Commands
 {
-    public class CarCommand
+    public class CreateCarCommand
     {
         public int CarBrandId { get; set; }
         public int CarTypeId { get; set; }

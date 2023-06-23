@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.ApiEndpoints;
@@ -5,7 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands;
 
-namespace PublicApi.Endpoints.Delivery
+namespace PublicApi.Endpoints.Delivery.Command
 {
     public class StartDelivery : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
@@ -19,7 +20,16 @@ namespace PublicApi.Endpoints.Delivery
 
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = new())
         {
-            return await _mediator.Send(new StartDeliveryCommand().SetUserId(HttpContext.Items["UserId"].ToString()), cancellationToken);
+            try
+            {
+                await _mediator.Send(new StartDeliveryCommand(HttpContext.Items["UserId"].ToString()),
+                    cancellationToken);
+                return new NoContentResult();
+            }
+            catch
+            {
+                return BadRequest("Ошибка системы");
+            }
         }
     }
 }

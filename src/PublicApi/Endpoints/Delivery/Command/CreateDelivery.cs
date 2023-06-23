@@ -9,7 +9,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands;
 
-namespace PublicApi.Endpoints.Drivers.RouteTrip
+namespace PublicApi.Endpoints.Delivery.Command
 {
     [Authorize]
     public class CreateDelivery : EndpointBaseAsync.WithRequest<CreateDeliveryCommand>.WithActionResult
@@ -32,15 +32,15 @@ namespace PublicApi.Endpoints.Drivers.RouteTrip
             }
             catch(CarNotExistsException ex)
             {
-                return new BadRequestObjectResult(ex.Message);
+                return BadRequest(ex.Message);
             }
             catch(ArgumentException ex)
             {
-                return new BadRequestObjectResult(ex.Message);
+                return BadRequest(ex.Message);
             }
             catch
             {
-                return new BadRequestObjectResult("Ошибка");
+                return BadRequest("Ошибка");
             }
         }
     }

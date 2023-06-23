@@ -4,6 +4,7 @@ using ApplicationCore.Entities;
 using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.RegisterInterfaces;
+using ApplicationCore.Models.Values;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;

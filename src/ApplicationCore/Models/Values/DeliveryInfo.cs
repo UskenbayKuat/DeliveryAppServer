@@ -1,10 +1,4 @@
-using System;
-using ApplicationCore.Entities.AppEntities.Locations;
-using ApplicationCore.Entities.AppEntities.Orders;
-using ApplicationCore.Entities.AppEntities.Routes;
-using ApplicationCore.Models.Values;
-
-namespace ApplicationCore.Entities.Values
+namespace ApplicationCore.Models.Values
 {
     public class DeliveryInfo : OrderInfo
     {

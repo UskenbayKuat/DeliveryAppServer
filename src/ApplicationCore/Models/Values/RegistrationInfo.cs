@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Entities.Values
+﻿namespace ApplicationCore.Models.Values
 {
     public class RegistrationInfo
     {

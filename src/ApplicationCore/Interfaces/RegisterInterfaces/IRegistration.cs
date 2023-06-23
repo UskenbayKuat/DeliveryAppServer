@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.Values;
+using ApplicationCore.Models.Values;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationCore.Interfaces.RegisterInterfaces

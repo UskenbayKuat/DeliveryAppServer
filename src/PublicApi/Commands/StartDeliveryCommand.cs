@@ -3,14 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicApi.Commands
 {
-    public class StartDeliveryCommand : IRequest<ActionResult>
+    public class StartDeliveryCommand : IRequest
     {
-        public string UserId { get; private set; }
-
-        public StartDeliveryCommand SetUserId(string userId)
+        public StartDeliveryCommand(string userId)
         {
             UserId = userId;
-            return this;
         }
+        public string UserId { get; private set; }
     }
 }
