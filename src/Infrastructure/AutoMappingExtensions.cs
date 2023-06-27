@@ -59,7 +59,8 @@ namespace Infrastructure
                 Longitude = order.Location.Longitude,
                 AddressFrom = order.AddressFrom,
                 AddressTo = order.AddressTo,
-                Description = order.Description
+                Description = order.Description,
+                
             };
 
         public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver) =>
@@ -83,6 +84,7 @@ namespace Infrastructure
                 CarNumber = order.Delivery.Driver.Car.CarNumber,
                 DeliveryState = order.Delivery.State.StateValue.GetDisplayName(),
                 SecretCode = order.SecretCode,
+                DeliveryDate = order.DeliveryDate
             };
     }
 }

@@ -7,7 +7,7 @@ using AutoMapper;
 using MediatR;
 using Notification.Interfaces;
 
-namespace PublicApi.Commands.Deliveries
+namespace PublicApi.Commands.Deliveries.Handlers
 {
     public class CreateDeliveryCommandHandler : AsyncRequestHandler<CreateDeliveryCommand>
     {

@@ -7,7 +7,7 @@ using AutoMapper;
 using MediatR;
 using Notification.Interfaces;
 
-namespace PublicApi.Commands.Orders
+namespace PublicApi.Commands.Orders.Handlers
 {
     public class CreateOrderCommandHandler : AsyncRequestHandler<CreateOrderCommand>
     {

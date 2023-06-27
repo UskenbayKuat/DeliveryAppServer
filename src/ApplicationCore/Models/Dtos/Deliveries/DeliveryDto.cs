@@ -1,3 +1,4 @@
+using System;
 using ApplicationCore.Models.Dtos.Shared;
 
 namespace ApplicationCore.Models.Dtos.Deliveries
@@ -10,5 +11,6 @@ namespace ApplicationCore.Models.Dtos.Deliveries
         public string DriverPhoneNumber { get; set; }
         public string CarNumber { get; set; }
         public string SecretCode { get; set; }
+
     }
 }

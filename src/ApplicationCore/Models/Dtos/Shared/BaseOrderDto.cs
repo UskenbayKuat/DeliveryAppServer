@@ -17,5 +17,6 @@ namespace ApplicationCore.Models.Dtos.Shared
         public string AddressTo { get; set; }
         public string AddressFrom { get; set; }
         public string Description { get; set; }
+        public DateTime DeliveryDate { get; set; }
     }
 }

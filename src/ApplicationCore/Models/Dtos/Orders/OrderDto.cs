@@ -11,7 +11,6 @@ namespace ApplicationCore.Models.Dtos.Orders
     {
         public string CarTypeName { get; set; }
         public string StateName { get; set; }
-        public DateTime DeliveryDate { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
     }

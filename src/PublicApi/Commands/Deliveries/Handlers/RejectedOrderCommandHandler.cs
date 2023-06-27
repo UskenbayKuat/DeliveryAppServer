@@ -6,7 +6,7 @@ using ApplicationCore.Interfaces.DeliveryInterfaces;
 using MediatR;
 using Notification.Interfaces;
 
-namespace PublicApi.Commands.Deliveries
+namespace PublicApi.Commands.Deliveries.Handlers
 {
     public class RejectedOrderCommandHandler : AsyncRequestHandler<RejectedOrderCommand>
     {
