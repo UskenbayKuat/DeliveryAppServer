@@ -22,5 +22,6 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
         Task SetDeliveryAsync(Order order, Delivery delivery);
         Task<bool> IsOnReview(BackgroundOrder backgroundOrder);
         Task<Order> UpdateStatePendingAsync(int orderId);
+        Task CancelAsync(int orderId);
     }
 }

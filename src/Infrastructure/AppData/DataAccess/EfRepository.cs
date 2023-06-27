@@ -60,8 +60,8 @@ namespace Infrastructure.AppData.DataAccess
 
         public async Task DeleteAsync(T entity, CancellationToken cancellationToken = default)
         {
-            _dbContext.Set<T>().Remove(entity);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            entity.IsDeleted = false;
+            await UpdateAsync(entity, cancellationToken);
         }
 
         public async Task<T> FirstAsync(ISpecification<T> spec, CancellationToken cancellationToken = default)

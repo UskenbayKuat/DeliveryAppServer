@@ -12,18 +12,13 @@ using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.RejectedInterfaces;
 using ApplicationCore.Interfaces.RouteInterfaces;
 using ApplicationCore.Interfaces.StateInterfaces;
-using ApplicationCore.Models.Dtos;
 using ApplicationCore.Models.Dtos.Deliveries;
 using ApplicationCore.Models.Dtos.Orders;
 using ApplicationCore.Models.Dtos.Shared;
 using ApplicationCore.Models.Entities.Locations;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Enums;
-using ApplicationCore.Models.Values;
-using ApplicationCore.Specifications;
 using ApplicationCore.Specifications.Orders;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.ClientServices
 {
@@ -124,10 +119,11 @@ namespace Infrastructure.Services.ClientServices
             return order;
         }
 
-        public async Task<IReadOnlyList<Order>> GetWaitingOrders(int routeId, DateTime dateTime)
+        public async Task CancelAsync(int orderId)
         {
-            var orderSpec = new OrderWithStateSpecification(routeId, dateTime);
-            return await _context.ListAsync(orderSpec);
+            var order = await _context.FirstOrDefaultAsync(o => o.Id == orderId && !o.IsDeleted)
+                ?? throw new ArgumentException($"Нет такого заказа с Id: {orderId}");
+            await _context.DeleteAsync(order);
         }
     }
 }
