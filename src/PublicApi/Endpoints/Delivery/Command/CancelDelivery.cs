@@ -28,7 +28,7 @@ namespace PublicApi.Endpoints.Delivery.Command
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception ex)
+            catch
             {
                 return BadRequest("Ошибка");
             }

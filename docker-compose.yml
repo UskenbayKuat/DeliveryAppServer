@@ -1,13 +1,11 @@
 version: '3.9'
 services:
-  postgres:
-    image: postgres
+  postgres2:
+    image: postgres:latest
     restart: always
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "123ekfy"
       PGDATA: /data/postgres
-    volumes:
-      - postgres:/data/postgres
     ports:
       - "5432:5432"
