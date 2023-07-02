@@ -11,6 +11,7 @@ namespace ApplicationCore.Specifications.Orders
         {
             Query.Include(o => o.State)
                 .Where(o =>
+                    !o.IsDeleted &&
                     o.Route.Id == routeId &&
                     o.DeliveryDate <= date &&
                     o.State.StateValue == GeneralState.WaitingOnReview);
@@ -32,7 +33,7 @@ namespace ApplicationCore.Specifications.Orders
                 .Include(o => o.Delivery.Driver.Car)
                 .Include(o => o.Delivery.State)
                 .Include(o => o.Location)
-                .Where(o => o.Client.UserId == userId)
+                .Where(o => o.Client.UserId == userId && !o.IsDeleted)
                 .Where(o =>
                     o.State.StateValue == GeneralState.WaitingOnReview ||
                     o.State.StateValue == GeneralState.OnReview ||

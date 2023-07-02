@@ -16,6 +16,7 @@ namespace PublicApi.Commands.Orders
         public double Price { get; set; }
         public Location Location { get; set; }
         public string AddressTo { get; set; }
+        public string Description { get; set; }
         public string AddressFrom { get; set; } = string.Empty;
         public string UserId { get; private set; }
         public CreateOrderCommand SetUserId(string userId)

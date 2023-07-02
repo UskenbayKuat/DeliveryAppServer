@@ -20,8 +20,8 @@ namespace ApplicationCore.Models.Entities.Orders
             IsSingle = isSingle;
             Price = price;
             Description = description;
-            AddressTo = addressTo;
-            AddressFrom = string.IsNullOrEmpty(addressFrom) ? StorageAddress : addressFrom;
+            AddressTo = string.IsNullOrEmpty(addressTo) ? StorageAddress : addressTo;
+            AddressFrom = addressFrom;
         }
         public CarType CarType { get;  set;}
         public Client Client { get;  set;}

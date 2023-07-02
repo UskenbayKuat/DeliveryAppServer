@@ -39,13 +39,14 @@ namespace Infrastructure.Services.ClientServices
                 .AsNoTracking()
                 .ForEachAsync(o =>
                 {
+                    var driverUserId = o.Delivery?.Driver?.UserId;
                     var userDriver = _dbIdentityDbContext.Users
                         .AsNoTracking()
-                        .FirstOrDefault(u => u.Id == o.Delivery.Driver.UserId);
+                        .FirstOrDefault(u => u.Id == driverUserId);
                     deliveriesInfo.Add(o.GetDeliveryDto(userClient, userDriver));
                 });
             return deliveriesInfo;
-        }
+        } 
         
 
         public async Task<IReadOnlyList<Order>> GetByDriverUserIdAsync(string driverUserId)

@@ -60,7 +60,7 @@ namespace Infrastructure.AppData.DataAccess
 
         public async Task DeleteAsync(T entity, CancellationToken cancellationToken = default)
         {
-            entity.IsDeleted = false;
+            entity.IsDeleted = true;
             await UpdateAsync(entity, cancellationToken);
         }
 

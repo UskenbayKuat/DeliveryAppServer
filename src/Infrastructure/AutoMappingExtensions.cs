@@ -78,11 +78,11 @@ namespace Infrastructure
                 ClientName = client.Name,
                 ClientSurname = client.Surname,
                 ClientPhoneNumber = client.PhoneNumber,
-                DriverPhoneNumber = driver.PhoneNumber,
-                DriverName = driver.Name,
-                DriverSurname = driver.Surname,
-                CarNumber = order.Delivery.Driver.Car.CarNumber,
-                DeliveryState = order.Delivery.State.StateValue.GetDisplayName(),
+                DriverPhoneNumber = driver?.PhoneNumber,
+                DriverName = driver?.Name,
+                DriverSurname = driver?.Surname,
+                CarNumber = order.Delivery?.Driver.Car.CarNumber,
+                DeliveryState = order.State.StateValue.GetDisplayName(),
                 SecretCode = order.SecretCode,
                 DeliveryDate = order.DeliveryDate
             };
