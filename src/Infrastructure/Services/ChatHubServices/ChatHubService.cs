@@ -4,10 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
-using ApplicationCore.Entities.AppEntities.Orders;
-using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Interfaces.ContextInterfaces;
+using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.HubInterfaces;
 using Infrastructure.AppData.DataAccess;
 using Microsoft.AspNetCore.SignalR;
@@ -17,10 +15,9 @@ namespace Infrastructure.Services.ChatHubServices
 {
     public class ChatHubService : IChatHub
     {
-        private readonly IContext _context;
         private readonly IOrderQuery _orderQuery;
-
-        public ChatHubService(IContext context, IOrderQuery orderQuery)
+        private readonly IAsyncRepository<ChatHub> _context;
+        public ChatHubService(IAsyncRepository<ChatHub> context, IOrderQuery orderQuery)
         {
             _context = context;
             _orderQuery = orderQuery;
@@ -28,25 +25,28 @@ namespace Infrastructure.Services.ChatHubServices
 
         public async Task ConnectedAsync(string userId, string connectId)
         {
-            var chatHub = await _context.FindAsync<ChatHub>(c => c.UserId == userId)
+            var chatHub = await _context.FirstOrDefaultAsync(c => c.UserId == userId)
                           ?? await CreateChatHubAsync(userId, connectId);
             await _context.UpdateAsync(chatHub.UpdateConnectId(connectId));
         }
 
         public async Task<string> GetConnectionIdAsync(string userId, CancellationToken cancellationToken)
         {
-            var chatHub = await _context.FindAsync<ChatHub>(c => c.UserId == userId);
+            var chatHub = await _context.FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
             return chatHub?.ConnectionId;
         }
 
         public async Task<List<string>> GetConnectionIdListAsync(string driverUserId)
         {
             var connectionIds = new List<string>();
-            var orders = await _orderQuery.GetOrdersAsync(driverUserId);
+            var orders = await _orderQuery.GetByDriverUserIdAsync(driverUserId);
             foreach (var order in orders)
             {
-                var chatHub = await  _context.FindAsync<ChatHub>(c => c.UserId == order.Client.UserId);
-                connectionIds.Add(chatHub?.ConnectionId);
+                var chatHub = await  _context.FirstOrDefaultAsync(c => c.UserId == order.Client.UserId);
+                if (chatHub != null && string.IsNullOrEmpty(chatHub.ConnectionId))
+                {
+                    connectionIds.Add(chatHub.ConnectionId);
+                }
             }
             return connectionIds;
         }
@@ -56,11 +56,11 @@ namespace Infrastructure.Services.ChatHubServices
             ChatHub chatHub;
             if (!string.IsNullOrEmpty(userId))
             {
-                chatHub = await _context.FindAsync<ChatHub>(c => c.UserId == userId);
+                chatHub = await _context.FirstOrDefaultAsync(c => c.UserId == userId);
             }
             else if (!string.IsNullOrEmpty(userId))
             {
-                chatHub = await _context.FindAsync<ChatHub>(c => c.ConnectionId == connectId);
+                chatHub = await _context.FirstOrDefaultAsync(c => c.ConnectionId == connectId);
             }
             else
             {

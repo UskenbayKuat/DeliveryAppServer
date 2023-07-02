@@ -1,85 +1,129 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
-using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
-using ApplicationCore.Entities.Values;
-using ApplicationCore.Entities.Values.Enums;
+using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Interfaces.ContextInterfaces;
-using Infrastructure.AppData.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using ApplicationCore.Interfaces.DataContextInterface;
+using ApplicationCore.Interfaces.RejectedInterfaces;
+using ApplicationCore.Interfaces.RouteInterfaces;
+using ApplicationCore.Interfaces.StateInterfaces;
+using ApplicationCore.Models.Dtos.Deliveries;
+using ApplicationCore.Models.Dtos.Orders;
+using ApplicationCore.Models.Dtos.Shared;
+using ApplicationCore.Models.Entities.Locations;
+using ApplicationCore.Models.Entities.Orders;
+using ApplicationCore.Models.Enums;
+using ApplicationCore.Specifications.Orders;
 
 namespace Infrastructure.Services.ClientServices
 {
     public class OrderCommand : IOrderCommand
     {
-        private readonly IContext _context;
-        private readonly IOrderContextBuilder _orderContextBuilder;
+        private readonly IAsyncRepository<Order> _context;
+        private readonly IAsyncRepository<CarType> _contextCarType;
+        private readonly IBackgroundTaskQueue _backgroundTask;
+        private readonly IState _state;
+        private readonly IRejected _rejected;
+        private readonly IClient _client;
+        private readonly IRoute _route;
 
-        public OrderCommand(IContext context, IOrderContextBuilder orderContextBuilder)
+        public OrderCommand(
+            IAsyncRepository<Order> context, 
+            IBackgroundTaskQueue backgroundTask, 
+            IState state, 
+            IRejected rejected, IClient client, IAsyncRepository<CarType> contextCarType, IRoute route)
         {
             _context = context;
-            _orderContextBuilder = orderContextBuilder;
+            _backgroundTask = backgroundTask;
+            _state = state;
+            _rejected = rejected;
+            _client = client;
+            _contextCarType = contextCarType;
+            _route = route;
         }
 
-        public async Task<Order> CreateAsync(OrderInfo info, string clientUserId, CancellationToken cancellationToken)
+        public async Task<Order> CreateAsync(CreateOrderDto dto, string clientUserId)
         {
-            var client = await _context.FindAsync<Client>(c => c.UserId == clientUserId);
-            var carType = await _context.FindAsync<CarType>(c => c.Id == info.CarType.Id);
-            var route = await _context.FindAsync<Route>(r =>
-                r.StartCityId == info.StartCity.Id &&
-                r.FinishCityId == info.FinishCity.Id);
-            var state = await _context.FindAsync<State>((int)GeneralState.Waiting);
-            var order = new Order(info.IsSingle, info.Price, info.DeliveryDate)
+            var client = await _client.GetByUserId(clientUserId);
+            var carType = await _contextCarType.FirstOrDefaultAsync(c => c.Name == dto.CarTypeName);
+            var route = await _route.GetByCitiesNameAsync(dto.StartCityName, dto.FinishCityName);
+            var state = await _state.GetByStateAsync(GeneralState.WaitingOnReview);
+            var order = new Order(dto.IsSingle, dto.Price, dto.DeliveryDate, dto.Description, dto.AddressTo, dto.AddressFrom)
             {
                 Client = client,
-                Package = info.Package,
+                Package = dto.Package,
                 CarType = carType,
                 Route = route,
                 State = state,
-                Location = new Location(info.Location.Latitude, info.Location.Longitude)
+                Location = new Location(dto.Location.Latitude, dto.Location.Longitude)
             };
-            await _context.AddAsync(order);
-            return order;
+            return await _context.AddAsync(order);
         }
 
-        public async Task<ActionResult> ConfirmHandOverAsync(ConfirmHandOverInfo info, CancellationToken cancellationToken)
+        public async Task ConfirmHandOverAsync(ConfirmHandOverDto dto)
         {
-            var order = await _orderContextBuilder
-                .StateBuilder()
-                .Build()
-                .FirstOrDefaultAsync(o => o.Id == info.OrderId, cancellationToken);
-            if (order.State.Id != (int)GeneralState.PendingForHandOver || order.SecretCode != info.SecretCode.ToUpper()) //TODO проверка на deliveryId == order.Delivery.Id нужен?
+            var orderSpec = new OrderWithStateSpecification(dto.OrderId);
+            var order = await _context.FirstOrDefaultAsync(orderSpec);
+            if (order.State.StateValue != GeneralState.PendingForHandOver 
+                || order.SecretCode != dto.SecretCode.ToUpper())
             {
-                return new BadRequestResult();
+                throw new ArgumentException("Не совпадает код");
             }
-            order.State = await _context.FindAsync<State>(s => s.Id == (int)GeneralState.ReceivedByDriver);
-            await _context.UpdateAsync(order);
-            return new NoContentResult();
+            order.State = await _state.GetByStateAsync(GeneralState.ReceivedByDriver);
+            await _context.UpdateAsync(order.SetSecretCodeEmpty());
         }
 
         public async Task<Order> RejectAsync(int orderId)
         {
-            var order = await _orderContextBuilder.ForRejectBuilder()
-                .Build()
-                .FirstOrDefaultAsync(o => o.Id == orderId);
-            await _context.AddAsync(new RejectedOrder
+            var orderSpec = new OrderForRejectSpecification(orderId);
+            var order = await _context.FirstOrDefaultAsync(orderSpec);
+            if (order == null)
             {
-                Order = order,
-                Delivery = order.Delivery
-            });
+                return default;
+            }
+            await _rejected.AddAsync(order);
             order.Delivery = default;
-            order.State = await _context.FindAsync<State>((int)GeneralState.Waiting);
-            await _context.UpdateAsync(order);
+            order.State = await _state.GetByStateAsync(GeneralState.WaitingOnReview);
+            await _context.UpdateAsync(order.SetSecretCodeEmpty());
             return order;
         }
-        
+    
+        public async Task SetDeliveryAsync(Order order, Delivery delivery)
+        {
+            order.State = await _state.GetByStateAsync(GeneralState.OnReview);
+            order.Delivery = delivery;
+            await _context.UpdateAsync(order);
+            await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, order.Delivery.Id));
+        }
+
+        public async Task<bool> IsOnReview(BackgroundOrder backgroundOrder)
+        {
+            return await _context
+                .AnyAsync(o => 
+                    o.Id == backgroundOrder.OrderId &&
+                    o.Delivery.Id == backgroundOrder.DeliveryId && 
+                    o.State.StateValue == GeneralState.OnReview);
+        }
+
+        public async Task<Order> UpdateStatePendingAsync(int orderId)
+        {            
+            var orderSpec = new OrderWithClientSpecification(orderId);
+            var order = await _context.FirstOrDefaultAsync(orderSpec);
+            order.State = await _state.GetByStateAsync(GeneralState.PendingForHandOver);
+            await _context.UpdateAsync(order.SetSecretCode());
+            return order;
+        }
+
+        public async Task CancelAsync(int orderId)
+        {
+            var order = await _context.FirstOrDefaultAsync(o => o.Id == orderId && !o.IsDeleted)
+                ?? throw new ArgumentException($"Нет такого заказа с Id: {orderId}");
+            await _context.DeleteAsync(order);
+        }
     }
 }

@@ -17,7 +17,7 @@ namespace PublicApi
                 .Build()
                 .MigrateDbContext<AppDbContext>((context, provider) =>
                 {
-                    var logger = provider.GetService<ILogger<AppDbContextInitializer>>(); // ?? GetRequiredService
+                    var logger = provider.GetService<ILogger<AppDbContextInitializer>>();
                     AppDbContextInitializer.SeedAsync(context, logger);
                 })
                 .MigrateDbContext<AppIdentityDbContext>((_, _) => {})

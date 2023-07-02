@@ -19,51 +19,21 @@ namespace Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "5.0.17")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Cars.Car", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int?>("CarBrandId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("CarColorId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("CarNumber")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("CarTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("ProductionYear")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("RegistrationCertificate")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CarBrandId");
-
-                    b.HasIndex("CarColorId");
-
-                    b.HasIndex("CarTypeId");
-
-                    b.ToTable("Cars");
-                });
-
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Cars.CarBrand", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -80,6 +50,15 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -94,6 +73,15 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -113,6 +101,15 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ConnectionId")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
@@ -127,6 +124,15 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UserId")
                         .HasColumnType("text");
@@ -146,6 +152,9 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("CarId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("DriverLicenceScanPath")
                         .HasColumnType("text");
 
@@ -160,6 +169,12 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("IdentityCardPhotoPath")
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<double>("Rating")
                         .HasColumnType("double precision");
@@ -181,11 +196,20 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int?>("DriverId")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
                     b.Property<int?>("KitId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("PurchaseDate")
                         .HasColumnType("timestamp without time zone");
@@ -206,11 +230,23 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsUnlimited")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("double precision");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
@@ -220,24 +256,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("Kits");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Locations.Location", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<double>("Latitude")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("Longitude")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Locations");
-                });
-
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Locations.LocationData", b =>
                 {
                     b.Property<int>("Id")
@@ -245,14 +263,23 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int?>("DeliveryId")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("LocationDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("LocationId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -279,6 +306,9 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<DateTime>("DeliveryDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -290,6 +320,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<int?>("LocationId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("RouteId")
                         .HasColumnType("integer");
@@ -310,12 +343,269 @@ namespace Infrastructure.Migrations
                     b.ToTable("Deliveries");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Order", b =>
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Package", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<double>("Height")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("double precision");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<double>("Length")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<double>("Weight")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Width")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Packages");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.RejectedOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("DeliveryId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeliveryId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("RejectedOrders");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Routes.City", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cities");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Routes.Route", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("FinishCityId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("StartCityId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FinishCityId");
+
+                    b.HasIndex("StartCityId");
+
+                    b.ToTable("Routes");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Routes.RoutePrice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("RouteId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RouteId");
+
+                    b.ToTable("RoutePrice");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.UIMessages.MessageForUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MessagesForUser");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Models.Entities.Cars.Car", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int?>("CarBrandId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("CarColorId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CarNumber")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("CarTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("ProductionYear")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RegistrationCertificate")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CarBrandId");
+
+                    b.HasIndex("CarColorId");
+
+                    b.HasIndex("CarTypeId");
+
+                    b.ToTable("Cars");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Models.Entities.Locations.Location", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Locations");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Models.Entities.Orders.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("AddressFrom")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AddressTo")
+                        .HasColumnType("text");
 
                     b.Property<int?>("CarTypeId")
                         .HasColumnType("integer");
@@ -323,7 +613,7 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("ClientId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("DeliveryDate")
@@ -332,18 +622,27 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("DeliveryId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsSingle")
                         .HasColumnType("boolean");
 
                     b.Property<int?>("LocationId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int?>("PackageId")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("Price")
+                    b.Property<double>("Price")
                         .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
+                        .HasColumnType("double precision");
 
                     b.Property<int?>("RouteId")
                         .HasColumnType("integer");
@@ -373,173 +672,36 @@ namespace Infrastructure.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Package", b =>
+            modelBuilder.Entity("ApplicationCore.Models.Entities.Orders.State", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<double>("Height")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("double precision");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<double>("Length")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("double precision");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<double>("Weight")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("Width")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("double precision");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Packages");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.RejectedOrder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int?>("DeliveryId")
+                    b.Property<int>("StateValue")
                         .HasColumnType("integer");
-
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeliveryId");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("RejectedOrders");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.State", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.ToTable("States");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Routes.City", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Cities");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Routes.Route", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int>("FinishCityId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("StartCityId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FinishCityId");
-
-                    b.HasIndex("StartCityId");
-
-                    b.ToTable("Routes");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Routes.RoutePrice", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("RouteId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RouteId");
-
-                    b.ToTable("RoutePrice");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.UIMessages.MessageForUser", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MessagesForUser");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Cars.Car", b =>
-                {
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Cars.CarBrand", "CarBrand")
-                        .WithMany()
-                        .HasForeignKey("CarBrandId");
-
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Cars.CarColor", "CarColor")
-                        .WithMany()
-                        .HasForeignKey("CarColorId");
-
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Cars.CarType", "CarType")
-                        .WithMany()
-                        .HasForeignKey("CarTypeId");
-
-                    b.Navigation("CarBrand");
-
-                    b.Navigation("CarColor");
-
-                    b.Navigation("CarType");
-                });
-
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Driver", b =>
                 {
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Cars.Car", "Car")
+                    b.HasOne("ApplicationCore.Models.Entities.Cars.Car", "Car")
                         .WithMany()
                         .HasForeignKey("CarId");
 
@@ -567,7 +729,7 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("DeliveryId");
 
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Locations.Location", "Location")
+                    b.HasOne("ApplicationCore.Models.Entities.Locations.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId");
 
@@ -582,7 +744,7 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("DriverId");
 
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Locations.Location", "Location")
+                    b.HasOne("ApplicationCore.Models.Entities.Locations.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId");
 
@@ -590,7 +752,7 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("RouteId");
 
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.State", "State")
+                    b.HasOne("ApplicationCore.Models.Entities.Orders.State", "State")
                         .WithMany()
                         .HasForeignKey("StateId");
 
@@ -603,58 +765,13 @@ namespace Infrastructure.Migrations
                     b.Navigation("State");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Order", b =>
-                {
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Cars.CarType", "CarType")
-                        .WithMany()
-                        .HasForeignKey("CarTypeId");
-
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId");
-
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.Delivery", "Delivery")
-                        .WithMany("Orders")
-                        .HasForeignKey("DeliveryId");
-
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Locations.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId");
-
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.Package", "Package")
-                        .WithMany()
-                        .HasForeignKey("PackageId");
-
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Routes.Route", "Route")
-                        .WithMany()
-                        .HasForeignKey("RouteId");
-
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.State", "State")
-                        .WithMany()
-                        .HasForeignKey("StateId");
-
-                    b.Navigation("CarType");
-
-                    b.Navigation("Client");
-
-                    b.Navigation("Delivery");
-
-                    b.Navigation("Location");
-
-                    b.Navigation("Package");
-
-                    b.Navigation("Route");
-
-                    b.Navigation("State");
-                });
-
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.RejectedOrder", b =>
                 {
                     b.HasOne("ApplicationCore.Entities.AppEntities.Orders.Delivery", "Delivery")
                         .WithMany()
                         .HasForeignKey("DeliveryId");
 
-                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.Order", "Order")
+                    b.HasOne("ApplicationCore.Models.Entities.Orders.Order", "Order")
                         .WithMany()
                         .HasForeignKey("OrderId");
 
@@ -691,6 +808,72 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Route");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Models.Entities.Cars.Car", b =>
+                {
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Cars.CarBrand", "CarBrand")
+                        .WithMany()
+                        .HasForeignKey("CarBrandId");
+
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Cars.CarColor", "CarColor")
+                        .WithMany()
+                        .HasForeignKey("CarColorId");
+
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Cars.CarType", "CarType")
+                        .WithMany()
+                        .HasForeignKey("CarTypeId");
+
+                    b.Navigation("CarBrand");
+
+                    b.Navigation("CarColor");
+
+                    b.Navigation("CarType");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Models.Entities.Orders.Order", b =>
+                {
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Cars.CarType", "CarType")
+                        .WithMany()
+                        .HasForeignKey("CarTypeId");
+
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId");
+
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.Delivery", "Delivery")
+                        .WithMany("Orders")
+                        .HasForeignKey("DeliveryId");
+
+                    b.HasOne("ApplicationCore.Models.Entities.Locations.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Orders.Package", "Package")
+                        .WithMany()
+                        .HasForeignKey("PackageId");
+
+                    b.HasOne("ApplicationCore.Entities.AppEntities.Routes.Route", "Route")
+                        .WithMany()
+                        .HasForeignKey("RouteId");
+
+                    b.HasOne("ApplicationCore.Models.Entities.Orders.State", "State")
+                        .WithMany()
+                        .HasForeignKey("StateId");
+
+                    b.Navigation("CarType");
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Delivery");
+
+                    b.Navigation("Location");
+
+                    b.Navigation("Package");
+
+                    b.Navigation("Route");
+
+                    b.Navigation("State");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Orders.Delivery", b =>

@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
-using ApplicationCore.Entities.Values;
+using ApplicationCore.Models.Dtos;
+using ApplicationCore.Models.Dtos.Deliveries;
+using ApplicationCore.Models.Dtos.Orders;
+using ApplicationCore.Models.Dtos.Register;
+using ApplicationCore.Models.Dtos.Shared;
+using ApplicationCore.Models.Values;
 using PublicApi.Commands;
-using PublicApi.Endpoints.Clients.Order;
-using PublicApi.Endpoints.Delivery;
-using PublicApi.Endpoints.Drivers.Car;
-using PublicApi.Endpoints.Drivers.RouteTrip;
-using PublicApi.Endpoints.RegisterApi.ConfirmRegister;
-using PublicApi.Endpoints.RegisterApi.ProceedRegister;
-using PublicApi.Endpoints.RegisterApi.Register;
+using PublicApi.Commands.Deliveries;
+using PublicApi.Commands.Orders;
+using PublicApi.Commands.Register;
 using PublicApi.Endpoints.Shared.RefreshToken;
 
 namespace PublicApi
@@ -16,14 +17,14 @@ namespace PublicApi
     {
         public AutoMapping()
         {
-            CreateMap<RegisterCommand, RegistrationInfo>();
-            CreateMap<ConfirmRegisterCommand, ConfirmRegistrationInfo>();
-            CreateMap<ProceedRegisterCommand, ProceedRegistrationInfo>();
-            CreateMap<RefreshCommand, RefreshTokenInfo>();
-            CreateMap<CreateDeliveryCommand, RouteTripInfo>();
-            CreateMap<CarCommand, CarInfo>();
-            CreateMap<CreateOrderCommand, OrderInfo>();
-            CreateMap<ConfirmHandOverCommand, ConfirmHandOverInfo>();
+            CreateMap<RegisterCommand, RegistrationDto>();
+            CreateMap<ConfirmRegisterCommand, ConfirmRegistrationDto>();
+            CreateMap<ProceedRegisterCommand, ProceedRegistrationDto>();
+            CreateMap<RefreshCommand, RefreshTokenDto>();
+            CreateMap<CreateDeliveryCommand, CreateDeliveryDto>();
+            CreateMap<CreateCarCommand, CreateCarDto>();
+            CreateMap<CreateOrderCommand, CreateOrderDto>();
+            CreateMap<ConfirmHandOverCommand, ConfirmHandOverDto>();
         }   
     }
 }

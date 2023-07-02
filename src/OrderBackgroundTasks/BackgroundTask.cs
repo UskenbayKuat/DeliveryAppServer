@@ -1,13 +1,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore;
-using ApplicationCore.Entities.AppEntities.Orders;
-using ApplicationCore.Entities.Values;
-using ApplicationCore.Entities.Values.Enums;
 using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
-using ApplicationCore.Interfaces.ContextInterfaces;
-using Microsoft.EntityFrameworkCore;
+using ApplicationCore.Interfaces.ClientInterfaces;
+using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Models.Dtos;
+using ApplicationCore.Models.Dtos.Shared;
+using ApplicationCore.Models.Values;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -47,28 +46,21 @@ namespace OrderBackgroundTasks
         {
             using var scope = _serviceProvider.CreateScope();
             var serviceProvider = scope.ServiceProvider;
-            var orderContextBuilder = serviceProvider.GetService<IOrderContextBuilder>();
-            var order = await OrderAsync(orderContextBuilder, backgroundOrder);
-            if (CheckOrderState(order, backgroundOrder))
+            var orderCommand = serviceProvider.GetService<IOrderCommand>();
+            if (await orderCommand.IsOnReview(backgroundOrder))
             {
-                var orderHandler = serviceProvider.GetService<IOrderHandler>();
-                var notify = serviceProvider.GetService<INotify>();
-                order = await orderHandler.RejectedHandlerAsync(order.Id, stoppingToken);
-                await notify.SendToDriverAsync(order.Delivery?.Driver?.UserId, stoppingToken);
-                _logger.LogInformation("Complete work!");
+                var deliveryCommand = serviceProvider.GetService<IDeliveryCommand>();
+                var order = await orderCommand.RejectAsync(backgroundOrder.OrderId);
+                _logger.LogInformation($"DeliverId: {backgroundOrder.DeliveryId} reject order: {backgroundOrder.OrderId}");
+                var delivery = await deliveryCommand.FindIsNewDelivery(order);
+                if (delivery != null)
+                {
+                    await orderCommand.SetDeliveryAsync(order, delivery);
+                    _logger.LogInformation($"Order: {backgroundOrder.OrderId} state OnReview from DeliverId: {backgroundOrder.DeliveryId}");
+                    var notify = serviceProvider.GetService<INotify>();
+                    await notify.SendToDriverAsync(delivery.Driver.UserId, stoppingToken);
+                }
             }
         }
-        
-        private async Task<Order> OrderAsync(IOrderContextBuilder orderContextBuilder,BackgroundOrder backgroundOrder) =>
-            await orderContextBuilder
-                .ForRejectBuilder()
-                .Build()
-                .FirstOrDefaultAsync(o =>
-                    o.Id == backgroundOrder.OrderId && 
-                    o.Delivery.Id == backgroundOrder.DeliveryId);
-
-        private bool CheckOrderState(Order order, BackgroundOrder delivery) =>
-            order?.State.Id == (int)GeneralState.OnReview && 
-            order.Delivery.Id == delivery.DeliveryId;
     }
 }

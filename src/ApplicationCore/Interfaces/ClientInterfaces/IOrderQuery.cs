@@ -1,16 +1,19 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Orders;
-using ApplicationCore.Entities.Values;
+using ApplicationCore.Models.Dtos.Deliveries;
+using ApplicationCore.Models.Entities.Orders;
+using ApplicationCore.Models.Values;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationCore.Interfaces.ClientInterfaces
 {
     public interface IOrderQuery
     {
-        public Task<ActionResult> GetWaitingOrdersAsync(string clientUserId, CancellationToken cancellationToken);
-        public Task<ActionResult> GetActiveOrdersForClientAsync(string userClientId);
-        public Task<List<Order>> GetOrdersAsync(string driverUserId);
+        public Task<List<DeliveryDto>> GetActiveOrdersForClientAsync(string clientUserId);
+        public Task<IReadOnlyList<Order>> GetByDriverUserIdAsync(string driverUserId);
+        Task<IReadOnlyList<Order>> GetWaitingOrders(int routeId, DateTime dateTime);
     }
 }

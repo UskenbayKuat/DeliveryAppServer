@@ -1,8 +1,10 @@
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
+using ApplicationCore.Models.Dtos;
+using ApplicationCore.Models.Dtos.Shared;
+using ApplicationCore.Models.Values;
 
 namespace Infrastructure.Services.BackgroundServices
 {

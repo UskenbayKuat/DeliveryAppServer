@@ -8,8 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using ApplicationCore.Entities;
 using ApplicationCore.Entities.AppEntities;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Interfaces.TokenInterfaces;
+using ApplicationCore.Models.Dtos.Shared;
+using ApplicationCore.Models.Values;
 using Infrastructure.AppData.Identity;
 using Infrastructure.Config;
 using Microsoft.AspNetCore.Mvc;
@@ -55,11 +56,11 @@ namespace Infrastructure.Services.TokenServices
             return Convert.ToBase64String(randomNumber);
         }
 
-        public async Task<ActionResult> RefreshTokenAsync(RefreshTokenInfo tokenInfo)
+        public async Task<ActionResult> RefreshTokenAsync(RefreshTokenDto tokenDto)
         {
             try
             {
-                var user = await _identityDb.Users.FirstAsync(u => u.RefreshToken == tokenInfo.RefreshToken &&
+                var user = await _identityDb.Users.FirstAsync(u => u.RefreshToken == tokenDto.RefreshToken &&
                                                         u.RefreshTokenExpiryTime >= DateTime.Now);
                 return new OkObjectResult(new {AccessToken = CreateAccessToken(user)});
             }

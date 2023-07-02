@@ -1,6 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.Values;
+using ApplicationCore.Models.Dtos;
+using ApplicationCore.Models.Dtos.Shared;
+using ApplicationCore.Models.Values;
 
 namespace ApplicationCore.Interfaces.BackgroundTaskInterfaces
 {

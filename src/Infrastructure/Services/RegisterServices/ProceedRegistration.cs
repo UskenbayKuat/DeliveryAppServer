@@ -1,11 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
-using ApplicationCore.Entities.Values;
 using ApplicationCore.Exceptions;
-using ApplicationCore.Interfaces.ContextInterfaces;
+using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.RegisterInterfaces;
-using Infrastructure.AppData.DataAccess;
+using ApplicationCore.Models.Dtos.Register;
 using Infrastructure.AppData.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,29 +14,30 @@ namespace Infrastructure.Services.RegisterServices
     public class ProceedRegistrationService : IProceedRegistration
     {
         private readonly AppIdentityDbContext _identityDb;
-        private readonly IContext _context;
-
-        public ProceedRegistrationService(AppIdentityDbContext identityDb, IContext context)
+        private readonly IAsyncRepository<Driver> _contextDriver;
+        private readonly IAsyncRepository<Client> _contextClient;
+        public ProceedRegistrationService(AppIdentityDbContext identityDb, IAsyncRepository<Driver> contextDriver, IAsyncRepository<Client> contextClient)
         {
             _identityDb = identityDb;
-            _context = context;
+            _contextDriver = contextDriver;
+            _contextClient = contextClient;
         }
 
-        public async Task<ActionResult> ProceedRegistration(ProceedRegistrationInfo info, string userId,
+        public async Task<ActionResult> ProceedRegistration(ProceedRegistrationDto dto, string userId,
             CancellationToken cancellationToken)
         {
             var user = (await _identityDb.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken))
-                       .AddFullName(info.Name, info.Surname) ??
+                       .AddFullName(dto.Name, dto.Surname) ??
                        throw new NotExistUserException("User is not found");
             if (user.IsDriver)
             {
-                var driver = new Driver(user.Id, info.IdentificationNumber, info.IdentificationSeries,
-                    info.IdentityCardCreateDate, info.DriverLicenceScanPath, info.IdentityCardPhotoPath);
-                await _context.AddAsync(driver);
+                var driver = new Driver(user.Id, dto.IdentificationNumber, dto.IdentificationSeries,
+                    dto.IdentityCardCreateDate, dto.DriverLicenceScanPath, dto.IdentityCardPhotoPath);
+                await _contextDriver.AddAsync(driver, cancellationToken);
             }
             else
             {
-                await _context.AddAsync(new Client(user.Id));
+                await _contextClient.AddAsync(new Client(user.Id), cancellationToken);
             }
 
             _identityDb.Users.Update(user);

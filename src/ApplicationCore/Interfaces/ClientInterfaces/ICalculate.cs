@@ -1,12 +1,13 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.Values;
+using ApplicationCore.Models.Dtos;
+using ApplicationCore.Models.Dtos.Orders;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationCore.Interfaces.ClientInterfaces
 {
     public interface ICalculate
     {
-        public Task<ActionResult> CalculateAsync(OrderInfo info,CancellationToken cancellationToken);
+        public Task<CreateOrderDto> CalculateAsync(CreateOrderDto model,CancellationToken cancellationToken);
     }
 }

@@ -1,15 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Orders;
-using ApplicationCore.Entities.Values;
-using ApplicationCore.Entities.Values.Enums;
-using ApplicationCore.Interfaces.ContextInterfaces;
+using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Models.Dtos.Deliveries;
+using ApplicationCore.Specifications.Deliveries;
 using Infrastructure.AppData.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.DeliveryServices
@@ -17,54 +14,25 @@ namespace Infrastructure.Services.DeliveryServices
     public class DeliveryQuery : IDeliveryQuery
     {
         private readonly AppIdentityDbContext _identityDbContext;
-        private readonly IOrderContextBuilder _orderContextBuilder;
-        private readonly IDeliveryContextBuilder _deliveryContextBuilder;
+        private readonly IAsyncRepository<Delivery> _context;
 
-        public DeliveryQuery(AppIdentityDbContext identityDbContext, IOrderContextBuilder orderContextBuilder, IDeliveryContextBuilder deliveryContextBuilder)
+        public DeliveryQuery(AppIdentityDbContext identityDbContext, IAsyncRepository<Delivery> context)
         {
             _identityDbContext = identityDbContext;
-            _orderContextBuilder = orderContextBuilder;
-            _deliveryContextBuilder = deliveryContextBuilder;
+            _context = context;
         }
-        public async Task<ActionResult> GetDeliveryIsActiveAsync(string driverUserId)
+        public async Task<IsActiveDeliveryDto> GetDeliveryIsActiveAsync(string driverUserId)
         {
-            var delivery = await _deliveryContextBuilder
-                .RouteBuilder()
-                .Build()
-                .FirstOrDefaultAsync(d =>
-                    d.Driver.UserId == driverUserId &&
-                    (d.State.Id == (int)GeneralState.New ||
-                     d.State.Id == (int)GeneralState.InProgress));
-            return new OkObjectResult(delivery?.SetRouteTripInfo());
+            var deliverySpec = new DeliveryWithOrderSpecification(driverUserId);
+            var delivery = await _context
+                .GetQueryableAsync(deliverySpec)
+                .AsNoTracking()
+                .FirstOrDefaultAsync() ?? throw new ArgumentException("Не найден поездка");
+            var orderDtoList = (
+                from order in delivery.Orders 
+                let user = _identityDbContext.Users.AsNoTracking().FirstOrDefault(u => u.Id == order.Client.UserId) 
+                select order.GetOrderDto(user)).ToList();
+            return delivery.GetDeliveryDto(orderDtoList);
         }
-
-        public async Task<ActionResult> GetOnReviewOrdersForDriverAsync(string driverUserId) => 
-            await GetOrderInfosAsync(driverUserId, OnReviewOrderExpression());
-        public async Task<ActionResult> GetActiveOrdersForDriverAsync(string driverUserId) =>
-            await GetOrderInfosAsync(driverUserId, ActiveOrderExpression());
-
-
-        private async Task<ActionResult> GetOrderInfosAsync(string driverUserId, Expression<Func<Order, bool>> expression)
-        {
-            var ordersInfo = new List<OrderInfo>();
-            await _orderContextBuilder
-                .OrdersInfoBuilder()
-                .Build()
-                .Where(o => o.Delivery.Driver.UserId == driverUserId)
-                .Where(expression)
-                .ForEachAsync(o =>
-                {
-                    var userClient = _identityDbContext.Users.FirstOrDefault(u => u.Id == o.Client.UserId);
-                    ordersInfo.Add(o.SetSecretCodeEmpty().SetOrderInfo(userClient));
-                });
-            return new OkObjectResult(ordersInfo);
-        }
-        
-        private Expression<Func<Order, bool>> ActiveOrderExpression() =>
-            o => o.State.Id == (int)GeneralState.InProgress ||
-                 o.State.Id == (int)GeneralState.PendingForHandOver ||
-                 o.State.Id == (int)GeneralState.ReceivedByDriver;
-        private Expression<Func<Order, bool>> OnReviewOrderExpression() => 
-            o => o.State.Id == (int)GeneralState.OnReview;
     }
 }
