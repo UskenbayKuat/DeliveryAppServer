@@ -27,8 +27,10 @@ WORKDIR /app
 # RUN dotnet restore AML.Dictionary.API/AML.Dictionary.API.csproj
 
 # Copy the entire project and build the application
-COPY . ./
-RUN dotnet publish src/PublicApi.csproj -c Release -o out
+COPY . .
+RUN dotnet restore
+
+RUN dotnet publish -c Release -o out
 
 # Build the runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS runtime

@@ -24,7 +24,6 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         public DateTime? CompletionDate { get; private set; }
         public DateTime? CancellationDate { get; private set; }
         public Location Location { get; set; }
-        public bool IsDeleted { get; private set; }
         public List<Order> Orders { get; private set; } = new();
 
 
