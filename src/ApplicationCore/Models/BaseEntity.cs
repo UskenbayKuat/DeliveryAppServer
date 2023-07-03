@@ -9,7 +9,7 @@ namespace ApplicationCore.Entities
         /// </summary>
         public int Id { get; set; }
 
-        // <summary>
+        /// <summary>
         /// Дата создания сущности
         /// </summary>
         public DateTime CreatedDate { get; set; } = DateTime.Now;

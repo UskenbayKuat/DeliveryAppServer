@@ -9,6 +9,7 @@ using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DataContextInterface;
+using ApplicationCore.Interfaces.Histories;
 using ApplicationCore.Interfaces.RejectedInterfaces;
 using ApplicationCore.Interfaces.RouteInterfaces;
 using ApplicationCore.Interfaces.StateInterfaces;
@@ -31,12 +32,16 @@ namespace Infrastructure.Services.ClientServices
         private readonly IRejected _rejected;
         private readonly IClient _client;
         private readonly IRoute _route;
-
+        private readonly IOrderStateHistory _stateHistory;
         public OrderCommand(
             IAsyncRepository<Order> context, 
             IBackgroundTaskQueue backgroundTask, 
             IState state, 
-            IRejected rejected, IClient client, IAsyncRepository<CarType> contextCarType, IRoute route)
+            IRejected rejected, 
+            IClient client, 
+            IAsyncRepository<CarType> contextCarType, 
+            IRoute route, 
+            IOrderStateHistory stateHistory)
         {
             _context = context;
             _backgroundTask = backgroundTask;
@@ -45,6 +50,7 @@ namespace Infrastructure.Services.ClientServices
             _client = client;
             _contextCarType = contextCarType;
             _route = route;
+            _stateHistory = stateHistory;
         }
 
         public async Task<Order> CreateAsync(CreateOrderDto dto, string clientUserId)
@@ -62,7 +68,11 @@ namespace Infrastructure.Services.ClientServices
                 State = state,
                 Location = new Location(dto.Location.Latitude, dto.Location.Longitude)
             };
-            return await _context.AddAsync(order);
+            await _stateHistory.AddAsync(order, state); 
+            //Проверить
+            //можно без 'await _context.AddAsync(order)' записать на базе сохраняется дважды order
+            //await _context.AddAsync(order);
+            return order;
         }
 
         public async Task ConfirmHandOverAsync(ConfirmHandOverDto dto)
@@ -87,17 +97,22 @@ namespace Infrastructure.Services.ClientServices
                 return default;
             }
             await _rejected.AddAsync(order);
+            var state = await _state.GetByStateAsync(GeneralState.WaitingOnReview);
             order.Delivery = default;
-            order.State = await _state.GetByStateAsync(GeneralState.WaitingOnReview);
+            order.State = state;
             await _context.UpdateAsync(order.SetSecretCodeEmpty());
+            await _stateHistory.AddAsync(order, state); 
             return order;
         }
     
         public async Task SetDeliveryAsync(Order order, Delivery delivery)
         {
-            order.State = await _state.GetByStateAsync(GeneralState.OnReview);
+            var state = await _state.GetByStateAsync(GeneralState.OnReview);
+            order.State = state;
             order.Delivery = delivery;
             await _context.UpdateAsync(order);
+            //запись история статуса
+            await _stateHistory.AddAsync(order, state); 
             await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, order.Delivery.Id));
         }
 

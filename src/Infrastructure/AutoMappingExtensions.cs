@@ -6,6 +6,7 @@ using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Extensions;
 using ApplicationCore.Models.Dtos;
 using ApplicationCore.Models.Dtos.Deliveries;
+using ApplicationCore.Models.Dtos.Histories;
 using ApplicationCore.Models.Dtos.Orders;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Enums;
@@ -85,6 +86,13 @@ namespace Infrastructure
                 DeliveryState = order.State.StateValue.GetDisplayName(),
                 SecretCode = order.SecretCode,
                 DeliveryDate = order.DeliveryDate
+            };
+
+        public static StateHistoryDto GetHistoryDto(this OrderStateHistory stateHistory) =>
+            new()
+            {
+                StateName = stateHistory.State.Name,
+                CreateDate = stateHistory.CreatedDate
             };
     }
 }
