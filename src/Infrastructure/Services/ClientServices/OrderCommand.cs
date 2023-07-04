@@ -80,7 +80,9 @@ namespace Infrastructure.Services.ClientServices
             {
                 throw new ArgumentException("Не совпадает код");
             }
-            order.State = await _state.GetByStateAsync(GeneralState.ReceivedByDriver);
+            var state = await _state.GetByStateAsync(GeneralState.ReceivedByDriver);
+            order.State = state;
+            await _stateHistory.AddAsync(order, state);
             await _context.UpdateAsync(order.SetSecretCodeEmpty());
         }
 
