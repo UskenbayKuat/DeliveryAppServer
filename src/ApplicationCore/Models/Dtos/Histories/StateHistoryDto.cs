@@ -4,7 +4,8 @@ namespace ApplicationCore.Models.Dtos.Histories
 {
     public class StateHistoryDto
     {
-        public string StateName { get; set; }
-        public DateTime CreateDate { get; set; }
+        public string PendingForHandOver { get; set; } = string.Empty;
+        public string ReceivedByDriver { get; set; } = string.Empty;
+        public string Done { get; set; } = string.Empty;
     }
 }

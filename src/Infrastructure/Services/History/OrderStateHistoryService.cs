@@ -34,15 +34,14 @@ namespace Infrastructure.Services.History
             await _context.RemoveAsync(orderHistory);
         }
 
-        public async Task<List<StateHistoryDto>> GetAsync(int orderId)
+        public async Task<StateHistoryDto> GetAsync(int orderId)
         {
             var historySpec = new OrderStateHistoryWithStateSpecification(orderId);
             var ordersHistories = await _context
                     .GetQueryableAsync(historySpec)
                     .OrderBy(o => o.CreatedDate)
-                    .Select(o => o.GetHistoryDto())
                     .ToListAsync();
-            return ordersHistories;
+            return ordersHistories.GetStateHistoryDto();
         }
     }
 }

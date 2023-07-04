@@ -13,6 +13,6 @@ namespace ApplicationCore.Models.Dtos.Deliveries
         public string DriverPhoneNumber { get; set; }
         public string CarNumber { get; set; }
         public string SecretCode { get; set; }
-        public List<StateHistoryDto> StateHistoryDtos { get; set; }
+        public StateHistoryDto StateHistoryDto { get; set; }
     }
 }

@@ -691,6 +691,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
+                    b.Property<string>("StateName")
+                        .HasColumnType("text");
+
                     b.Property<int>("StateValue")
                         .HasColumnType("integer");
 

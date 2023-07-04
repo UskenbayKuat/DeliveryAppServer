@@ -44,11 +44,11 @@ namespace Infrastructure.Services.ClientServices
             foreach (var order in orders)
             {
                 var driverUserId = order.Delivery?.Driver?.UserId;
-                var orderStateList = await _stateHistory.GetAsync(order.Id);
+                var orderState = await _stateHistory.GetAsync(order.Id);
                 var userDriver = await _dbIdentityDbContext.Users
                     .AsNoTracking()
                     .FirstOrDefaultAsync(u => u.Id == driverUserId);
-                deliveriesInfo.Add(order.GetDeliveryDto(userClient, userDriver, orderStateList));
+                deliveriesInfo.Add(order.GetDeliveryDto(userClient, userDriver, orderState));
             }
             return deliveriesInfo;
         } 

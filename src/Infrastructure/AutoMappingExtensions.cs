@@ -64,7 +64,7 @@ namespace Infrastructure
                 
             };
 
-        public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver, List<StateHistoryDto> stateHistoryDtos) =>
+        public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver, StateHistoryDto stateHistoryDto) =>
             new()
             {  
                 StartCityName = order.Route.StartCity.Name,
@@ -86,15 +86,30 @@ namespace Infrastructure
                 DeliveryState = order.State.StateValue.GetDisplayName(),
                 SecretCode = order.SecretCode,
                 DeliveryDate = order.DeliveryDate,
-                StateHistoryDtos = stateHistoryDtos,
+                StateHistoryDto = stateHistoryDto,
                 CreateDate = order.CreatedDate
             };
 
-        public static StateHistoryDto GetHistoryDto(this OrderStateHistory stateHistory) =>
-            new()
+        public static StateHistoryDto GetStateHistoryDto(this List<OrderStateHistory> stateHistoryList)
+        {
+            var dto = new StateHistoryDto();
+            foreach (var item in stateHistoryList)
             {
-                StateName = stateHistory.State.Name,
-                CreateDate = stateHistory.CreatedDate
-            };
+                switch (item.State.StateValue)
+                {
+                    case GeneralState.PendingForHandOver:
+                        dto.PendingForHandOver = item.CreatedDate.ToString("dd MMMM, yyyy");
+                        break;
+                    case GeneralState.ReceivedByDriver:
+                        dto.ReceivedByDriver = item.CreatedDate.ToString("dd MMMM, yyyy");
+                        break;
+                    case GeneralState.Done:
+                        dto.Done = item.CreatedDate.ToString("dd MMMM, yyyy");
+                        break;
+                }
+            }
+            return dto;
+        }
+
     }
 }
