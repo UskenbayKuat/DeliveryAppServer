@@ -64,7 +64,7 @@ namespace Infrastructure
                 
             };
 
-        public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver) =>
+        public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver, List<StateHistoryDto> stateHistoryDtos) =>
             new()
             {  
                 StartCityName = order.Route.StartCity.Name,
@@ -85,7 +85,9 @@ namespace Infrastructure
                 CarNumber = order.Delivery?.Driver.Car.CarNumber,
                 DeliveryState = order.State.StateValue.GetDisplayName(),
                 SecretCode = order.SecretCode,
-                DeliveryDate = order.DeliveryDate
+                DeliveryDate = order.DeliveryDate,
+                StateHistoryDtos = stateHistoryDtos,
+                CreateDate = order.CreatedDate
             };
 
         public static StateHistoryDto GetHistoryDto(this OrderStateHistory stateHistory) =>

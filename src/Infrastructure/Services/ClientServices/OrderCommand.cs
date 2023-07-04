@@ -68,11 +68,7 @@ namespace Infrastructure.Services.ClientServices
                 State = state,
                 Location = new Location(dto.Location.Latitude, dto.Location.Longitude)
             };
-            await _stateHistory.AddAsync(order, state); 
-            //Проверить
-            //можно без 'await _context.AddAsync(order)' записать на базе сохраняется дважды order
-            //await _context.AddAsync(order);
-            return order;
+            return await _context.AddAsync(order);
         }
 
         public async Task ConfirmHandOverAsync(ConfirmHandOverDto dto)
@@ -96,12 +92,12 @@ namespace Infrastructure.Services.ClientServices
             {
                 return default;
             }
+            await _stateHistory.RemoveAsync(order.Id, order.State.Id); 
             await _rejected.AddAsync(order);
             var state = await _state.GetByStateAsync(GeneralState.WaitingOnReview);
             order.Delivery = default;
             order.State = state;
             await _context.UpdateAsync(order.SetSecretCodeEmpty());
-            await _stateHistory.AddAsync(order, state); 
             return order;
         }
     
@@ -111,8 +107,6 @@ namespace Infrastructure.Services.ClientServices
             order.State = state;
             order.Delivery = delivery;
             await _context.UpdateAsync(order);
-            //запись история статуса
-            await _stateHistory.AddAsync(order, state); 
             await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, order.Delivery.Id));
         }
 
@@ -128,8 +122,11 @@ namespace Infrastructure.Services.ClientServices
         public async Task<Order> UpdateStatePendingAsync(int orderId)
         {            
             var orderSpec = new OrderWithClientSpecification(orderId);
-            var order = await _context.FirstOrDefaultAsync(orderSpec);
-            order.State = await _state.GetByStateAsync(GeneralState.PendingForHandOver);
+            var order = await _context.FirstOrDefaultAsync(orderSpec)
+                    ?? throw new ArgumentException($"Нет такого заказа с Id: {orderId}");
+            var state = await _state.GetByStateAsync(GeneralState.PendingForHandOver);
+            order.State = state;
+            await _stateHistory.AddAsync(order, state);
             await _context.UpdateAsync(order.SetSecretCode());
             return order;
         }

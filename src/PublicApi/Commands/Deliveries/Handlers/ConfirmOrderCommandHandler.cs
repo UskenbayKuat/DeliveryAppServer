@@ -9,13 +9,11 @@ namespace PublicApi.Commands.Orders.Handlers
 {
     public class ConfirmOrderCommandHandler : AsyncRequestHandler<ConfirmOrderCommand>
     {
-        private readonly IDeliveryCommand _deliveryCommand;
         private readonly INotify _notify;
         private readonly IOrderCommand _orderCommand;
 
-        public ConfirmOrderCommandHandler(IDeliveryCommand deliveryCommand, INotify notify, IOrderCommand orderCommand)
+        public ConfirmOrderCommandHandler(INotify notify, IOrderCommand orderCommand)
         {
-            _deliveryCommand = deliveryCommand;
             _notify = notify;
             _orderCommand = orderCommand;
         }

@@ -52,7 +52,7 @@ namespace OrderBackgroundTasks
                 var deliveryCommand = serviceProvider.GetService<IDeliveryCommand>();
                 var order = await orderCommand.RejectAsync(backgroundOrder.OrderId);
                 _logger.LogInformation($"DeliverId: {backgroundOrder.DeliveryId} reject order: {backgroundOrder.OrderId}");
-                var delivery = await deliveryCommand.FindIsNewDelivery(order);
+                var delivery = await deliveryCommand.FindIsNewDeliveryAsync(order);
                 if (delivery != null)
                 {
                     await orderCommand.SetDeliveryAsync(order, delivery);

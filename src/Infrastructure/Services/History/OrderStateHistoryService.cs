@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,9 +26,17 @@ namespace Infrastructure.Services.History
             await _context.AddAsync(orderHistory);
         }
 
-        public async Task<List<StateHistoryDto>> GetAsync(int orderId, int deliveryId)
+        public async Task RemoveAsync(int orderId, int stateId)
         {
-            var historySpec = new OrderStateHistoryWithStateSpecification(orderId, deliveryId);
+            var orderHistory = await _context
+                .FirstOrDefaultAsync(o => o.Order.Id == orderId && o.State.Id == stateId)
+                ?? throw new ArgumentException("Не найдено история статус заказа");
+            await _context.RemoveAsync(orderHistory);
+        }
+
+        public async Task<List<StateHistoryDto>> GetAsync(int orderId)
+        {
+            var historySpec = new OrderStateHistoryWithStateSpecification(orderId);
             var ordersHistories = await _context
                     .GetQueryableAsync(historySpec)
                     .OrderBy(o => o.CreatedDate)

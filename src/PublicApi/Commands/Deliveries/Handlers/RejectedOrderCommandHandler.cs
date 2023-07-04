@@ -25,7 +25,7 @@ namespace PublicApi.Commands.Deliveries.Handlers
         {
             var order = await _orderCommand.RejectAsync(request.OrderId) 
                         ?? throw new ArgumentException("Ошибка, заказ передан");
-            var delivery = await _deliveryCommand.FindIsNewDelivery(order);
+            var delivery = await _deliveryCommand.FindIsNewDeliveryAsync(order);
             if (delivery != null)
             {
                 await _orderCommand.SetDeliveryAsync(order, delivery);

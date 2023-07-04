@@ -22,8 +22,8 @@ namespace PublicApi.Endpoints.Clients.Query
         {
             try
             {
-                var deliveryInfos = await _orderQuery
-                    .GetActiveOrdersForClientAsync(HttpContext.Items["UserId"]?.ToString());
+                var deliveryInfos = 
+                    await _orderQuery.GetActiveOrdersForClientAsync(HttpContext.Items["UserId"]?.ToString());
                 return Ok(deliveryInfos);
             }
             catch

@@ -23,5 +23,6 @@ namespace ApplicationCore.Interfaces.DataContextInterface
         Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default);
         Task<bool> AnyAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default);
         Task<bool> AnyAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);
+        Task RemoveAsync(T entity, CancellationToken cancellationToken = default);
     }
 }

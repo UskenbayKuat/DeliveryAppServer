@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DataContextInterface;
+using ApplicationCore.Interfaces.Histories;
 using ApplicationCore.Models.Dtos.Deliveries;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Values;
@@ -18,13 +19,15 @@ namespace Infrastructure.Services.ClientServices
     {
         private readonly AppIdentityDbContext _dbIdentityDbContext;
         private readonly IAsyncRepository<Order> _context;
+        private readonly IOrderStateHistory _stateHistory;
 
         public OrderQuery(
             AppIdentityDbContext dbIdentityDbContext, 
-            IAsyncRepository<Order> context)
+            IAsyncRepository<Order> context, IOrderStateHistory stateHistory)
         {
             _dbIdentityDbContext = dbIdentityDbContext;
             _context = context;
+            _stateHistory = stateHistory;
         }
         
         public async Task<List<DeliveryDto>> GetActiveOrdersForClientAsync(string clientUserId)
@@ -34,17 +37,19 @@ namespace Infrastructure.Services.ClientServices
                 .FirstOrDefaultAsync(u => u.Id == clientUserId);
             var deliveriesInfo = new List<DeliveryDto>();
             var orderSpec = new OrderWithStateSpecification(clientUserId);
-            await _context
+            var orders = await _context
                 .GetQueryableAsync(orderSpec)
                 .AsNoTracking()
-                .ForEachAsync(o =>
-                {
-                    var driverUserId = o.Delivery?.Driver?.UserId;
-                    var userDriver = _dbIdentityDbContext.Users
-                        .AsNoTracking()
-                        .FirstOrDefault(u => u.Id == driverUserId);
-                    deliveriesInfo.Add(o.GetDeliveryDto(userClient, userDriver));
-                });
+                .ToListAsync();
+            foreach (var order in orders)
+            {
+                var driverUserId = order.Delivery?.Driver?.UserId;
+                var orderStateList = await _stateHistory.GetAsync(order.Id);
+                var userDriver = await _dbIdentityDbContext.Users
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(u => u.Id == driverUserId);
+                deliveriesInfo.Add(order.GetDeliveryDto(userClient, userDriver, orderStateList));
+            }
             return deliveriesInfo;
         } 
         

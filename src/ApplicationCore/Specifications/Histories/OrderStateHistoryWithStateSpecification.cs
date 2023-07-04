@@ -5,12 +5,11 @@ namespace ApplicationCore.Specifications.Histories
 {
     public sealed class OrderStateHistoryWithStateSpecification : Specification<OrderStateHistory>
     {
-        public OrderStateHistoryWithStateSpecification(int orderId, int deliveryId)
+        public OrderStateHistoryWithStateSpecification(int orderId)
         {
             Query
                 .Include(o => o.State)
-                .Where(o => o.Order.Id == orderId 
-                                         && o.Order.Delivery.Id == deliveryId);
+                .Where(o => o.Order.Id == orderId);
         }
     }
 }
