@@ -98,13 +98,13 @@ namespace Infrastructure
                 switch (item.State.StateValue)
                 {
                     case GeneralState.PendingForHandOver:
-                        dto.PendingForHandOver = item.CreatedDate.ToString("dd MMMM, yyyy");
+                        dto.PendingForHandOver = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
                         break;
                     case GeneralState.ReceivedByDriver:
-                        dto.ReceivedByDriver = item.CreatedDate.ToString("dd MMMM, yyyy");
+                        dto.ReceivedByDriver = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
                         break;
                     case GeneralState.Done:
-                        dto.Done = item.CreatedDate.ToString("dd MMMM, yyyy");
+                        dto.Done = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
                         break;
                 }
             }
