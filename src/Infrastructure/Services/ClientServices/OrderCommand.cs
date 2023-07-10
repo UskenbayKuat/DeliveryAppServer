@@ -9,6 +9,7 @@ using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DataContextInterface;
+using ApplicationCore.Interfaces.Histories;
 using ApplicationCore.Interfaces.RejectedInterfaces;
 using ApplicationCore.Interfaces.RouteInterfaces;
 using ApplicationCore.Interfaces.StateInterfaces;
@@ -31,12 +32,16 @@ namespace Infrastructure.Services.ClientServices
         private readonly IRejected _rejected;
         private readonly IClient _client;
         private readonly IRoute _route;
-
+        private readonly IOrderStateHistory _stateHistory;
         public OrderCommand(
             IAsyncRepository<Order> context, 
             IBackgroundTaskQueue backgroundTask, 
             IState state, 
-            IRejected rejected, IClient client, IAsyncRepository<CarType> contextCarType, IRoute route)
+            IRejected rejected, 
+            IClient client, 
+            IAsyncRepository<CarType> contextCarType, 
+            IRoute route, 
+            IOrderStateHistory stateHistory)
         {
             _context = context;
             _backgroundTask = backgroundTask;
@@ -45,6 +50,7 @@ namespace Infrastructure.Services.ClientServices
             _client = client;
             _contextCarType = contextCarType;
             _route = route;
+            _stateHistory = stateHistory;
         }
 
         public async Task<Order> CreateAsync(CreateOrderDto dto, string clientUserId)
@@ -74,7 +80,9 @@ namespace Infrastructure.Services.ClientServices
             {
                 throw new ArgumentException("Не совпадает код");
             }
-            order.State = await _state.GetByStateAsync(GeneralState.ReceivedByDriver);
+            var state = await _state.GetByStateAsync(GeneralState.ReceivedByDriver);
+            order.State = state;
+            await _stateHistory.AddAsync(order, state);
             await _context.UpdateAsync(order.SetSecretCodeEmpty());
         }
 
@@ -86,16 +94,19 @@ namespace Infrastructure.Services.ClientServices
             {
                 return default;
             }
+            await _stateHistory.RemoveAsync(order.Id, order.State.Id); 
             await _rejected.AddAsync(order);
+            var state = await _state.GetByStateAsync(GeneralState.WaitingOnReview);
             order.Delivery = default;
-            order.State = await _state.GetByStateAsync(GeneralState.WaitingOnReview);
+            order.State = state;
             await _context.UpdateAsync(order.SetSecretCodeEmpty());
             return order;
         }
     
         public async Task SetDeliveryAsync(Order order, Delivery delivery)
         {
-            order.State = await _state.GetByStateAsync(GeneralState.OnReview);
+            var state = await _state.GetByStateAsync(GeneralState.OnReview);
+            order.State = state;
             order.Delivery = delivery;
             await _context.UpdateAsync(order);
             await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, order.Delivery.Id));
@@ -113,8 +124,11 @@ namespace Infrastructure.Services.ClientServices
         public async Task<Order> UpdateStatePendingAsync(int orderId)
         {            
             var orderSpec = new OrderWithClientSpecification(orderId);
-            var order = await _context.FirstOrDefaultAsync(orderSpec);
-            order.State = await _state.GetByStateAsync(GeneralState.PendingForHandOver);
+            var order = await _context.FirstOrDefaultAsync(orderSpec)
+                    ?? throw new ArgumentException($"Нет такого заказа с Id: {orderId}");
+            var state = await _state.GetByStateAsync(GeneralState.PendingForHandOver);
+            order.State = state;
+            await _stateHistory.AddAsync(order, state);
             await _context.UpdateAsync(order.SetSecretCode());
             return order;
         }

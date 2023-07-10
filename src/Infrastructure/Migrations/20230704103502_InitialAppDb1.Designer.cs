@@ -3,15 +3,17 @@ using System;
 using Infrastructure.AppData.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230704103502_InitialAppDb1")]
+    partial class InitialAppDb1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -672,37 +674,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Models.Entities.Orders.OrderStateHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("StateId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("StateId");
-
-                    b.ToTable("OrderStateHistories");
-                });
-
             modelBuilder.Entity("ApplicationCore.Models.Entities.Orders.State", b =>
                 {
                     b.Property<int>("Id")
@@ -906,21 +877,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Package");
 
                     b.Navigation("Route");
-
-                    b.Navigation("State");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Models.Entities.Orders.OrderStateHistory", b =>
-                {
-                    b.HasOne("ApplicationCore.Models.Entities.Orders.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId");
-
-                    b.HasOne("ApplicationCore.Models.Entities.Orders.State", "State")
-                        .WithMany()
-                        .HasForeignKey("StateId");
-
-                    b.Navigation("Order");
 
                     b.Navigation("State");
                 });

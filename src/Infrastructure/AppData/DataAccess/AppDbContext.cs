@@ -38,6 +38,7 @@ namespace Infrastructure.AppData.DataAccess
         public DbSet<Order> Orders { get; set; }
         public DbSet<Package> Packages { get; set; }
         public DbSet<RejectedOrder>  RejectedOrders { get; set; }
+        public DbSet<OrderStateHistory> OrderStateHistories { get; set; }
         public DbSet<State>  States { get; set; }
         
         //kits

@@ -6,6 +6,7 @@ using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Extensions;
 using ApplicationCore.Models.Dtos;
 using ApplicationCore.Models.Dtos.Deliveries;
+using ApplicationCore.Models.Dtos.Histories;
 using ApplicationCore.Models.Dtos.Orders;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Enums;
@@ -63,7 +64,7 @@ namespace Infrastructure
                 
             };
 
-        public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver) =>
+        public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver, StateHistoryDto stateHistoryDto) =>
             new()
             {  
                 StartCityName = order.Route.StartCity.Name,
@@ -84,7 +85,31 @@ namespace Infrastructure
                 CarNumber = order.Delivery?.Driver.Car.CarNumber,
                 DeliveryState = order.State.StateValue.GetDisplayName(),
                 SecretCode = order.SecretCode,
-                DeliveryDate = order.DeliveryDate
+                DeliveryDate = order.DeliveryDate,
+                StateHistoryDto = stateHistoryDto,
+                CreateDate = order.CreatedDate
             };
+
+        public static StateHistoryDto GetStateHistoryDto(this List<OrderStateHistory> stateHistoryList)
+        {
+            var dto = new StateHistoryDto();
+            foreach (var item in stateHistoryList)
+            {
+                switch (item.State.StateValue)
+                {
+                    case GeneralState.PendingForHandOver:
+                        dto.PendingForHandOver = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
+                        break;
+                    case GeneralState.ReceivedByDriver:
+                        dto.ReceivedByDriver = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
+                        break;
+                    case GeneralState.Done:
+                        dto.Done = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
+                        break;
+                }
+            }
+            return dto;
+        }
+
     }
 }

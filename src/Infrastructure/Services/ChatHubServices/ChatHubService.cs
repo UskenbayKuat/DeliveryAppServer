@@ -10,6 +10,7 @@ using ApplicationCore.Interfaces.HubInterfaces;
 using Infrastructure.AppData.DataAccess;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Services.ChatHubServices
 {
@@ -17,10 +18,12 @@ namespace Infrastructure.Services.ChatHubServices
     {
         private readonly IOrderQuery _orderQuery;
         private readonly IAsyncRepository<ChatHub> _context;
-        public ChatHubService(IAsyncRepository<ChatHub> context, IOrderQuery orderQuery)
+        private readonly ILogger<ChatHub> _logger;
+        public ChatHubService(IAsyncRepository<ChatHub> context, IOrderQuery orderQuery, ILogger<ChatHub> logger)
         {
             _context = context;
             _orderQuery = orderQuery;
+            _logger = logger;
         }
 
         public async Task ConnectedAsync(string userId, string connectId)
@@ -73,7 +76,7 @@ namespace Infrastructure.Services.ChatHubServices
         {
             if (string.IsNullOrEmpty(userId))
             {
-                throw new NullReferenceException();
+                _logger.LogWarning($"Error connect Hub userId: {userId}, connectId: {connectId}");
             }
             var chatHub = new ChatHub(userId, connectId);
             await _context.AddAsync(chatHub);

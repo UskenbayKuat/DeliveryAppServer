@@ -9,6 +9,7 @@ using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using ApplicationCore.Interfaces.DriverInterfaces;
+using ApplicationCore.Interfaces.Histories;
 using ApplicationCore.Interfaces.HubInterfaces;
 using ApplicationCore.Interfaces.RejectedInterfaces;
 using ApplicationCore.Interfaces.RouteInterfaces;
@@ -32,6 +33,7 @@ namespace Infrastructure.Services.DeliveryServices
         private readonly IRoute _route;
         private readonly IOrderQuery _orderQuery;
         private readonly IRejected _rejected;
+        private readonly IOrderStateHistory _orderStateHistory;
         public DeliveryCommand(
             IAsyncRepository<Delivery> context,
             IBackgroundTaskQueue backgroundTask,
@@ -39,7 +41,7 @@ namespace Infrastructure.Services.DeliveryServices
             IRoute route, 
             IState state, 
             IDriver driver, 
-            IOrderQuery orderQuery, IRejected rejected)
+            IOrderQuery orderQuery, IRejected rejected, IOrderStateHistory orderStateHistory)
         {
             _chatHub = chatHub;
             _context = context;
@@ -48,6 +50,7 @@ namespace Infrastructure.Services.DeliveryServices
             _driver = driver;
             _orderQuery = orderQuery;
             _rejected = rejected;
+            _orderStateHistory = orderStateHistory;
             _backgroundTask = backgroundTask;
         }
         public async Task<Delivery> CreateAsync(CreateDeliveryDto dto)
@@ -116,7 +119,7 @@ namespace Infrastructure.Services.DeliveryServices
             return request;
         }
 
-        public async Task<Delivery> FindIsNewDelivery(Order order)
+        public async Task<Delivery> FindIsNewDeliveryAsync(Order order)
         {
             var deliverySpec = new DeliveryWithDriverSpecification(order.Route.Id, order.DeliveryDate, order.Location);
             var deliveries = await _context.ListAsync(deliverySpec);

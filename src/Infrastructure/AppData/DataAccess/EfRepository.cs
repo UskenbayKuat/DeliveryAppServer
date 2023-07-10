@@ -64,6 +64,12 @@ namespace Infrastructure.AppData.DataAccess
             await UpdateAsync(entity, cancellationToken);
         }
 
+        public async Task RemoveAsync(T entity, CancellationToken cancellationToken = default)
+        {
+            _dbContext.Set<T>().Remove(entity);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
         public async Task<T> FirstAsync(ISpecification<T> spec, CancellationToken cancellationToken = default)
         {
             var specificationResult = ApplySpecification(spec);

@@ -153,15 +153,15 @@ namespace Infrastructure.AppData.DataAccess
         private static IEnumerable<State> GetPreconfiguredStates() =>
             new List<State>
             {
-                new(GeneralState.WaitingOrder, GeneralState.WaitingOrder.GetDisplayName()),
-                new(GeneralState.WaitingOnReview, GeneralState.WaitingOnReview.GetDisplayName()),
-                new(GeneralState.OnReview, GeneralState.OnReview.GetDisplayName()),
-                new(GeneralState.PendingForHandOver, GeneralState.PendingForHandOver.GetDisplayName()),
-                new(GeneralState.ReceivedByDriver, GeneralState.ReceivedByDriver.GetDisplayName()),
-                new(GeneralState.InProgress, GeneralState.InProgress.GetDisplayName()),
-                new(GeneralState.Done, GeneralState.Done.GetDisplayName()),
-                new(GeneralState.Delayed, GeneralState.Delayed.GetDisplayName()),
-                new(GeneralState.Canceled, GeneralState.Canceled.GetDisplayName())
+                new(GeneralState.WaitingOrder, GeneralState.WaitingOrder.GetDisplayName(), GeneralState.WaitingOrder.ToString()),
+                new(GeneralState.WaitingOnReview, GeneralState.WaitingOnReview.GetDisplayName(), GeneralState.WaitingOnReview.ToString()),
+                new(GeneralState.OnReview, GeneralState.OnReview.GetDisplayName(), GeneralState.OnReview.ToString()),
+                new(GeneralState.PendingForHandOver, GeneralState.PendingForHandOver.GetDisplayName(), GeneralState.PendingForHandOver.ToString()),
+                new(GeneralState.ReceivedByDriver, GeneralState.ReceivedByDriver.GetDisplayName(), GeneralState.ReceivedByDriver.ToString()),
+                new(GeneralState.InProgress, GeneralState.InProgress.GetDisplayName(), GeneralState.InProgress.ToString()),
+                new(GeneralState.Done, GeneralState.Done.GetDisplayName(), GeneralState.Done.ToString()),
+                new(GeneralState.Delayed, GeneralState.Delayed.GetDisplayName(), GeneralState.Delayed.ToString()),
+                new(GeneralState.Canceled, GeneralState.Canceled.GetDisplayName(), GeneralState.Canceled.ToString())
             };
         
     }
