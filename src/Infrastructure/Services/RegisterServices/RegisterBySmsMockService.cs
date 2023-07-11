@@ -34,20 +34,24 @@ namespace Infrastructure.Services.RegisterServices
         public async Task<ActionResult> Confirm(ConfirmRegistrationDto dto, CancellationToken cancellationToken)
         {
              var user = await _identityDb.Users.FirstOrDefaultAsync(
-                u => u.PhoneNumber == dto.PhoneNumber && u.IsDriver == dto.IsDriver, cancellationToken);
-            if (user is null)
-            {
-                user = new User(dto.PhoneNumber, dto.IsDriver);
-                await _identityDb.Users.AddAsync(user, cancellationToken);
-                await _identityDb.SaveChangesAsync(cancellationToken);
-            }
-
-            user.AddRefreshToken(_generateToken.CreateRefreshToken(), DateTime.UtcNow.AddYears(_generateToken.LifeTimeRefreshTokenInYear));
-            _identityDb.Users.Update(user);
+                u => u.PhoneNumber == dto.PhoneNumber && u.IsDriver == dto.IsDriver, cancellationToken)
+                 ?? await GetUserAsync(dto.PhoneNumber, dto.IsDriver);
+            _identityDb.Users.Update(
+                user.AddRefreshToken(
+                            refreshToken:_generateToken.CreateRefreshToken(), 
+                            refreshTokenExpiryTime: DateTime.UtcNow.AddYears(_generateToken.LifeTimeRefreshTokenInYear)));
             await _identityDb.SaveChangesAsync(cancellationToken);
 
             return new OkObjectResult(new{accessToken = _generateToken.CreateAccessToken(user), 
-                refreshToken = user.RefreshToken, name = user.Name, surname = user.Surname, isValid = user.IsValid});
+                refreshToken = user.RefreshToken, name = user.Name, surname = user.Surname, isValid = user.IsValid, email = user.Email});
+        }
+
+        private async Task<User> GetUserAsync(string phoneNumber, bool isDriver)
+        {
+            var user = new User(phoneNumber, isDriver);
+            await _identityDb.Users.AddAsync(user);
+            await _identityDb.SaveChangesAsync();
+            return user;
         }
     }
 }
