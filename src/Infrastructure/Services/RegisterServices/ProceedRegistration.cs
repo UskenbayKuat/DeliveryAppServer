@@ -42,7 +42,7 @@ namespace Infrastructure.Services.RegisterServices
 
             _identityDb.Users.Update(user);
             await _identityDb.SaveChangesAsync(cancellationToken);
-            return new OkObjectResult(new { name = user.Name, surname = user.Surname });
+            return new OkObjectResult(new { name = user.Name, surname = user.Surname, email = user.Email });
         }
     }
 }
