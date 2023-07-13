@@ -7,6 +7,6 @@ namespace ApplicationCore.Interfaces.DeliveryInterfaces
 {
     public interface IDeliveryQuery
     {
-        public Task<IsActiveDeliveryDto> GetDeliveryIsActiveAsync(string driverUserId);
+        public Task<ActiveDeliveryDto> GetDeliveryIsActiveAsync(string driverUserId);
     }
 }

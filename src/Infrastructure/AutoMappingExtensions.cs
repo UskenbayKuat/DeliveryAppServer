@@ -17,11 +17,11 @@ namespace Infrastructure
 {
     public static class AutoMappingExtensions
     {
-        public static IsActiveDeliveryDto GetDeliveryDto(this Delivery delivery, List<OrderDto> orderInfos)
+        public static ActiveDeliveryDto GetDeliveryDto(this Delivery delivery, List<OrderDto> orderDtoList)
         {
             var handOverCount = 0;
             var activeCount = 0;
-            orderInfos.ForEach(o =>
+            orderDtoList.ForEach(o =>
             {
                 if (o.StateName == GeneralState.PendingForHandOver.GetDisplayName())
                     handOverCount++;
@@ -35,9 +35,8 @@ namespace Infrastructure
                 DeliveryDate = delivery.DeliveryDate,
                 HandOverCount = handOverCount,
                 ActiveCount = activeCount,
-                OrderCount = activeCount + handOverCount,
                 IsStartVisible = delivery.State.StateValue == GeneralState.InProgress,
-                OrderInfos = orderInfos
+                OrderDtoList = orderDtoList
             };
         }
 

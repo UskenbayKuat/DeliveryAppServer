@@ -21,7 +21,7 @@ namespace Infrastructure.Services.DeliveryServices
             _identityDbContext = identityDbContext;
             _context = context;
         }
-        public async Task<IsActiveDeliveryDto> GetDeliveryIsActiveAsync(string driverUserId)
+        public async Task<ActiveDeliveryDto> GetDeliveryIsActiveAsync(string driverUserId)
         {
             var deliverySpec = new DeliveryWithOrderSpecification(driverUserId);
             var delivery = await _context
