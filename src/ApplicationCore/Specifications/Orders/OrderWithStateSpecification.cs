@@ -19,7 +19,12 @@ namespace ApplicationCore.Specifications.Orders
         public OrderWithStateSpecification(int orderId)
         {
             Query.Include(o => o.State)
-                .Where(o => o.Id == orderId);
+                .Where(o => o.Id == orderId && !o.IsDeleted);
+        }
+        public OrderWithStateSpecification(int orderId, GeneralState state)
+        {
+            Query.Include(o => o.State)
+                .Where(o => o.Id == orderId && !o.IsDeleted && o.State.StateValue == state);
         }
         public OrderWithStateSpecification(string userId)
         {

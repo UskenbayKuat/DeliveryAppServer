@@ -12,6 +12,7 @@ namespace ApplicationCore.Models.Dtos.Deliveries
         public bool IsStartVisible { get; set; }
         public int HandOverCount { get; set; }
         public int ActiveCount { get; set; }
+        public string StateName { get; set; }
         public int OrderCount => ActiveCount + HandOverCount;
         public List<OrderDto> OrderDtoList { get; set; }
     }

@@ -135,8 +135,9 @@ namespace Infrastructure.Services.ClientServices
 
         public async Task CancelAsync(int orderId)
         {
-            var order = await _context.FirstOrDefaultAsync(o => o.Id == orderId && !o.IsDeleted)
-                ?? throw new ArgumentException($"Нет такого заказа с Id: {orderId}");
+            var spec = new OrderWithStateSpecification(orderId, GeneralState.WaitingOnReview);
+            var order = await _context.FirstOrDefaultAsync(spec)
+                ?? throw new ArgumentException($"Активный заказ нельзя отменить");
             await _context.DeleteAsync(order);
         }
     }

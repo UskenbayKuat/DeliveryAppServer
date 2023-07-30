@@ -17,17 +17,17 @@ namespace Infrastructure
 {
     public static class AutoMappingExtensions
     {
-        public static ActiveDeliveryDto GetDeliveryDto(this Delivery delivery, List<OrderDto> orderDtoList)
+        public static ActiveDeliveryDto MapToDeliveryDto(this Delivery delivery, List<OrderDto> orderDtoList)
         {
             var handOverCount = 0;
             var activeCount = 0;
-            orderDtoList.ForEach(o =>
+            foreach(var o in orderDtoList)
             {
                 if (o.StateName == GeneralState.PendingForHandOver.GetDisplayName())
                     handOverCount++;
                 else if (o.StateName == GeneralState.ReceivedByDriver.GetDisplayName())
                     activeCount++;
-            });
+            }
             return new()
             {
                 StartCityName = delivery.Route.StartCity.Name,
@@ -36,7 +36,8 @@ namespace Infrastructure
                 HandOverCount = handOverCount,
                 ActiveCount = activeCount,
                 IsStartVisible = delivery.State.StateValue == GeneralState.InProgress,
-                OrderDtoList = orderDtoList
+                OrderDtoList = orderDtoList,
+                StateName = delivery.State.Name
             };
         }
 
@@ -51,7 +52,7 @@ namespace Infrastructure
                 IsSingle = order.IsSingle,
                 Price = order.Price,
                 StateName = order.State.Name,
-                DeliveryDate = order.Delivery?.DeliveryDate ?? order.DeliveryDate,
+                DeliveryDate = order.DeliveryDate,
                 ClientName = client.Name,
                 ClientSurname = client.Surname,
                 ClientPhoneNumber = client.PhoneNumber,
@@ -60,7 +61,7 @@ namespace Infrastructure
                 AddressFrom = order.AddressFrom,
                 AddressTo = order.AddressTo,
                 Description = order.Description,
-                
+                IsConfirm = order.State.StateValue == GeneralState.OnReview
             };
 
         public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver, StateHistoryDto stateHistoryDto) =>

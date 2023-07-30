@@ -27,12 +27,18 @@ namespace Infrastructure.Services.DeliveryServices
             var delivery = await _context
                 .GetQueryableAsync(deliverySpec)
                 .AsNoTracking()
-                .FirstOrDefaultAsync() ?? throw new ArgumentException("Не найден поездка");
+                .FirstOrDefaultAsync();
+            if (delivery is null)
+            {
+                return default;
+            }
             var orderDtoList = (
                 from order in delivery.Orders 
-                let user = _identityDbContext.Users.AsNoTracking().FirstOrDefault(u => u.Id == order.Client.UserId) 
+                let user = _identityDbContext.Users
+                    .AsNoTracking()
+                    .FirstOrDefault(u => u.Id == order.Client.UserId) 
                 select order.GetOrderDto(user)).ToList();
-            return delivery.GetDeliveryDto(orderDtoList);
+            return delivery.MapToDeliveryDto(orderDtoList);
         }
     }
 }
