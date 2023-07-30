@@ -5,22 +5,26 @@ namespace ApplicationCore.Models.Enums
     public enum GeneralState
     {
         [Display(Name = "Ожидает заказ")]
-        WaitingOrder = 1,
+        WAITING_ORDER = 1,
         [Display(Name = "Ожидает рассмотрения")]
-        WaitingOnReview = 2,
+        WAITING_ON_REVIEW = 2,
         [Display(Name = "На рассмотрении")]
-        OnReview = 3,
+        ON_REVIEW = 3,
         [Display(Name = "Ожидает передачи")]
-        PendingForHandOver = 4,
+        PENDING_For_HAND_OVER = 4,
         [Display(Name = "Передан")]
-        ReceivedByDriver = 5,
+        RECEIVED_BY_DRIVER = 5,
         [Display(Name = "В пути")]
-        InProgress = 6,
+        INPROGRESS = 6,
         [Display(Name = "Завершен")]
-        Done = 7,
+        DONE = 7,
         [Display(Name = "Отложенный")]
-        Delayed = 8,
+        DELAYED = 8,
         [Display(Name = "Отмененный")]
-        Canceled = 9 
+        CANCALED = 9,
+        [Display(Name = "Ожидание передачи клиенту")]
+        AWAITING_TRANSFER_TO_CUSTOMER = 10,
+        [Display(Name = "Доставлено")]
+        DELIVERED = 11,
     }
 }

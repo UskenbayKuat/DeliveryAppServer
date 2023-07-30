@@ -14,7 +14,7 @@ namespace ApplicationCore.Specifications.Orders
                     !o.IsDeleted &&
                     o.Route.Id == routeId &&
                     o.DeliveryDate <= date &&
-                    o.State.StateValue == GeneralState.WaitingOnReview);
+                    o.State.StateValue == GeneralState.WAITING_ON_REVIEW);
         }
         public OrderWithStateSpecification(int orderId)
         {
@@ -40,10 +40,10 @@ namespace ApplicationCore.Specifications.Orders
                 .Include(o => o.Location)
                 .Where(o => o.Client.UserId == userId && !o.IsDeleted)
                 .Where(o =>
-                    o.State.StateValue == GeneralState.WaitingOnReview ||
-                    o.State.StateValue == GeneralState.OnReview ||
-                    o.State.StateValue == GeneralState.PendingForHandOver ||
-                    o.State.StateValue == GeneralState.ReceivedByDriver);
+                    o.State.StateValue == GeneralState.WAITING_ON_REVIEW ||
+                    o.State.StateValue == GeneralState.ON_REVIEW ||
+                    o.State.StateValue == GeneralState.PENDING_For_HAND_OVER ||
+                    o.State.StateValue == GeneralState.RECEIVED_BY_DRIVER);
         }
     }
 }

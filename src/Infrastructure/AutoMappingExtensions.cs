@@ -23,9 +23,9 @@ namespace Infrastructure
             var activeCount = 0;
             foreach(var o in orderDtoList)
             {
-                if (o.StateName == GeneralState.PendingForHandOver.GetDisplayName())
+                if (o.StateName == GeneralState.PENDING_For_HAND_OVER.GetDisplayName())
                     handOverCount++;
-                else if (o.StateName == GeneralState.ReceivedByDriver.GetDisplayName())
+                else if (o.StateName == GeneralState.RECEIVED_BY_DRIVER.GetDisplayName())
                     activeCount++;
             }
             return new()
@@ -35,7 +35,7 @@ namespace Infrastructure
                 DeliveryDate = delivery.DeliveryDate,
                 HandOverCount = handOverCount,
                 ActiveCount = activeCount,
-                IsStartVisible = delivery.State.StateValue == GeneralState.InProgress,
+                IsStartVisible = delivery.State.StateValue == GeneralState.INPROGRESS,
                 OrderDtoList = orderDtoList,
                 StateName = delivery.State.Name
             };
@@ -61,7 +61,7 @@ namespace Infrastructure
                 AddressFrom = order.AddressFrom,
                 AddressTo = order.AddressTo,
                 Description = order.Description,
-                IsConfirm = order.State.StateValue == GeneralState.OnReview
+                IsConfirm = order.State.StateValue == GeneralState.ON_REVIEW
             };
 
         public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver, StateHistoryDto stateHistoryDto) =>
@@ -97,13 +97,13 @@ namespace Infrastructure
             {
                 switch (item.State.StateValue)
                 {
-                    case GeneralState.PendingForHandOver:
+                    case GeneralState.PENDING_For_HAND_OVER:
                         dto.PendingForHandOver = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
                         break;
-                    case GeneralState.ReceivedByDriver:
+                    case GeneralState.RECEIVED_BY_DRIVER:
                         dto.ReceivedByDriver = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
                         break;
-                    case GeneralState.Done:
+                    case GeneralState.DONE:
                         dto.Done = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
                         break;
                 }

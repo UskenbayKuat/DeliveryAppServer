@@ -11,9 +11,9 @@ namespace ApplicationCore.Specifications.Histories
             Query
                 .Include(o => o.State)
                 .Where(o => o.Order.Id == orderId)
-                .Where(o => o.State.StateValue == GeneralState.PendingForHandOver ||
-                                         o.State.StateValue == GeneralState.ReceivedByDriver ||
-                                         o.State.StateValue == GeneralState.Done);
+                .Where(o => o.State.StateValue == GeneralState.PENDING_For_HAND_OVER ||
+                                         o.State.StateValue == GeneralState.RECEIVED_BY_DRIVER ||
+                                         o.State.StateValue == GeneralState.DONE);
         }
     }
 }

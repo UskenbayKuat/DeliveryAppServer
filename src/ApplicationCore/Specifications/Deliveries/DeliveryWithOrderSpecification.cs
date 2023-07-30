@@ -27,8 +27,8 @@ namespace ApplicationCore.Specifications.Deliveries
                 .Include(d => d.Orders)
                 .ThenInclude(o => o.Location)
                 .Where(d => d.Driver.UserId == userId)
-                .Where(d => d.State.StateValue == GeneralState.InProgress ||
-                            d.State.StateValue == GeneralState.WaitingOrder);
+                .Where(d => d.State.StateValue == GeneralState.INPROGRESS ||
+                            d.State.StateValue == GeneralState.WAITING_ORDER);
         }
     }
 }

@@ -21,10 +21,10 @@ namespace ApplicationCore.Specifications.Orders
                 .Include(o => o.Delivery.Route.StartCity)
                 .Include(o => o.Delivery.Route.FinishCity)
                 .Where(o => o.Delivery.Driver.UserId == driverUserId)
-                .Where(o => o.State.StateValue == GeneralState.InProgress ||
-                            o.State.StateValue == GeneralState.PendingForHandOver ||
-                            o.State.StateValue == GeneralState.ReceivedByDriver ||
-                            o.State.StateValue == GeneralState.OnReview);
+                .Where(o => o.State.StateValue == GeneralState.INPROGRESS ||
+                            o.State.StateValue == GeneralState.PENDING_For_HAND_OVER ||
+                            o.State.StateValue == GeneralState.RECEIVED_BY_DRIVER||
+                            o.State.StateValue == GeneralState.ON_REVIEW);
         }
     }
 }

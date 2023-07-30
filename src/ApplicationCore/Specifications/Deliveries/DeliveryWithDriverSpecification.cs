@@ -15,7 +15,7 @@ namespace ApplicationCore.Specifications.Deliveries
                 .Where(d =>
                     d.Route.Id == routeId &&
                     d.DeliveryDate >= dateTime &&
-                    d.State.StateValue == GeneralState.WaitingOrder);
+                    d.State.StateValue == GeneralState.WAITING_ORDER);
         }
     }
 }
