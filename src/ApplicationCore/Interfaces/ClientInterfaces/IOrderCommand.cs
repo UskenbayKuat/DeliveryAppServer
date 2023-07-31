@@ -23,5 +23,6 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
         Task<bool> IsOnReview(BackgroundOrder backgroundOrder);
         Task<Order> UpdateStatePendingAsync(int orderId);
         Task CancelAsync(int orderId);
+        Task<string> ProfitAsync(ClientProfitDto dto);
     }
 }

@@ -21,6 +21,11 @@ namespace ApplicationCore.Specifications.Orders
             Query.Include(o => o.State)
                 .Where(o => o.Id == orderId && !o.IsDeleted);
         }
+        public OrderWithStateSpecification(int orderId, string userId)
+        {
+            Query.Include(o => o.State)
+                .Where(o => o.Id == orderId && !o.IsDeleted && o.Delivery.Driver.UserId == userId);
+        }
         public OrderWithStateSpecification(int orderId, GeneralState state)
         {
             Query.Include(o => o.State)

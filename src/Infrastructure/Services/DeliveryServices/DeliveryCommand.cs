@@ -41,7 +41,8 @@ namespace Infrastructure.Services.DeliveryServices
             IRoute route, 
             IState state, 
             IDriver driver, 
-            IOrderQuery orderQuery, IRejected rejected, IOrderStateHistory orderStateHistory)
+            IOrderQuery orderQuery, IRejected rejected, 
+            IOrderStateHistory orderStateHistory)
         {
             _chatHub = chatHub;
             _context = context;
@@ -119,7 +120,7 @@ namespace Infrastructure.Services.DeliveryServices
             return request;
         }
 
-        public async Task<Delivery> FindIsNewDeliveryAsync(Order order)
+        public async Task<Delivery> FindIsActiveDeliveryAsync(Order order)
         {
             var deliverySpec = new DeliveryWithDriverSpecification(order.Route.Id, order.DeliveryDate, order.Location);
             var deliveries = await _context.ListAsync(deliverySpec);

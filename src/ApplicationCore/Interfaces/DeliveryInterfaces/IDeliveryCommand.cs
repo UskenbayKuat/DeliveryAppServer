@@ -13,7 +13,7 @@ namespace ApplicationCore.Interfaces.DeliveryInterfaces
 {
     public interface IDeliveryCommand
     {
-        public  Task<Delivery> FindIsNewDeliveryAsync(Order order);
+        public  Task<Delivery> FindIsActiveDeliveryAsync(Order order);
         public Task<Delivery> CreateAsync(CreateDeliveryDto dto);
         Task<IReadOnlyList<Order>> AddWaitingOrdersAsync(Delivery delivery);
         public Task<ActionResult> CancellationAsync(string driverUserId);

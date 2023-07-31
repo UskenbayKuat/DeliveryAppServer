@@ -7,19 +7,19 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Notification.Interfaces;
 
-namespace Notification
+namespace Notification.Hubs
 {
-    public class Notification : Hub
+    public class NotificationHub : Hub
     {
         private readonly IChatHub _chatHub;
-        private readonly ILogger<Notification> _logger;
+        private readonly ILogger<NotificationHub> _logger;
         private readonly INotify _notify;
         private readonly IDeliveryCommand _deliveryCommand;
 
-        public Notification(
-            IChatHub chatHub, 
-            ILogger<Notification> logger, 
-            INotify notify, 
+        public NotificationHub(
+            IChatHub chatHub,
+            ILogger<NotificationHub> logger,
+            INotify notify,
             IDeliveryCommand deliveryCommand)
         {
             _chatHub = chatHub;
@@ -35,7 +35,7 @@ namespace Notification
             await _notify.SendDriverLocationToClientsAsync(request.UserId, locationInfo);
             _logger.LogInformation($"{request.DriverName} : {DateTime.Now:G}");
         }
-        
+
         public override async Task<Task> OnConnectedAsync()
         {
             await _chatHub.ConnectedAsync(Context.GetHttpContext().Items["UserId"]?.ToString(), Context.ConnectionId);
@@ -44,7 +44,7 @@ namespace Notification
 
         public override async Task<Task> OnDisconnectedAsync(Exception exception)
         {
-            await _chatHub.DisconnectedAsync(Context.GetHttpContext().Items["UserId"]?.ToString(),Context.ConnectionId);
+            await _chatHub.DisconnectedAsync(Context.GetHttpContext().Items["UserId"]?.ToString(), Context.ConnectionId);
             return base.OnDisconnectedAsync(exception);
         }
     }

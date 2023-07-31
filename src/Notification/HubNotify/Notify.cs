@@ -1,19 +1,19 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.HubInterfaces;
 using ApplicationCore.Models.Dtos.Shared;
 using Microsoft.AspNetCore.SignalR;
 using Notification.Interfaces;
+using Notification.Hubs;
 
 namespace Notification.HubNotify
 {
     public class Notify : INotify
     {
-        private readonly IHubContext<Notification> _hubContext;
+        private readonly IHubContext<NotificationHub> _hubContext;
         private readonly IChatHub _chatHub;
 
-        public Notify(IHubContext<Notification> hubContext, IChatHub chatHub)
+        public Notify(IHubContext<NotificationHub> hubContext, IChatHub chatHub)
         {
             _hubContext = hubContext;
             _chatHub = chatHub;
@@ -55,6 +55,12 @@ namespace Notification.HubNotify
             {
                 await _hubContext.Clients.Client(connectionId).SendCoreAsync("SendToClient", new[] { "Водитель начал поездку" });
             }
+        }
+
+        public async Task SendProfitClientAsync(string clientUserId)
+        {
+            var connectionId = await _chatHub.GetConnectionIdAsync(clientUserId, default);
+            await _hubContext.Clients.Client(connectionId).SendCoreAsync("SendToClient", new[] { "Водитель прибыль" });
         }
     }
 }
