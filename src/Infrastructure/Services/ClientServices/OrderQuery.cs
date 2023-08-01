@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DataContextInterface;
 using ApplicationCore.Interfaces.Histories;
 using ApplicationCore.Models.Dtos.Deliveries;
 using ApplicationCore.Models.Entities.Orders;
-using ApplicationCore.Models.Values;
 using ApplicationCore.Specifications.Orders;
 using Infrastructure.AppData.Identity;
 using Microsoft.EntityFrameworkCore;

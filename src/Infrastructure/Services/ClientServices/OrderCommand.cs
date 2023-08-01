@@ -138,7 +138,7 @@ namespace Infrastructure.Services.ClientServices
             var spec = new OrderWithStateSpecification(orderId, GeneralState.WAITING_ON_REVIEW);
             var order = await _context.FirstOrDefaultAsync(spec)
                 ?? throw new ArgumentException($"Активный заказ нельзя отменить");
-            await _context.DeleteAsync(order);
+            await _context.DeleteAsync(order.SetCancellationDate());
         }
 
         public async Task<string> ProfitAsync(ClientProfitDto dto)
@@ -148,6 +148,16 @@ namespace Infrastructure.Services.ClientServices
                 ?? throw new ArgumentException($"У вас нет такой заказа: Id {dto.OrderId}");
             order.State = await _state.GetByStateAsync(GeneralState.AWAITING_TRANSFER_TO_CUSTOMER);
             await _context.UpdateAsync(order.SetSecretCode());
+            return order.Client.UserId;
+        }
+
+        public async Task<string> DeliveredAsync(ClientDeliveredDto dto)
+        {
+            var spec = new OrderWithStateSpecification(dto.OrderId, dto.UserId);
+            var order = await _context.FirstOrDefaultAsync(spec) 
+                ?? throw new ArgumentException($"У вас нет такой заказа: Id {dto.OrderId}");
+            order.State = await _state.GetByStateAsync(GeneralState.DELIVERED);
+            await _context.UpdateAsync(order.SetCompletionDate());
             return order.Client.UserId;
         }
     }
