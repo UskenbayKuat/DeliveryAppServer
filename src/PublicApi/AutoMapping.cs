@@ -25,7 +25,7 @@ namespace PublicApi
             CreateMap<CreateCarCommand, CreateCarDto>();
             CreateMap<CreateOrderCommand, CreateOrderDto>();
             CreateMap<ConfirmHandOverCommand, ConfirmHandOverDto>();
-            CreateMap<ClientDeliveredCommand, ClientDeliveredDto>();
+            CreateMap<DeliveredOrderCommand, DeliveredOrderDto>();
             CreateMap<ClientProfitCommand, ClientProfitDto>();
         }   
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Orders;
@@ -19,6 +20,7 @@ using ApplicationCore.Models.Dtos.Shared;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Enums;
 using ApplicationCore.Specifications.Deliveries;
+using ApplicationCore.Specifications.Orders;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Infrastructure.Services.DeliveryServices
@@ -146,6 +148,19 @@ namespace Infrastructure.Services.DeliveryServices
             };
             await _context.AddAsync(delivery);
             return delivery;
+        }
+
+        public async Task FinishAsync(string userId)
+        {
+            var spec = new DeliveryWithOrderStateSpecification(userId);
+            var delivery = await _context.FirstOrDefaultAsync(spec)
+                ?? throw new ArgumentException("Нет такой поездки");
+            if (delivery.Orders.Any(x => x.State.StateValue != GeneralState.DELIVERED || x.State.StateValue != GeneralState.CANCALED))
+            {
+                throw new ArgumentException("У вас активные заказы");
+            }
+            delivery.State = await _state.GetByStateAsync(GeneralState.DONE);
+            await _context.AddAsync(delivery.SetCompletionDate());
         }
     }
 }

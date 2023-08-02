@@ -19,5 +19,6 @@ namespace ApplicationCore.Interfaces.DeliveryInterfaces
         public Task<ActionResult> CancellationAsync(string driverUserId);
         public Task StartAsync(string driverUserId);
         Task<LocationDto> UpdateLocationAsync(LocationDto request);
+        Task FinishAsync(string userId);
     }
 }

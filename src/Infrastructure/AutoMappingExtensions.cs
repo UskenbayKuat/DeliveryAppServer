@@ -40,6 +40,17 @@ namespace Infrastructure
                 StateName = delivery.State.Name
             };
         }
+        public static HistoryDeliveryDto MapToHistoryDto(this Delivery delivery, List<OrderDto> orderDtoList)
+        {
+            return new()
+            {
+                StartCityName = delivery.Route.StartCity.Name,
+                FinishCityName = delivery.Route.FinishCity.Name,
+                DeliveryDate = delivery.DeliveryDate,
+                OrderDtoList = orderDtoList,
+                StateName = delivery.State.Name
+            };
+        }
 
         public static OrderDto GetOrderDto(this Order order, User client) =>
             new()

@@ -7,7 +7,7 @@ namespace ApplicationCore.Specifications.Deliveries
 {
     public sealed class DeliveryWithOrderSpecification : Specification<Delivery>
     {
-        public DeliveryWithOrderSpecification(string userId)
+        public DeliveryWithOrderSpecification(string userId, bool isActive = true)
         {
             Query
                 .Include(d => d.State)
@@ -20,13 +20,25 @@ namespace ApplicationCore.Specifications.Deliveries
                 .Include(d => d.Orders).ThenInclude(o => o.Package)
                 .Include(d => d.Orders).ThenInclude(o => o.CarType)
                 .Include(d => d.Orders).ThenInclude(o => o.Location)
-                .Where(d => d.Driver.UserId == userId)
-                .Where(d => d.State.StateValue == GeneralState.INPROGRESS ||
-                            d.State.StateValue == GeneralState.WAITING_ORDER)
-                .Where(d => d.Orders.Any(o => o.State.StateValue == GeneralState.WAITING_ON_REVIEW ||
-                                              o.State.StateValue == GeneralState.ON_REVIEW ||
-                                              o.State.StateValue == GeneralState.PENDING_For_HAND_OVER ||
-                                              o.State.StateValue == GeneralState.RECEIVED_BY_DRIVER));
+                .Where(d => d.Driver.UserId == userId && !d.IsDeleted);
+            if (isActive)
+            {
+                Query
+                    .Where(d => d.State.StateValue == GeneralState.INPROGRESS ||
+                                d.State.StateValue == GeneralState.WAITING_ORDER)
+                    .Where(d => d.Orders.Any(o => o.State.StateValue == GeneralState.WAITING_ON_REVIEW ||
+                                                  o.State.StateValue == GeneralState.ON_REVIEW ||
+                                                  o.State.StateValue == GeneralState.PENDING_For_HAND_OVER ||
+                                                  o.State.StateValue == GeneralState.RECEIVED_BY_DRIVER));
+            }
+            else
+            {
+                Query
+                    .Where(d => d.State.StateValue == GeneralState.DONE ||
+                                d.State.StateValue == GeneralState.CANCALED);
+            }
+
+
         }
     }
 }

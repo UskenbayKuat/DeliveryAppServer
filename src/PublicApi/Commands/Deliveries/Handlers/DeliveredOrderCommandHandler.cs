@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace PublicApi.Commands.Deliveries.Handlers
 {
-    public class ClientDeliveredCommandHandler : AsyncRequestHandler<ClientDeliveredCommand>
+    public class DeliveredOrderCommandHandler : AsyncRequestHandler<DeliveredOrderCommand>
     {
         private readonly IMapper _mapper;
         private readonly IOrderCommand _orderCommand;
         private readonly INotify _notify;
 
-        public ClientDeliveredCommandHandler(
+        public DeliveredOrderCommandHandler(
             IMapper mapper,
             IOrderCommand orderCommand,
             INotify notify)
@@ -24,9 +24,9 @@ namespace PublicApi.Commands.Deliveries.Handlers
             _notify = notify;
         }
 
-        protected override async Task Handle(ClientDeliveredCommand request, CancellationToken cancellationToken)
+        protected override async Task Handle(DeliveredOrderCommand request, CancellationToken cancellationToken)
         {
-            var clientUserId = await _orderCommand.DeliveredAsync(_mapper.Map<ClientDeliveredDto>(request));
+            var clientUserId = await _orderCommand.DeliveredAsync(_mapper.Map<DeliveredOrderDto>(request));
             await _notify.SendProfitClientAsync(clientUserId);
         }
     }

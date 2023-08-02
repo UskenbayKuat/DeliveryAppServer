@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Orders;
@@ -39,6 +40,27 @@ namespace Infrastructure.Services.DeliveryServices
                     .FirstOrDefault(u => u.Id == order.Client.UserId) 
                 select order.GetOrderDto(user)).ToList();
             return delivery.MapToDeliveryDto(orderDtoList);
+        }
+
+        public async Task<List<HistoryDeliveryDto>> GetHistoryAsync(string userId)
+        {
+            var deliverySpec = new DeliveryWithOrderSpecification(userId, isActive: false);
+            var deliveryList = await _context
+                .GetQueryableAsync(deliverySpec)
+                .AsNoTracking()
+                .ToListAsync();
+            var resultList = new List<HistoryDeliveryDto>();
+            foreach (var delivery in deliveryList)
+            {
+                var orderDtoList = (
+                    from order in delivery.Orders
+                    let user = _identityDbContext.Users
+                        .AsNoTracking()
+                        .FirstOrDefault(u => u.Id == order.Client.UserId)
+                    select order.GetOrderDto(user)).ToList();
+                resultList.Add(delivery.MapToHistoryDto(orderDtoList));
+            }
+            return resultList;
         }
     }
 }

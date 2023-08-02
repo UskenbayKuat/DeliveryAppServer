@@ -151,7 +151,7 @@ namespace Infrastructure.Services.ClientServices
             return order.Client.UserId;
         }
 
-        public async Task<string> DeliveredAsync(ClientDeliveredDto dto)
+        public async Task<string> DeliveredAsync(DeliveredOrderDto dto)
         {
             var spec = new OrderWithStateSpecification(dto.OrderId, dto.UserId);
             var order = await _context.FirstOrDefaultAsync(spec) 

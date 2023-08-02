@@ -9,7 +9,7 @@ using System;
 
 namespace PublicApi.Endpoints.Delivery.Command
 {
-    public class DeliveredOrder : EndpointBaseAsync.WithRequest<ClientDeliveredCommand>.WithActionResult
+    public class DeliveredOrder : EndpointBaseAsync.WithRequest<DeliveredOrderCommand>.WithActionResult
     {
         private readonly IMediator _mediator;
         public DeliveredOrder(
@@ -20,7 +20,7 @@ namespace PublicApi.Endpoints.Delivery.Command
 
         [HttpPost("api/driver/clientDelivered")]
         public override async Task<ActionResult> HandleAsync(
-            [FromBody] ClientDeliveredCommand request, CancellationToken cancellationToken = default)
+            [FromBody] DeliveredOrderCommand request, CancellationToken cancellationToken = default)
         {
             try
             {

@@ -31,9 +31,9 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         {
             Orders?.Add(order);
         }
-        public Delivery SetCompletionDate(DateTime dateTime)
+        public Delivery SetCompletionDate()
         {
-            CompletionDate = dateTime;
+            CompletionDate = DateTime.UtcNow;
             return this;
         }
         public Delivery SetCancellationDate()

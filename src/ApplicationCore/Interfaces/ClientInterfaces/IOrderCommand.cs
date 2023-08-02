@@ -24,6 +24,6 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
         Task<Order> UpdateStatePendingAsync(int orderId);
         Task CancelAsync(int orderId);
         Task<string> ProfitAsync(ClientProfitDto dto);
-        Task<string> DeliveredAsync(ClientDeliveredDto dto);
+        Task<string> DeliveredAsync(DeliveredOrderDto dto);
     }
 }
