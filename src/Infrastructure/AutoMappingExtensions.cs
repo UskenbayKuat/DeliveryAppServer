@@ -46,9 +46,10 @@ namespace Infrastructure
             {
                 StartCityName = delivery.Route.StartCity.Name,
                 FinishCityName = delivery.Route.FinishCity.Name,
-                DeliveryDate = delivery.DeliveryDate,
+                StartDate = delivery.DeliveryDate,
+                FinishDate = delivery.CompletionDate ?? delivery.CancellationDate.Value,
                 OrderDtoList = orderDtoList,
-                StateName = delivery.State.Name
+                StateName = delivery.State.Name,
             };
         }
 
