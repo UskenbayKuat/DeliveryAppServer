@@ -33,13 +33,12 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         }
         public Delivery SetCompletionDate()
         {
-            CompletionDate = DateTime.UtcNow;
+            CompletionDate = DateTime.Now;
             return this;
         }
         public Delivery SetCancellationDate()
         {
             CancellationDate = DateTime.Now;
-            IsDeleted = true;
             ModifiedDate = DateTime.Now;
             return this;
         }

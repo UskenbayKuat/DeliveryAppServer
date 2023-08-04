@@ -10,7 +10,7 @@ namespace ApplicationCore.Specifications.Deliveries
         {
             Query.Where(d =>
                 d.Driver.Id == driverId && (
-                    d.State.StateValue == GeneralState.WAITING_ON_REVIEW ||
+                    d.State.StateValue == GeneralState.WAITING_ORDER ||
                     d.State.StateValue == GeneralState.INPROGRESS));
         }
         public DeliveryWithStateSpecification(string userId)
@@ -18,7 +18,7 @@ namespace ApplicationCore.Specifications.Deliveries
             Query.Include(d => d.Orders)
                  .Where(d =>
                      d.Driver.UserId == userId && (
-                     d.State.StateValue == GeneralState.WAITING_ON_REVIEW ||
+                     d.State.StateValue == GeneralState.WAITING_ORDER ||
                      d.State.StateValue == GeneralState.INPROGRESS));
         }
         public DeliveryWithStateSpecification(string userId, GeneralState state)

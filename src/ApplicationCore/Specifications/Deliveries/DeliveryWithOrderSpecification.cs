@@ -25,11 +25,11 @@ namespace ApplicationCore.Specifications.Deliveries
             {
                 Query
                     .Where(d => d.State.StateValue == GeneralState.INPROGRESS ||
-                                d.State.StateValue == GeneralState.WAITING_ORDER)
-                    .Where(d => d.Orders.Any(o => o.State.StateValue == GeneralState.WAITING_ON_REVIEW ||
-                                                  o.State.StateValue == GeneralState.ON_REVIEW ||
-                                                  o.State.StateValue == GeneralState.PENDING_For_HAND_OVER ||
-                                                  o.State.StateValue == GeneralState.RECEIVED_BY_DRIVER));
+                                d.State.StateValue == GeneralState.WAITING_ORDER);
+                    //.Where(d => d.Orders.Any(o => o.State.StateValue == GeneralState.WAITING_ON_REVIEW ||
+                    //                              o.State.StateValue == GeneralState.ON_REVIEW ||
+                    //                              o.State.StateValue == GeneralState.PENDING_For_HAND_OVER ||
+                    //                              o.State.StateValue == GeneralState.RECEIVED_BY_DRIVER));
             }
             else
             {

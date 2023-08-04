@@ -5,6 +5,7 @@ using ApplicationCore.Interfaces.HubInterfaces;
 using ApplicationCore.Models.Dtos.Shared;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using NLog.Fluent;
 using Notification.Interfaces;
 
 namespace Notification.Hubs
@@ -38,12 +39,14 @@ namespace Notification.Hubs
 
         public override async Task<Task> OnConnectedAsync()
         {
+            _logger.LogInformation($"Connect: ConnectingId: {Context.ConnectionId}, UserId: {Context.GetHttpContext().Items["UserId"]?.ToString()}");
             await _chatHub.ConnectedAsync(Context.GetHttpContext().Items["UserId"]?.ToString(), Context.ConnectionId);
             return base.OnConnectedAsync();
         }
 
         public override async Task<Task> OnDisconnectedAsync(Exception exception)
         {
+            _logger.LogInformation($"Disconnect: ConnectingId: {Context.ConnectionId}, UserId: {Context.GetHttpContext().Items["UserId"]?.ToString()}");
             await _chatHub.DisconnectedAsync(Context.GetHttpContext().Items["UserId"]?.ToString(), Context.ConnectionId);
             return base.OnDisconnectedAsync(exception);
         }

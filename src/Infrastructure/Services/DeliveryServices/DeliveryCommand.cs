@@ -160,7 +160,7 @@ namespace Infrastructure.Services.DeliveryServices
                 throw new ArgumentException("У вас активные заказы");
             }
             delivery.State = await _state.GetByStateAsync(GeneralState.DONE);
-            await _context.AddAsync(delivery.SetCompletionDate());
+            await _context.UpdateAsync(delivery.SetCompletionDate());
         }
     }
 }
