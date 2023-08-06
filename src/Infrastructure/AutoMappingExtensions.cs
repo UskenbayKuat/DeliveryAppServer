@@ -54,7 +54,7 @@ namespace Infrastructure
             };
         }
 
-        public static OrderDto GetOrderDto(this Order order, User client) =>
+        public static OrderDto GetOrderDto(this Order order, User client, GeneralState state) =>
             new()
             {
                 OrderId = order.Id,
@@ -75,10 +75,11 @@ namespace Infrastructure
                 AddressTo = order.AddressTo,
                 Description = order.Description,
                 IsConfirm = order.State.StateValue == GeneralState.ON_REVIEW,
-                IsProfit = order.State.StateValue == GeneralState.RECEIVED_BY_DRIVER,
+                IsProfit = order.State.StateValue == GeneralState.RECEIVED_BY_DRIVER
+                    && state == GeneralState.INPROGRESS,
                 IsDelivered = order.State.StateValue == GeneralState.AWAITING_TRANSFER_TO_CUSTOMER,
                 IsPendingForHandOver = order.State.StateValue == GeneralState.PENDING_For_HAND_OVER 
-                || order.State.StateValue == GeneralState.AWAITING_TRANSFER_TO_CUSTOMER
+                    || order.State.StateValue == GeneralState.AWAITING_TRANSFER_TO_CUSTOMER
 
             };
 

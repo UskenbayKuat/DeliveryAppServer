@@ -38,7 +38,7 @@ namespace Infrastructure.Services.DeliveryServices
                 let user = _identityDbContext.Users
                     .AsNoTracking()
                     .FirstOrDefault(u => u.Id == order.Client.UserId) 
-                select order.GetOrderDto(user)).ToList();
+                select order.GetOrderDto(user, delivery.State.StateValue)).ToList();
             return delivery.MapToDeliveryDto(orderDtoList);
         }
 
@@ -57,7 +57,7 @@ namespace Infrastructure.Services.DeliveryServices
                     let user = _identityDbContext.Users
                         .AsNoTracking()
                         .FirstOrDefault(u => u.Id == order.Client.UserId)
-                    select order.GetOrderDto(user)).ToList();
+                    select order.GetOrderDto(user, delivery.State.StateValue)).ToList();
                 resultList.Add(delivery.MapToHistoryDto(orderDtoList));
             }
             return resultList;
