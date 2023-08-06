@@ -9,7 +9,7 @@ using ApplicationCore.Interfaces.ClientInterfaces;
 
 namespace PublicApi.Commands.Deliveries.Handlers
 {
-    public class ClientProfitCommandHandler : AsyncRequestHandler<ClientProfitCommand>
+    public class ClientProfitCommandHandler : AsyncRequestHandler<ProfitOrderCommand>
     {
         private readonly IMapper _mapper;
         private readonly IOrderCommand _orderCommand;
@@ -25,9 +25,9 @@ namespace PublicApi.Commands.Deliveries.Handlers
             _notify = notify;
         }
 
-        protected override async Task Handle(ClientProfitCommand request, CancellationToken cancellationToken)
+        protected override async Task Handle(ProfitOrderCommand request, CancellationToken cancellationToken)
         {
-            var clientUserId = await _orderCommand.ProfitAsync(_mapper.Map<ClientProfitDto>(request));
+            var clientUserId = await _orderCommand.ProfitAsync(_mapper.Map<ProfitOrderDto>(request));
             await _notify.SendProfitClientAsync(clientUserId);
         }
     }

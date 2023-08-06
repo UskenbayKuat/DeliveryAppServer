@@ -17,13 +17,12 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
     public interface IOrderCommand
     {
         public Task<Order> CreateAsync(CreateOrderDto dto, string clientUserId);
-        public Task ConfirmHandOverAsync(ConfirmHandOverDto dto);
+        public Task<string> QRCodeAcceptAsync(QRCodeDto dto);
         public Task<Order> RejectAsync(int orderId);
         Task SetDeliveryAsync(Order order, Delivery delivery);
         Task<bool> IsOnReview(BackgroundOrder backgroundOrder);
         Task<Order> UpdateStatePendingAsync(int orderId);
         Task CancelAsync(int orderId);
-        Task<string> ProfitAsync(ClientProfitDto dto);
-        Task<string> DeliveredAsync(DeliveredOrderDto dto);
+        Task<string> ProfitAsync(ProfitOrderDto dto);
     }
 }

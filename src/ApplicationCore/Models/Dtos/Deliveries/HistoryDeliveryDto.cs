@@ -8,6 +8,7 @@ namespace ApplicationCore.Models.Dtos.Deliveries
 {
     public class HistoryDeliveryDto
     {
+        public int Id { get; set; }
         public string StartCityName { get; set; }
         public string FinishCityName { get; set; }
         public DateTime StartDate { get; set; }

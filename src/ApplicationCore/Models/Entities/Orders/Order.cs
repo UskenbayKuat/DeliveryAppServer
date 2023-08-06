@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Threading.Tasks;
 using ApplicationCore.Entities;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
@@ -66,6 +67,14 @@ namespace ApplicationCore.Models.Entities.Orders
         {
             CancellationDate = DateTime.UtcNow;
             return this;
+        }
+        public Task CheckSecretCodeAsync(string code)
+        {
+            if (SecretCode.ToUpper() != code.ToUpper())
+            {
+                throw new ArgumentException("Не совпадает код");
+            }
+            return Task.CompletedTask;
         }
 
     }

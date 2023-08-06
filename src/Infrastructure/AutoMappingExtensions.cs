@@ -44,6 +44,7 @@ namespace Infrastructure
         {
             return new()
             {
+                Id = delivery.Id,
                 StartCityName = delivery.Route.StartCity.Name,
                 FinishCityName = delivery.Route.FinishCity.Name,
                 StartDate = delivery.DeliveryDate,
@@ -73,7 +74,12 @@ namespace Infrastructure
                 AddressFrom = order.AddressFrom,
                 AddressTo = order.AddressTo,
                 Description = order.Description,
-                IsConfirm = order.State.StateValue == GeneralState.ON_REVIEW
+                IsConfirm = order.State.StateValue == GeneralState.ON_REVIEW,
+                IsProfit = order.State.StateValue == GeneralState.RECEIVED_BY_DRIVER,
+                IsDelivered = order.State.StateValue == GeneralState.AWAITING_TRANSFER_TO_CUSTOMER,
+                IsPendingForHandOver = order.State.StateValue == GeneralState.PENDING_For_HAND_OVER 
+                || order.State.StateValue == GeneralState.AWAITING_TRANSFER_TO_CUSTOMER
+
             };
 
         public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver, StateHistoryDto stateHistoryDto) =>
@@ -115,10 +121,10 @@ namespace Infrastructure
                     case GeneralState.RECEIVED_BY_DRIVER:
                         dto.ReceivedByDriver = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
                         break;
-                    case GeneralState.DONE:
-                        dto.Done = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
+                    case GeneralState.DELIVERED:
+                        dto.Delivered = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
                         break;
-                }
+                }   
             }
             return dto;
         }

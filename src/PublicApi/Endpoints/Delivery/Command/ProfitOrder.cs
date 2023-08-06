@@ -15,18 +15,18 @@ namespace PublicApi.Endpoints.Delivery.Command
     /// <summary>
     /// Прибыль клиента
     /// </summary>
-    public class ClientProfit : EndpointBaseAsync.WithRequest<ClientProfitCommand>.WithActionResult
+    public class ProfitOrder : EndpointBaseAsync.WithRequest<ProfitOrderCommand>.WithActionResult
     {
         private readonly IMediator _mediator;
-        public ClientProfit(
+        public ProfitOrder(
             IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        [HttpPost("api/driver/clientProfit")]
+        [HttpPost("api/driver/profitOrder")]
         public override async Task<ActionResult> HandleAsync(
-            [FromBody] ClientProfitCommand request, CancellationToken cancellationToken = default)
+            [FromBody] ProfitOrderCommand request, CancellationToken cancellationToken = default)
         {
             try
             {

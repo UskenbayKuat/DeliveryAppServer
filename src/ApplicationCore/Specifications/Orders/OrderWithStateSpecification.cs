@@ -24,6 +24,7 @@ namespace ApplicationCore.Specifications.Orders
         public OrderWithStateSpecification(int orderId, string userId)
         {
             Query.Include(o => o.State)
+                .Include(o => o.Client)
                 .Where(o => o.Id == orderId && !o.IsDeleted && o.Delivery.Driver.UserId == userId);
         }
         public OrderWithStateSpecification(int orderId, GeneralState state)
@@ -48,6 +49,8 @@ namespace ApplicationCore.Specifications.Orders
                     o.State.StateValue == GeneralState.WAITING_ON_REVIEW ||
                     o.State.StateValue == GeneralState.ON_REVIEW ||
                     o.State.StateValue == GeneralState.PENDING_For_HAND_OVER ||
+                    o.State.StateValue == GeneralState.AWAITING_TRANSFER_TO_CUSTOMER ||
+                    o.State.StateValue == GeneralState.DELIVERED ||
                     o.State.StateValue == GeneralState.RECEIVED_BY_DRIVER);
         }
     }

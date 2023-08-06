@@ -22,7 +22,7 @@ namespace ApplicationCore.Models.Enums
         DELAYED = 8,
         [Display(Name = "Отмененный")]
         CANCALED = 9,
-        [Display(Name = "Ожидание передачи клиенту")]
+        [Display(Name = "Ожидание передачу заказа")]
         AWAITING_TRANSFER_TO_CUSTOMER = 10,
         [Display(Name = "Доставлено")]
         DELIVERED = 11,

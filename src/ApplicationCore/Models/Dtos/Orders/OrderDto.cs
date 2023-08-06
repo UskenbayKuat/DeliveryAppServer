@@ -14,5 +14,8 @@ namespace ApplicationCore.Models.Dtos.Orders
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public bool IsConfirm { get; set; }
+        public bool IsProfit { get; set; }
+        public bool IsDelivered { get; set; }
+        public bool IsPendingForHandOver { get; set; }
     }
 }

@@ -155,10 +155,10 @@ namespace Infrastructure.Services.DeliveryServices
             var spec = new DeliveryWithOrderStateSpecification(userId);
             var delivery = await _context.FirstOrDefaultAsync(spec)
                 ?? throw new ArgumentException("Нет такой поездки");
-            if (delivery.Orders.Any(x => x.State.StateValue != GeneralState.DELIVERED || x.State.StateValue != GeneralState.CANCALED))
+            if (!delivery.Orders.Any(x => x.State.StateValue == GeneralState.DELIVERED || x.State.StateValue == GeneralState.CANCALED))
             {
                 throw new ArgumentException("У вас активные заказы");
-            }
+            }   
             delivery.State = await _state.GetByStateAsync(GeneralState.DONE);
             await _context.UpdateAsync(delivery.SetCompletionDate());
         }

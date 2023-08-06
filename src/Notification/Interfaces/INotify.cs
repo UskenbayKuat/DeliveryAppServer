@@ -13,5 +13,6 @@ namespace Notification.Interfaces
         public Task SendDriverLocationToClientsAsync(string driverUserId, LocationDto locationCommand);
         public Task SendInfoToClientsAsync(string driverUserId);
         public Task SendProfitClientAsync(string clientUserId);
+        Task QrCodeClientAsync(string clientUserId);
     }
 }

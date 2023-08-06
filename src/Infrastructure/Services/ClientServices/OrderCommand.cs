@@ -71,19 +71,19 @@ namespace Infrastructure.Services.ClientServices
             return await _context.AddAsync(order);
         }
 
-        public async Task ConfirmHandOverAsync(ConfirmHandOverDto dto)
+        public async Task<string> QRCodeAcceptAsync(QRCodeDto dto)
         {
-            var orderSpec = new OrderWithStateSpecification(dto.OrderId);
+            var orderSpec = new OrderWithStateSpecification(dto.OrderId, dto.UserId);
             var order = await _context.FirstOrDefaultAsync(orderSpec);
-            if (order.State.StateValue != GeneralState.PENDING_For_HAND_OVER 
-                || order.SecretCode != dto.SecretCode.ToUpper())
+            await order.CheckSecretCodeAsync(dto.SecretCode);
+            order.State = order.State.StateValue switch
             {
-                throw new ArgumentException("Не совпадает код");
-            }
-            var state = await _state.GetByStateAsync(GeneralState.RECEIVED_BY_DRIVER);
-            order.State = state;
-            await _stateHistory.AddAsync(order, state);
-            await _context.UpdateAsync(order.SetSecretCodeEmpty());
+                GeneralState.PENDING_For_HAND_OVER => await _state.GetByStateAsync(GeneralState.RECEIVED_BY_DRIVER),
+                GeneralState.AWAITING_TRANSFER_TO_CUSTOMER => await _state.GetByStateAsync(GeneralState.DELIVERED),
+                _ => throw new ArgumentException("Не правильный статус заказа")
+            };
+            await _stateHistory.AddAsync(order.SetSecretCodeEmpty());
+            return order.Client.UserId;
         }
 
         public async Task<Order> RejectAsync(int orderId)
@@ -126,10 +126,8 @@ namespace Infrastructure.Services.ClientServices
             var orderSpec = new OrderWithClientSpecification(orderId);
             var order = await _context.FirstOrDefaultAsync(orderSpec)
                     ?? throw new ArgumentException($"Нет такого заказа с Id: {orderId}");
-            var state = await _state.GetByStateAsync(GeneralState.PENDING_For_HAND_OVER);
-            order.State = state;
-            await _stateHistory.AddAsync(order, state);
-            await _context.UpdateAsync(order.SetSecretCode());
+            order.State = await _state.GetByStateAsync(GeneralState.PENDING_For_HAND_OVER);
+            await _stateHistory.AddAsync(order.SetSecretCode());
             return order;
         }
 
@@ -141,23 +139,13 @@ namespace Infrastructure.Services.ClientServices
             await _context.DeleteAsync(order.SetCancellationDate());
         }
 
-        public async Task<string> ProfitAsync(ClientProfitDto dto)
+        public async Task<string> ProfitAsync(ProfitOrderDto dto)
         {
             var spec = new OrderWithStateSpecification(dto.OrderId, dto.UserId);
             var order = await _context.FirstOrDefaultAsync(spec) 
                 ?? throw new ArgumentException($"У вас нет такой заказа: Id {dto.OrderId}");
             order.State = await _state.GetByStateAsync(GeneralState.AWAITING_TRANSFER_TO_CUSTOMER);
             await _context.UpdateAsync(order.SetSecretCode());
-            return order.Client.UserId;
-        }
-
-        public async Task<string> DeliveredAsync(DeliveredOrderDto dto)
-        {
-            var spec = new OrderWithStateSpecification(dto.OrderId, dto.UserId);
-            var order = await _context.FirstOrDefaultAsync(spec) 
-                ?? throw new ArgumentException($"У вас нет такой заказа: Id {dto.OrderId}");
-            order.State = await _state.GetByStateAsync(GeneralState.DELIVERED);
-            await _context.UpdateAsync(order.SetCompletionDate());
             return order.Client.UserId;
         }
     }
