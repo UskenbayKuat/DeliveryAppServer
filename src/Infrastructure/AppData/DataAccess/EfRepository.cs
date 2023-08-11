@@ -54,6 +54,7 @@ namespace Infrastructure.AppData.DataAccess
 
         public async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
         {
+            entity.ModifiedDate = DateTime.UtcNow;
             _dbContext.Entry(entity).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
@@ -61,6 +62,7 @@ namespace Infrastructure.AppData.DataAccess
         public async Task DeleteAsync(T entity, CancellationToken cancellationToken = default)
         {
             entity.IsDeleted = true;
+            entity.ModifiedDate = DateTime.UtcNow;
             await UpdateAsync(entity, cancellationToken);
         }
 

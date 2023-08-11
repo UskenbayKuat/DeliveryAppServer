@@ -19,5 +19,6 @@ namespace ApplicationCore.Models.Dtos.Shared
         public string Description { get; set; }
         public DateTime DeliveryDate { get; set; }
         public DateTime CreateDate { get; set; }
+        public DateTime? CancellationDate { get; set; }
     }
 }

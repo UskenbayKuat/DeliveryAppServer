@@ -13,7 +13,7 @@ namespace ApplicationCore.Specifications.Histories
                 .Where(o => o.Order.Id == orderId)
                 .Where(o => o.State.StateValue == GeneralState.PENDING_For_HAND_OVER ||
                                          o.State.StateValue == GeneralState.RECEIVED_BY_DRIVER ||
-                                         o.State.StateValue == GeneralState.DONE);
+                                         o.State.StateValue == GeneralState.DELIVERED);
         }
     }
 }

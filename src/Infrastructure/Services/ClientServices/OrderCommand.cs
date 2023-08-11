@@ -136,7 +136,8 @@ namespace Infrastructure.Services.ClientServices
             var spec = new OrderWithStateSpecification(orderId, GeneralState.WAITING_ON_REVIEW);
             var order = await _context.FirstOrDefaultAsync(spec)
                 ?? throw new ArgumentException($"Активный заказ нельзя отменить");
-            await _context.DeleteAsync(order.SetCancellationDate());
+            order.State = await _state.GetByStateAsync(GeneralState.CANCALED);
+            await _context.UpdateAsync(order.SetCancellationDate());
         }
 
         public async Task<string> ProfitAsync(ProfitOrderDto dto)

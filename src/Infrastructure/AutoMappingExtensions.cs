@@ -83,7 +83,7 @@ namespace Infrastructure
 
             };
 
-        public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver, StateHistoryDto stateHistoryDto) =>
+        public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver = null, StateHistoryDto stateHistoryDto = null) =>
             new()
             {  
                 StartCityName = order.Route.StartCity.Name,
@@ -102,11 +102,15 @@ namespace Infrastructure
                 DriverName = driver?.Name,
                 DriverSurname = driver?.Surname,
                 CarNumber = order.Delivery?.Driver.Car.CarNumber,
-                DeliveryState = order.State.StateValue.GetDisplayName(),
+                DeliveryState = order.Delivery?.State?.StateValue == GeneralState.INPROGRESS 
+                        ? order.Delivery?.State?.StateValue.GetDisplayName() 
+                        : order.State.StateValue.GetDisplayName(),
                 SecretCode = order.SecretCode,
                 DeliveryDate = order.DeliveryDate,
                 StateHistoryDto = stateHistoryDto,
-                CreateDate = order.CreatedDate
+                CreateDate = order.CreatedDate,
+                CancellationDate = order.CancellationDate,
+                OrderStateValue = order.State.StateValue
             };
 
         public static StateHistoryDto GetStateHistoryDto(this List<OrderStateHistory> stateHistoryList)
