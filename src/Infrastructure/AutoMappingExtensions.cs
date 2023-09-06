@@ -17,17 +17,17 @@ namespace Infrastructure
 {
     public static class AutoMappingExtensions
     {
-        public static IsActiveDeliveryDto GetDeliveryDto(this Delivery delivery, List<OrderDto> orderInfos)
+        public static ActiveDeliveryDto MapToDeliveryDto(this Delivery delivery, List<OrderDto> orderDtoList)
         {
             var handOverCount = 0;
             var activeCount = 0;
-            orderInfos.ForEach(o =>
+            foreach(var o in orderDtoList)
             {
-                if (o.StateName == GeneralState.PendingForHandOver.GetDisplayName())
+                if (o.StateName == GeneralState.PENDING_For_HAND_OVER.GetDisplayName())
                     handOverCount++;
-                else if (o.StateName == GeneralState.ReceivedByDriver.GetDisplayName())
+                else if (o.StateName == GeneralState.RECEIVED_BY_DRIVER.GetDisplayName())
                     activeCount++;
-            });
+            }
             return new()
             {
                 StartCityName = delivery.Route.StartCity.Name,
@@ -35,13 +35,26 @@ namespace Infrastructure
                 DeliveryDate = delivery.DeliveryDate,
                 HandOverCount = handOverCount,
                 ActiveCount = activeCount,
-                OrderCount = activeCount + handOverCount,
-                IsStartVisible = delivery.State.StateValue == GeneralState.InProgress,
-                OrderInfos = orderInfos
+                IsStartVisible = delivery.State.StateValue == GeneralState.INPROGRESS,
+                OrderDtoList = orderDtoList,
+                StateName = delivery.State.Name
+            };
+        }
+        public static HistoryDeliveryDto MapToHistoryDto(this Delivery delivery, List<OrderDto> orderDtoList)
+        {
+            return new()
+            {
+                Id = delivery.Id,
+                StartCityName = delivery.Route.StartCity.Name,
+                FinishCityName = delivery.Route.FinishCity.Name,
+                StartDate = delivery.DeliveryDate,
+                FinishDate = delivery.CompletionDate ?? delivery.CancellationDate.Value,
+                OrderDtoList = orderDtoList,
+                StateName = delivery.State.Name,
             };
         }
 
-        public static OrderDto GetOrderDto(this Order order, User client) =>
+        public static OrderDto GetOrderDto(this Order order, User client, GeneralState state) =>
             new()
             {
                 OrderId = order.Id,
@@ -52,7 +65,7 @@ namespace Infrastructure
                 IsSingle = order.IsSingle,
                 Price = order.Price,
                 StateName = order.State.Name,
-                DeliveryDate = order.Delivery?.DeliveryDate ?? order.DeliveryDate,
+                DeliveryDate = order.DeliveryDate,
                 ClientName = client.Name,
                 ClientSurname = client.Surname,
                 ClientPhoneNumber = client.PhoneNumber,
@@ -61,10 +74,16 @@ namespace Infrastructure
                 AddressFrom = order.AddressFrom,
                 AddressTo = order.AddressTo,
                 Description = order.Description,
-                
+                IsConfirm = order.State.StateValue == GeneralState.ON_REVIEW,
+                IsProfit = order.State.StateValue == GeneralState.RECEIVED_BY_DRIVER
+                    && state == GeneralState.INPROGRESS,
+                IsDelivered = order.State.StateValue == GeneralState.AWAITING_TRANSFER_TO_CUSTOMER,
+                IsPendingForHandOver = order.State.StateValue == GeneralState.PENDING_For_HAND_OVER 
+                    || order.State.StateValue == GeneralState.AWAITING_TRANSFER_TO_CUSTOMER
+
             };
 
-        public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver, StateHistoryDto stateHistoryDto) =>
+        public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver = null, StateHistoryDto stateHistoryDto = null) =>
             new()
             {  
                 StartCityName = order.Route.StartCity.Name,
@@ -83,11 +102,15 @@ namespace Infrastructure
                 DriverName = driver?.Name,
                 DriverSurname = driver?.Surname,
                 CarNumber = order.Delivery?.Driver.Car.CarNumber,
-                DeliveryState = order.State.StateValue.GetDisplayName(),
+                DeliveryState = order.Delivery?.State?.StateValue == GeneralState.INPROGRESS 
+                        ? order.Delivery?.State?.StateValue.GetDisplayName() 
+                        : order.State.StateValue.GetDisplayName(),
                 SecretCode = order.SecretCode,
                 DeliveryDate = order.DeliveryDate,
                 StateHistoryDto = stateHistoryDto,
-                CreateDate = order.CreatedDate
+                CreateDate = order.CreatedDate,
+                CancellationDate = order.CancellationDate,
+                OrderStateValue = order.State.StateValue
             };
 
         public static StateHistoryDto GetStateHistoryDto(this List<OrderStateHistory> stateHistoryList)
@@ -97,16 +120,16 @@ namespace Infrastructure
             {
                 switch (item.State.StateValue)
                 {
-                    case GeneralState.PendingForHandOver:
+                    case GeneralState.PENDING_For_HAND_OVER:
                         dto.PendingForHandOver = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
                         break;
-                    case GeneralState.ReceivedByDriver:
+                    case GeneralState.RECEIVED_BY_DRIVER:
                         dto.ReceivedByDriver = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
                         break;
-                    case GeneralState.Done:
-                        dto.Done = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
+                    case GeneralState.DELIVERED:
+                        dto.Delivered = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
                         break;
-                }
+                }   
             }
             return dto;
         }

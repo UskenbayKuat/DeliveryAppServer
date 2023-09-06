@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Orders;
@@ -19,6 +20,7 @@ using ApplicationCore.Models.Dtos.Shared;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Enums;
 using ApplicationCore.Specifications.Deliveries;
+using ApplicationCore.Specifications.Orders;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Infrastructure.Services.DeliveryServices
@@ -41,7 +43,8 @@ namespace Infrastructure.Services.DeliveryServices
             IRoute route, 
             IState state, 
             IDriver driver, 
-            IOrderQuery orderQuery, IRejected rejected, IOrderStateHistory orderStateHistory)
+            IOrderQuery orderQuery, IRejected rejected, 
+            IOrderStateHistory orderStateHistory)
         {
             _chatHub = chatHub;
             _context = context;
@@ -69,7 +72,7 @@ namespace Infrastructure.Services.DeliveryServices
         public async Task<IReadOnlyList<Order>> AddWaitingOrdersAsync(Delivery delivery)
         {
             var orders = await _orderQuery.GetWaitingOrders(delivery.Route.Id, delivery.DeliveryDate);
-            var stateOnReview = await _state.GetByStateAsync(GeneralState.OnReview);
+            var stateOnReview = await _state.GetByStateAsync(GeneralState.ON_REVIEW);
             foreach (var order in orders)
             {
                 order.State = stateOnReview;
@@ -88,18 +91,18 @@ namespace Infrastructure.Services.DeliveryServices
             {
                 throw new ArgumentException("У вас активные заказы");
             }
-            delivery.State = await _state.GetByStateAsync(GeneralState.Canceled);
+            delivery.State = await _state.GetByStateAsync(GeneralState.CANCALED);
             await _context.UpdateAsync(delivery.SetCancellationDate());
             return new NoContentResult();
         }
 
         public async Task StartAsync(string driverUserId)
         {
-            var deliverySpec = new DeliveryWithStateSpecification(driverUserId, GeneralState.WaitingOrder);
+            var deliverySpec = new DeliveryWithStateSpecification(driverUserId, GeneralState.WAITING_ORDER);
             var delivery = await _context.FirstOrDefaultAsync(deliverySpec);
             if (delivery != null)
             {
-                delivery.State = await _state.GetByStateAsync(GeneralState.InProgress);
+                delivery.State = await _state.GetByStateAsync(GeneralState.INPROGRESS);
                 await _context.UpdateAsync(delivery);
             }
         }
@@ -119,7 +122,7 @@ namespace Infrastructure.Services.DeliveryServices
             return request;
         }
 
-        public async Task<Delivery> FindIsNewDeliveryAsync(Order order)
+        public async Task<Delivery> FindIsActiveDeliveryAsync(Order order)
         {
             var deliverySpec = new DeliveryWithDriverSpecification(order.Route.Id, order.DeliveryDate, order.Location);
             var deliveries = await _context.ListAsync(deliverySpec);
@@ -135,7 +138,7 @@ namespace Infrastructure.Services.DeliveryServices
         private async Task<Delivery> CreateDeliveryAsync(CreateDeliveryDto dto, Driver driver)
         {
             var route = await _route.GetByCitiesIdAsync(dto.StartCityId, dto.FinishCityId);
-            var state = await _state.GetByStateAsync(GeneralState.WaitingOrder);
+            var state = await _state.GetByStateAsync(GeneralState.WAITING_ORDER);
             var delivery = new Delivery(dto.DeliveryDate)
             {
                 State = state,
@@ -145,6 +148,19 @@ namespace Infrastructure.Services.DeliveryServices
             };
             await _context.AddAsync(delivery);
             return delivery;
+        }
+
+        public async Task FinishAsync(string userId)
+        {
+            var spec = new DeliveryWithOrderStateSpecification(userId);
+            var delivery = await _context.FirstOrDefaultAsync(spec)
+                ?? throw new ArgumentException("Нет такой поездки");
+            if (!delivery.Orders.Any(x => x.State.StateValue == GeneralState.DELIVERED || x.State.StateValue == GeneralState.CANCALED))
+            {
+                throw new ArgumentException("У вас активные заказы");
+            }   
+            delivery.State = await _state.GetByStateAsync(GeneralState.DONE);
+            await _context.UpdateAsync(delivery.SetCompletionDate());
         }
     }
 }

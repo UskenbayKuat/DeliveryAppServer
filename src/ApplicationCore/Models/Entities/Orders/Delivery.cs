@@ -31,15 +31,14 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         {
             Orders?.Add(order);
         }
-        public Delivery SetCompletionDate(DateTime dateTime)
+        public Delivery SetCompletionDate()
         {
-            CompletionDate = dateTime;
+            CompletionDate = DateTime.Now;
             return this;
         }
         public Delivery SetCancellationDate()
         {
             CancellationDate = DateTime.Now;
-            IsDeleted = true;
             ModifiedDate = DateTime.Now;
             return this;
         }

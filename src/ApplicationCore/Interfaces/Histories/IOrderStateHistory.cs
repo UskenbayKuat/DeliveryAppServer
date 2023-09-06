@@ -7,7 +7,7 @@ namespace ApplicationCore.Interfaces.Histories
 {
     public interface IOrderStateHistory
     {
-        Task AddAsync(Order order, State state);
+        Task AddAsync(Order order);
         Task<StateHistoryDto> GetAsync(int orderId);
         Task RemoveAsync(int orderId, int stateId);
     }

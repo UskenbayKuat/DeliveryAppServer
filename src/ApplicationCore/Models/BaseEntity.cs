@@ -12,12 +12,12 @@ namespace ApplicationCore.Entities
         /// <summary>
         /// Дата создания сущности
         /// </summary>
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Дата изменения сущности
         /// </summary>
-        public DateTime ModifiedDate { get; set; } = DateTime.Now;
+        public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Признак удаления

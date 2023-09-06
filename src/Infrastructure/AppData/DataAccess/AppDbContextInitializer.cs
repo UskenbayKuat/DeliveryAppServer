@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
@@ -150,19 +151,14 @@ namespace Infrastructure.AppData.DataAccess
                 new(3, "Premium", 15, false, 9000),
                 new(4, "Unlimited", 1000, true, 11000)
             };
-        private static IEnumerable<State> GetPreconfiguredStates() =>
-            new List<State>
+        private static IEnumerable<State> GetPreconfiguredStates()
+        {
+            var stateList = new List<State>();
+            foreach (var item in Enum.GetValues(typeof(GeneralState)).Cast<GeneralState>().ToList())
             {
-                new(GeneralState.WaitingOrder, GeneralState.WaitingOrder.GetDisplayName(), GeneralState.WaitingOrder.ToString()),
-                new(GeneralState.WaitingOnReview, GeneralState.WaitingOnReview.GetDisplayName(), GeneralState.WaitingOnReview.ToString()),
-                new(GeneralState.OnReview, GeneralState.OnReview.GetDisplayName(), GeneralState.OnReview.ToString()),
-                new(GeneralState.PendingForHandOver, GeneralState.PendingForHandOver.GetDisplayName(), GeneralState.PendingForHandOver.ToString()),
-                new(GeneralState.ReceivedByDriver, GeneralState.ReceivedByDriver.GetDisplayName(), GeneralState.ReceivedByDriver.ToString()),
-                new(GeneralState.InProgress, GeneralState.InProgress.GetDisplayName(), GeneralState.InProgress.ToString()),
-                new(GeneralState.Done, GeneralState.Done.GetDisplayName(), GeneralState.Done.ToString()),
-                new(GeneralState.Delayed, GeneralState.Delayed.GetDisplayName(), GeneralState.Delayed.ToString()),
-                new(GeneralState.Canceled, GeneralState.Canceled.GetDisplayName(), GeneralState.Canceled.ToString())
-            };
-        
+                stateList.Add(new(item, item.GetDisplayName(), item.ToString()));
+            }
+            return stateList;
+        }
     }
 }

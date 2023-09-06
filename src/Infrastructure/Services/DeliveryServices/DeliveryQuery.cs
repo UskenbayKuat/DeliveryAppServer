@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Orders;
@@ -21,18 +22,45 @@ namespace Infrastructure.Services.DeliveryServices
             _identityDbContext = identityDbContext;
             _context = context;
         }
-        public async Task<IsActiveDeliveryDto> GetDeliveryIsActiveAsync(string driverUserId)
+        public async Task<ActiveDeliveryDto> GetDeliveryIsActiveAsync(string driverUserId)
         {
             var deliverySpec = new DeliveryWithOrderSpecification(driverUserId);
             var delivery = await _context
                 .GetQueryableAsync(deliverySpec)
                 .AsNoTracking()
-                .FirstOrDefaultAsync() ?? throw new ArgumentException("Не найден поездка");
+                .FirstOrDefaultAsync();
+            if (delivery is null)
+            {
+                return default;
+            }
             var orderDtoList = (
                 from order in delivery.Orders 
-                let user = _identityDbContext.Users.AsNoTracking().FirstOrDefault(u => u.Id == order.Client.UserId) 
-                select order.GetOrderDto(user)).ToList();
-            return delivery.GetDeliveryDto(orderDtoList);
+                let user = _identityDbContext.Users
+                    .AsNoTracking()
+                    .FirstOrDefault(u => u.Id == order.Client.UserId) 
+                select order.GetOrderDto(user, delivery.State.StateValue)).ToList();
+            return delivery.MapToDeliveryDto(orderDtoList);
+        }
+
+        public async Task<List<HistoryDeliveryDto>> GetHistoryAsync(string userId)
+        {
+            var deliverySpec = new DeliveryWithOrderSpecification(userId, isActive: false);
+            var deliveryList = await _context
+                .GetQueryableAsync(deliverySpec)
+                .AsNoTracking()
+                .ToListAsync();
+            var resultList = new List<HistoryDeliveryDto>();
+            foreach (var delivery in deliveryList)
+            {
+                var orderDtoList = (
+                    from order in delivery.Orders
+                    let user = _identityDbContext.Users
+                        .AsNoTracking()
+                        .FirstOrDefault(u => u.Id == order.Client.UserId)
+                    select order.GetOrderDto(user, delivery.State.StateValue)).ToList();
+                resultList.Add(delivery.MapToHistoryDto(orderDtoList));
+            }
+            return resultList;
         }
     }
 }

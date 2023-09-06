@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PublicApi.Extensions;
+using Notification.Hubs;
 
 namespace PublicApi
 {
@@ -90,7 +91,7 @@ namespace PublicApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<Notification.Notification>("/api/notification");
+                endpoints.MapHub<NotificationHub>("/api/notification");
             });
         }
     }

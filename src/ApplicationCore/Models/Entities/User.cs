@@ -28,10 +28,11 @@ namespace ApplicationCore.Entities.AppEntities
 
 
 
-        public void AddRefreshToken(string refreshToken, DateTime refreshTokenExpiryTime)
+        public User AddRefreshToken(string refreshToken, DateTime refreshTokenExpiryTime)
         {
             RefreshToken = refreshToken;
             RefreshTokenExpiryTime = refreshTokenExpiryTime;
+            return this;
         }
         public User AddFullName(string name, string surname)
         {

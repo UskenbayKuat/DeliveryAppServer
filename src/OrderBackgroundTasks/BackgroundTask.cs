@@ -4,9 +4,7 @@ using System.Threading.Tasks;
 using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
 using ApplicationCore.Interfaces.ClientInterfaces;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
-using ApplicationCore.Models.Dtos;
 using ApplicationCore.Models.Dtos.Shared;
-using ApplicationCore.Models.Values;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -47,20 +45,22 @@ namespace OrderBackgroundTasks
             using var scope = _serviceProvider.CreateScope();
             var serviceProvider = scope.ServiceProvider;
             var orderCommand = serviceProvider.GetService<IOrderCommand>();
-            if (await orderCommand.IsOnReview(backgroundOrder))
+            if (!await orderCommand.IsOnReview(backgroundOrder))
             {
-                var deliveryCommand = serviceProvider.GetService<IDeliveryCommand>();
-                var order = await orderCommand.RejectAsync(backgroundOrder.OrderId);
-                _logger.LogInformation($"DeliverId: {backgroundOrder.DeliveryId} reject order: {backgroundOrder.OrderId}");
-                var delivery = await deliveryCommand.FindIsNewDeliveryAsync(order);
-                if (delivery != null)
-                {
-                    await orderCommand.SetDeliveryAsync(order, delivery);
-                    _logger.LogInformation($"Order: {backgroundOrder.OrderId} state OnReview from DeliverId: {backgroundOrder.DeliveryId}");
-                    var notify = serviceProvider.GetService<INotify>();
-                    await notify.SendToDriverAsync(delivery.Driver.UserId, stoppingToken);
-                }
+                return;
             }
+            var deliveryCommand = serviceProvider.GetService<IDeliveryCommand>();
+            var order = await orderCommand.RejectAsync(backgroundOrder.OrderId);
+            _logger.LogInformation($"DeliverId: {backgroundOrder.DeliveryId} reject order: {backgroundOrder.OrderId}");
+            var delivery = await deliveryCommand.FindIsActiveDeliveryAsync(order);
+            if (delivery is null)
+            {
+                return;
+            }
+            await orderCommand.SetDeliveryAsync(order, delivery);
+            _logger.LogInformation($"Order: {backgroundOrder.OrderId} state OnReview from DeliverId: {backgroundOrder.DeliveryId}");
+            var notify = serviceProvider.GetService<INotify>();
+            await notify.SendToDriverAsync(delivery.Driver.UserId, stoppingToken);
         }
     }
 }

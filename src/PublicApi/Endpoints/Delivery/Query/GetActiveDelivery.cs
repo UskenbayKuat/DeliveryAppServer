@@ -5,6 +5,7 @@ using ApplicationCore.Interfaces.DeliveryInterfaces;
 using Ardalis.ApiEndpoints;
 using Infrastructure.Config.Attributes;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace PublicApi.Endpoints.Delivery.Query
 {
@@ -12,12 +13,13 @@ namespace PublicApi.Endpoints.Delivery.Query
     public class GetActiveDelivery : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
         private readonly IDeliveryQuery _deliveryQuery;
-
-        public GetActiveDelivery(IDeliveryQuery deliveryQuery)
+        private readonly ILogger<GetActiveDelivery> _logger;
+        public GetActiveDelivery(IDeliveryQuery deliveryQuery, ILogger<GetActiveDelivery> logger)
         {
             _deliveryQuery = deliveryQuery;
+            _logger = logger;
         }
-        
+
         [HttpPost("api/driver/activeDelivery")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
@@ -31,8 +33,9 @@ namespace PublicApi.Endpoints.Delivery.Query
             {
                 return BadRequest(ex.Message);
             }
-            catch
+            catch(Exception ex)
             {
+                _logger.LogError($"{ex.Message}");
                 return BadRequest("Ошибка системы");
             }
         }

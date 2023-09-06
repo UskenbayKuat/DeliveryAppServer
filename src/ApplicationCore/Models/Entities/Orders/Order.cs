@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Threading.Tasks;
 using ApplicationCore.Entities;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
@@ -37,6 +39,9 @@ namespace ApplicationCore.Models.Entities.Orders
         public string AddressTo { get; private set; }
         public string AddressFrom { get; private set; }
         public string Description { get; private set; }
+        public DateTime? CompletionDate { get; private set; }
+        public DateTime? CancellationDate { get; private set; }
+        public List<OrderStateHistory> OrderStateHistorys { get; set; } = new();
 
         public Order SetSecretCode()
         {
@@ -47,6 +52,29 @@ namespace ApplicationCore.Models.Entities.Orders
         {
             SecretCode = string.Empty;
             return this;
+        }
+        public Order AddHistory(OrderStateHistory orderState)
+        {
+            OrderStateHistorys.Add(orderState);
+            return this;
+        }
+        public Order SetCompletionDate()
+        {
+            CompletionDate = DateTime.UtcNow;
+            return this;
+        }
+        public Order SetCancellationDate()
+        {
+            CancellationDate = DateTime.UtcNow;
+            return this;
+        }
+        public Task CheckSecretCodeAsync(string code)
+        {
+            if (SecretCode.ToUpper() != code.ToUpper())
+            {
+                throw new ArgumentException("Не совпадает код");
+            }
+            return Task.CompletedTask;
         }
 
     }

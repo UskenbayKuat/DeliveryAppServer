@@ -20,9 +20,9 @@ namespace Infrastructure.Services.History
             _context = context;
         }
 
-        public async Task AddAsync(Order order, State state)
+        public async Task AddAsync(Order order)
         {
-            var orderHistory = new OrderStateHistory { Order = order, State = state };
+            var orderHistory = new OrderStateHistory { Order = order, State = order.State };
             await _context.AddAsync(orderHistory);
         }
 

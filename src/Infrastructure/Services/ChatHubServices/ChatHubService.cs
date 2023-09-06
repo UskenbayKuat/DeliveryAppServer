@@ -76,7 +76,7 @@ namespace Infrastructure.Services.ChatHubServices
         {
             if (string.IsNullOrEmpty(userId))
             {
-                _logger.LogWarning($"Error connect Hub userId: {userId}, connectId: {connectId}");
+                throw new HubException($"Error connect Hub userId -> null, connectId: {connectId}");
             }
             var chatHub = new ChatHub(userId, connectId);
             await _context.AddAsync(chatHub);
