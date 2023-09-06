@@ -56,18 +56,14 @@ namespace Infrastructure.Services.TokenServices
             return Convert.ToBase64String(randomNumber);
         }
 
-        public async Task<ActionResult> RefreshTokenAsync(RefreshTokenDto tokenDto)
+        public async Task<string> RefreshTokenAsync(RefreshTokenDto tokenDto)
         {
-            try
-            {
-                var user = await _identityDb.Users.FirstAsync(u => u.RefreshToken == tokenDto.RefreshToken &&
-                                                        u.RefreshTokenExpiryTime >= DateTime.Now);
-                return new OkObjectResult(new {AccessToken = CreateAccessToken(user)});
-            }
-            catch
-            {
-                return new BadRequestObjectResult("Login out");
-            }
+                var user = await _identityDb.Users
+                    .FirstOrDefaultAsync(u => 
+                            u.RefreshToken == tokenDto.RefreshToken &&
+                            u.RefreshTokenExpiryTime >= DateTime.Now)
+                    ?? throw new ArgumentException("Invalid account");
+                return CreateAccessToken(user);
         }
     }
 }

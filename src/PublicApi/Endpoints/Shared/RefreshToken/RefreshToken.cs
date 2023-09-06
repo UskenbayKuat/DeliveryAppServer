@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.TokenInterfaces;
 using ApplicationCore.Models.Dtos.Shared;
@@ -25,7 +26,21 @@ namespace PublicApi.Endpoints.Shared.RefreshToken
 
         [HttpPost("api/refreshToken")]
         public override async Task<ActionResult> HandleAsync([FromBody] RefreshCommand command,
-            CancellationToken cancellationToken = default) => await 
-            _refreshToken.RefreshTokenAsync(_mapper.Map<RefreshTokenDto>(command));
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var token = await _refreshToken.RefreshTokenAsync(_mapper.Map<RefreshTokenDto>(command));
+                return Ok(new { AccessToken = token });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch
+            {
+                return BadRequest("Ошибка системы");
+            }
+        }
     }
 }
