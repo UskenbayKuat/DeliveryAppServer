@@ -6,6 +6,7 @@ using Notification.Interfaces;
 using System.Threading.Tasks;
 using System.Threading;
 using ApplicationCore.Interfaces.ClientInterfaces;
+using PublicApi.Commands.Deliveries.Models;
 
 namespace PublicApi.Commands.Deliveries.Handlers
 {

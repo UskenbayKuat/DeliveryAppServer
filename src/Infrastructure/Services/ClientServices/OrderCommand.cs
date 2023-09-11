@@ -94,7 +94,7 @@ namespace Infrastructure.Services.ClientServices
             {
                 return default;
             }
-            await _stateHistory.RemoveAsync(order.Id, order.State.Id); 
+            //await _stateHistory.RemoveAsync(order.Id, order.State.Id); 
             await _rejected.AddAsync(order);
             var state = await _state.GetByStateAsync(GeneralState.WAITING_ON_REVIEW);
             order.Delivery = default;

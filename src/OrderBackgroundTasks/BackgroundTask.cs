@@ -17,7 +17,10 @@ namespace OrderBackgroundTasks
         private readonly ILogger<BackgroundTask> _logger;
         private readonly IBackgroundTaskQueue _backgroundQueue;
         private readonly IServiceScopeFactory _serviceProvider;
-        public BackgroundTask(IBackgroundTaskQueue backgroundQueue, IServiceScopeFactory serviceProvider, ILogger<BackgroundTask> logger)
+        public BackgroundTask(
+            IBackgroundTaskQueue backgroundQueue, 
+            IServiceScopeFactory serviceProvider, 
+            ILogger<BackgroundTask> logger)
         {
             _backgroundQueue = backgroundQueue;
             _serviceProvider = serviceProvider;

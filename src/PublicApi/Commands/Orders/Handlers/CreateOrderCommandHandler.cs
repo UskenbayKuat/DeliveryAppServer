@@ -6,6 +6,7 @@ using ApplicationCore.Models.Dtos.Orders;
 using AutoMapper;
 using MediatR;
 using Notification.Interfaces;
+using PublicApi.Commands.Orders.Models;
 
 namespace PublicApi.Commands.Orders.Handlers
 {

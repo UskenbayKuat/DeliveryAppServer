@@ -35,7 +35,6 @@ namespace Infrastructure.Services.DeliveryServices
         private readonly IRoute _route;
         private readonly IOrderQuery _orderQuery;
         private readonly IRejected _rejected;
-        private readonly IOrderStateHistory _orderStateHistory;
         public DeliveryCommand(
             IAsyncRepository<Delivery> context,
             IBackgroundTaskQueue backgroundTask,
@@ -43,8 +42,7 @@ namespace Infrastructure.Services.DeliveryServices
             IRoute route, 
             IState state, 
             IDriver driver, 
-            IOrderQuery orderQuery, IRejected rejected, 
-            IOrderStateHistory orderStateHistory)
+            IOrderQuery orderQuery, IRejected rejected)
         {
             _chatHub = chatHub;
             _context = context;
@@ -53,7 +51,6 @@ namespace Infrastructure.Services.DeliveryServices
             _driver = driver;
             _orderQuery = orderQuery;
             _rejected = rejected;
-            _orderStateHistory = orderStateHistory;
             _backgroundTask = backgroundTask;
         }
         public async Task<Delivery> CreateAsync(CreateDeliveryDto dto)

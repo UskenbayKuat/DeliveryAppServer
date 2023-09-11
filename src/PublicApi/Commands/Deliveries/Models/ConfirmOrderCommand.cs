@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace PublicApi.Commands.Orders
+namespace PublicApi.Commands.Deliveries.Models
 {
     public class ConfirmOrderCommand : IRequest
     {

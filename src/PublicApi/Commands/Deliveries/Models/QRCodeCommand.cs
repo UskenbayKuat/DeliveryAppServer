@@ -1,7 +1,7 @@
 
 using MediatR;
 
-namespace PublicApi.Commands.Deliveries
+namespace PublicApi.Commands.Deliveries.Models
 {
     public class QRCodeCommand : IRequest
     {

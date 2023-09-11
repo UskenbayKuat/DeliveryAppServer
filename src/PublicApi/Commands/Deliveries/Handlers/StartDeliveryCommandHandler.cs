@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using ApplicationCore.Interfaces.DeliveryInterfaces;
 using MediatR;
 using Notification.Interfaces;
+using PublicApi.Commands.Deliveries.Models;
 
 namespace PublicApi.Commands.Deliveries.Handlers
 {

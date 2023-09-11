@@ -3,6 +3,7 @@ using ApplicationCore.Models.Dtos.Deliveries;
 using AutoMapper;
 using MediatR;
 using Notification.Interfaces;
+using PublicApi.Commands.Deliveries.Models;
 using System.Threading;
 using System.Threading.Tasks;
 

@@ -3,7 +3,7 @@ using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Models.Entities.Locations;
 using MediatR;
 
-namespace PublicApi.Commands.Orders
+namespace PublicApi.Commands.Orders.Models
 {
     public class CreateOrderCommand : IRequest
     {

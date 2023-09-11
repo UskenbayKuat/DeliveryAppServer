@@ -20,6 +20,7 @@ namespace ApplicationCore.Interfaces.ClientInterfaces
         public Task<string> QRCodeAcceptAsync(QRCodeDto dto);
         public Task<Order> RejectAsync(int orderId);
         Task SetDeliveryAsync(Order order, Delivery delivery);
+        //
         Task<bool> IsOnReview(BackgroundOrder backgroundOrder);
         Task<Order> UpdateStatePendingAsync(int orderId);
         Task CancelAsync(int orderId);
