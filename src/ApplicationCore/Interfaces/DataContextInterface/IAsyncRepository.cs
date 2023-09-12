@@ -9,6 +9,7 @@ using Ardalis.Specification;
 
 namespace ApplicationCore.Interfaces.DataContextInterface
 {
+    //https://www.youtube.com/watch?v=YOakQq4GLU4&ab_channel=DevExpress
     public interface IAsyncRepository<T> where T : BaseEntity
     {
         IQueryable<T> GetQueryableAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);
