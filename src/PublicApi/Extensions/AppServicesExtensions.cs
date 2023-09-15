@@ -71,7 +71,7 @@ namespace PublicApi.Extensions
             services.AddTransient<IRegistration, RegisterBySmsMockService>();
             services.AddTransient<IProceedRegistration, ProceedRegistrationService>();
             services.AddTransient<ICalculate, CalculateService>();
-            services.AddTransient<INotify, Notify>();
+            services.AddTransient<INotify, NotifyService>();
             services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.JwtSettings));
             services.ConfigureDbContextServices(configuration);
         }

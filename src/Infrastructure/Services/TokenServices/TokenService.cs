@@ -41,7 +41,7 @@ namespace Infrastructure.Services.TokenServices
                         _options.Issuer,
                         _options.Audience,
                         notBefore: DateTime.UtcNow,
-                        claims: new List<Claim> { new(ClaimTypes.UserData, user.Id) },
+                        claims: new List<Claim> { new(JwtRegisteredClaimNames.Sub, user.Id) },
                         signingCredentials: new SigningCredentials(
                             new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.SecretKey)),
                             SecurityAlgorithms.HmacSha256),

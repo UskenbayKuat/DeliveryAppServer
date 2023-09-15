@@ -8,12 +8,12 @@ using Notification.Hubs;
 
 namespace Notification.HubNotify
 {
-    public class Notify : INotify
+    public class NotifyService : INotify
     {
         private readonly IHubContext<NotificationHub> _hubContext;
         private readonly IChatHub _chatHub;
 
-        public Notify(IHubContext<NotificationHub> hubContext, IChatHub chatHub)
+        public NotifyService(IHubContext<NotificationHub> hubContext, IChatHub chatHub)
         {
             _hubContext = hubContext;
             _chatHub = chatHub;

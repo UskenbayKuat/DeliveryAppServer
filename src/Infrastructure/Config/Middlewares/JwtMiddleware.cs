@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using ApplicationCore.Entities.AppEntities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -26,11 +27,11 @@ namespace Infrastructure.Config.Middlewares
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Replace("Bearer", string.Empty).Trim();
             if (!string.IsNullOrEmpty(token))
-                AttachUserToContext(context, token);
+                CheckValidate(context, token);
             await _next(context);
         }
 
-        private void AttachUserToContext(HttpContext context, string token)
+        private void CheckValidate(HttpContext context, string token)
         {
             try
             {
@@ -49,7 +50,7 @@ namespace Infrastructure.Config.Middlewares
                 
                 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var userId = jwtToken.Claims.First(x => x.Type == ClaimTypes.UserData).Value;
+                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
                 context.Items["UserId"] = userId;
             }
             catch
