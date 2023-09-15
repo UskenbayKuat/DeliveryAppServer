@@ -1,14 +1,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
-using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Interfaces.Clients;
+using ApplicationCore.Interfaces.Drivers;
+using ApplicationCore.Interfaces.Shared;
 using ApplicationCore.Models.Dtos.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Notification.Interfaces;
+using Notification.Services;
 
 namespace OrderBackgroundTasks
 {

@@ -1,10 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.ApiEndpoints;
-using Infrastructure.Config.Attributes;
+using Infrastructure.Config;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PublicApi.Commands;
 using PublicApi.Commands.Orders.Models;
 
 namespace PublicApi.Endpoints.Clients.Command

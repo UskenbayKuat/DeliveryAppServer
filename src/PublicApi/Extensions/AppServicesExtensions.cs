@@ -1,41 +1,23 @@
 ﻿using ApplicationCore.Interfaces;
-using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
-using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Interfaces.DataContextInterface;
-using ApplicationCore.Interfaces.DeliveryInterfaces;
-using ApplicationCore.Interfaces.DriverInterfaces;
-using ApplicationCore.Interfaces.Histories;
-using ApplicationCore.Interfaces.HubInterfaces;
-using ApplicationCore.Interfaces.RegisterInterfaces;
-using ApplicationCore.Interfaces.RejectedInterfaces;
-using ApplicationCore.Interfaces.RouteInterfaces;
-using ApplicationCore.Interfaces.SharedInterfaces;
-using ApplicationCore.Interfaces.StateInterfaces;
-using ApplicationCore.Interfaces.TokenInterfaces;
+using ApplicationCore.Interfaces.Clients;
+using ApplicationCore.Interfaces.Drivers;
+using ApplicationCore.Interfaces.Register;
+using ApplicationCore.Interfaces.Shared;
 using ApplicationCore.Models.Dtos;
 using ApplicationCore.Models.Dtos.Shared;
 using ApplicationCore.Models.Values;
-using Infrastructure.AppData.DataAccess;
-using Infrastructure.AppData.Identity;
+using Infrastructure.Context.DataAccess;
+using Infrastructure.Context.Identity;
 using Infrastructure.Config;
 using Infrastructure.Services;
-using Infrastructure.Services.BackgroundServices;
-using Infrastructure.Services.ChatHubServices;
-using Infrastructure.Services.ClientServices;
-using Infrastructure.Services.DeliveryServices;
-using Infrastructure.Services.DriverServices;
-using Infrastructure.Services.History;
-using Infrastructure.Services.RegisterServices;
-using Infrastructure.Services.RejectedService;
-using Infrastructure.Services.RouteServices;
+using Infrastructure.Services.Clients;
+using Infrastructure.Services.Drivers;
+using Infrastructure.Services.Register;
 using Infrastructure.Services.Shared;
-using Infrastructure.Services.StateServices;
-using Infrastructure.Services.TokenServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Notification.HubNotify;
-using Notification.Interfaces;
+using Notification.Services;
 
 namespace PublicApi.Extensions
 {
@@ -59,7 +41,7 @@ namespace PublicApi.Extensions
             services.AddTransient<IDeliveryQuery, DeliveryQuery>(); 
             services.AddTransient<IOrderStateHistory, OrderStateHistoryService>(); 
       
-            services.AddTransient<IRejected, RejectedService>();
+            services.AddTransient<IRejectedOrder, RejectedOrderService>();
             services.AddTransient<IState, StateService>();
             services.AddTransient<IRoute, RouteService>();
             services.AddTransient<IDriver, DriverService>();

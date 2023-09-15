@@ -1,11 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.SharedInterfaces;
-using ApplicationCore.Models.Dtos;
+using ApplicationCore.Interfaces.Shared;
 using ApplicationCore.Models.Dtos.Shared;
-using ApplicationCore.Models.Values;
 using Ardalis.ApiEndpoints;
-using Infrastructure.Config.Attributes;
+using Infrastructure.Config;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PublicApi.Endpoints.Shared.ClientAppData

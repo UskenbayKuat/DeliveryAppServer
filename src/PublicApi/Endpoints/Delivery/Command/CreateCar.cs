@@ -1,11 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Exceptions;
-using ApplicationCore.Interfaces.DriverInterfaces;
+using ApplicationCore.Interfaces.Drivers;
 using ApplicationCore.Models.Dtos;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
-using Infrastructure.Config.Attributes;
+using Infrastructure.Config;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands;
 using PublicApi.Commands.Deliveries.Models;

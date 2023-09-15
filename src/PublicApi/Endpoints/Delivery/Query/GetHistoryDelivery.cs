@@ -1,11 +1,11 @@
-﻿using ApplicationCore.Interfaces.DeliveryInterfaces;
-using Ardalis.ApiEndpoints;
+﻿using Ardalis.ApiEndpoints;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Infrastructure.Config.Attributes;
+using Infrastructure.Config;
+using ApplicationCore.Interfaces.Drivers;
 
 namespace PublicApi.Endpoints.Delivery.Query
 {

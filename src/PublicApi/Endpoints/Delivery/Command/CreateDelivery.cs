@@ -1,13 +1,11 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Exceptions;
 using Ardalis.ApiEndpoints;
-using Infrastructure.Config.Attributes;
+using Infrastructure.Config;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PublicApi.Commands;
 using PublicApi.Commands.Deliveries.Models;
 
 namespace PublicApi.Endpoints.Delivery.Command

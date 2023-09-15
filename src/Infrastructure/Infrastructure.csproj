@@ -6,6 +6,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="C:\Users\ulanzh\.nuget\packages\nlog.config\4.7.15\contentFiles\any\any\NLog.config" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
     </ItemGroup>
 

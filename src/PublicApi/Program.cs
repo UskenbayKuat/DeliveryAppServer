@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using Infrastructure.AppData.DataAccess;
-using Infrastructure.AppData.Identity;
+using Infrastructure.Context.DataAccess;
+using Infrastructure.Context.Identity;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;

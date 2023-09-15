@@ -1,5 +1,5 @@
 ﻿using Ardalis.ApiEndpoints;
-using Infrastructure.Config.Attributes;
+using Infrastructure.Config;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading;
 using System.Threading.Tasks;

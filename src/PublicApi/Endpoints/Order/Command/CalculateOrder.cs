@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.ClientInterfaces;
+using ApplicationCore.Interfaces.Clients;
 using ApplicationCore.Models.Dtos.Orders;
 using Ardalis.ApiEndpoints;
 using AutoMapper;

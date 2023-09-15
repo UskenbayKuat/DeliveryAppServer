@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.DeliveryInterfaces;
-using ApplicationCore.Interfaces.HubInterfaces;
+using ApplicationCore.Interfaces.Drivers;
+using ApplicationCore.Interfaces.Shared;
 using ApplicationCore.Models.Dtos.Shared;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using NLog.Fluent;
-using Notification.Interfaces;
+using Notification.Services;
 
 namespace Notification.Hubs
 {

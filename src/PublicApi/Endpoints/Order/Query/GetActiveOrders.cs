@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.ClientInterfaces;
+using ApplicationCore.Interfaces.Clients;
 using Ardalis.ApiEndpoints;
-using Infrastructure.Config.Attributes;
+using Infrastructure.Config;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PublicApi.Endpoints.Clients.Query

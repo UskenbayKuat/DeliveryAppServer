@@ -1,10 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Models.Dtos.Deliveries;
 using Ardalis.ApiEndpoints;
-using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands.Deliveries.Models;
