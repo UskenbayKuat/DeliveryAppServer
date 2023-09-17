@@ -39,16 +39,21 @@ namespace Notification.Hubs
 
         public override async Task<Task> OnConnectedAsync()
         {
-            _logger.LogInformation($"Connect: ConnectingId: {Context.ConnectionId}, UserId: {Context.GetHttpContext().Items["UserId"]?.ToString()}");
+            _logger.LogInformation($"{DateTime.Now:g}:  Connect: ConnectingId: {Context.ConnectionId}, UserId: {Context.GetHttpContext().Items["UserId"]?.ToString()}");
             await _chatHub.ConnectedAsync(Context.GetHttpContext().Items["UserId"]?.ToString(), Context.ConnectionId);
             return base.OnConnectedAsync();
         }
 
         public override async Task<Task> OnDisconnectedAsync(Exception exception)
         {
-            _logger.LogInformation($"Disconnect: ConnectingId: {Context.ConnectionId}, UserId: {Context.GetHttpContext().Items["UserId"]?.ToString()}");
+            _logger.LogInformation($"{DateTime.Now:g}: Disconnect: ConnectingId: {Context.ConnectionId}, UserId: {Context.GetHttpContext().Items["UserId"]?.ToString()}");
             await _chatHub.DisconnectedAsync(Context.GetHttpContext().Items["UserId"]?.ToString(), Context.ConnectionId);
             return base.OnDisconnectedAsync(exception);
+        }
+        public async Task SendMessage(string message)
+        {
+            Console.WriteLine(DateTime.Now.ToString("g") + ": " + message);
+            await Clients.Others.SendAsync("SendToDriver", message);
         }
     }
 }
