@@ -48,6 +48,7 @@ namespace Infrastructure.Services.Drivers
             var deliverySpec = new DeliveryWithOrderSpecification(userId, isActive: false);
             var deliveryList = await _context
                 .GetQueryableAsync(deliverySpec)
+                .OrderByDescending(x => x.CreatedDate)
                 .AsNoTracking()
                 .ToListAsync();
             var resultList = new List<HistoryDeliveryDto>();
