@@ -4,6 +4,7 @@ using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.AppEntities.UIMessages;
+using ApplicationCore.Models.Entities;
 using ApplicationCore.Models.Entities.Cars;
 using ApplicationCore.Models.Entities.Locations;
 using ApplicationCore.Models.Entities.Orders;
@@ -13,6 +14,9 @@ namespace Infrastructure.Context.DataAccess
 {
     public sealed class AppDbContext : DbContext
     {
+        //logger
+        public DbSet<MobileLogger> MobileLoggers { get; set; }
+
         //users
         public DbSet<Driver> Drivers { get; set; }
         public DbSet<Client> Clients { get; set; }
