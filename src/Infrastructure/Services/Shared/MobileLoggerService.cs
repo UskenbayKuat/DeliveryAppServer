@@ -15,9 +15,9 @@ namespace Infrastructure.Services.Shared
             _context = context;
         }
 
-        public Task AddAsync(MobileLoggerDto dto)
+        public async Task AddAsync(MobileLoggerDto dto)
         {
-            _context
+            _context.AddAsync(_)
         }
     }
 }
