@@ -103,8 +103,7 @@ namespace Infrastructure.Services.Drivers
             var delivery = await _context.FirstOrDefaultAsync(deliverySpec);
             if (request.Latitude != 0 && request.Longitude != 0)
             {
-                delivery?.Location.UpdateLocation(request.Latitude, request.Longitude);
-                await _context.UpdateAsync(delivery);
+                await _context.UpdateAsync(delivery.UpdateLocation(request.Latitude, request.Longitude));
                 return request;
             }
             request.Latitude = delivery.Location.Latitude;

@@ -9,7 +9,7 @@ namespace PublicApi.Endpoints.Shared
     [Authorize]
     public class LoggerApi : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
-        private readonly 
+        //private readonly 
 
         [HttpPost("api/logger")]
         public async override Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)

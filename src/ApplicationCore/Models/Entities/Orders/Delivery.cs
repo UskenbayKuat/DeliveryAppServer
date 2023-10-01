@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ApplicationCore.Entities.AppEntities.Locations;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Models.Entities.Locations;
 using ApplicationCore.Models.Entities.Orders;
@@ -39,13 +38,17 @@ namespace ApplicationCore.Entities.AppEntities.Orders
         public Delivery SetCancellationDate()
         {
             CancellationDate = DateTime.Now;
-            ModifiedDate = DateTime.Now;
             return this;
         }
         public Delivery SetDelete()
         {
             IsDeleted = true;
-            ModifiedDate = DateTime.Now;
+            return this;
+        }
+        public Delivery UpdateLocation(double latitude, double longitude)
+        {
+            Location = Location?.UpdateLocation(latitude, longitude) 
+                ?? new Location(latitude, longitude);
             return this;
         }
     }
