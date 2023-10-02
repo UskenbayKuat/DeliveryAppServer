@@ -39,7 +39,7 @@ namespace Infrastructure.Services.Shared
             foreach (var order in orders)
             {
                 var chatHub = await _context.FirstOrDefaultAsync(c => c.UserId == order.Client.UserId);
-                if (chatHub != null && string.IsNullOrEmpty(chatHub.ConnectionId))
+                if (chatHub != null && !string.IsNullOrEmpty(chatHub.ConnectionId))
                 {
                     connectionIds.Add(chatHub.ConnectionId);
                 }
