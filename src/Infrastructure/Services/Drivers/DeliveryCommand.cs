@@ -103,8 +103,7 @@ namespace Infrastructure.Services.Drivers
             var delivery = await _context.FirstOrDefaultAsync(deliverySpec);
             if (request.Latitude != 0 && request.Longitude != 0)
             {
-                delivery?.Location.UpdateLocation(request.Latitude, request.Longitude);
-                await _context.UpdateAsync(delivery);
+                await _context.UpdateAsync(delivery.UpdateLocation(request.Latitude, request.Longitude));
                 return request;
             }
             request.Latitude = delivery.Location.Latitude;
@@ -145,7 +144,9 @@ namespace Infrastructure.Services.Drivers
             var spec = new DeliveryWithOrderStateSpecification(userId);
             var delivery = await _context.FirstOrDefaultAsync(spec)
                 ?? throw new ArgumentException("Нет такой поездки");
-            if (!delivery.Orders.Any(x => x.State.StateValue == GeneralState.DELIVERED || x.State.StateValue == GeneralState.CANCALED))
+            if (delivery.Orders.Any() &&
+                delivery.Orders.Any(x => x.State.StateValue != GeneralState.DELIVERED || 
+                                    x.State.StateValue != GeneralState.CANCALED))
             {
                 throw new ArgumentException("У вас активные заказы");
             }

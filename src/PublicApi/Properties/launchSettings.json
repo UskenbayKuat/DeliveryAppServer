@@ -12,9 +12,9 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl1": "http://192.168.0.104:5005",
+      "applicationUrl": "http://192.168.0.108:5005",
       "applicationUrl2": "http://localhost:5005",
-      "applicationUrl": "http://185.217.182.92:5005"
+      "applicationUrl1": "http://185.217.182.92:5005"
     }
   },
   "iisSettings": {
