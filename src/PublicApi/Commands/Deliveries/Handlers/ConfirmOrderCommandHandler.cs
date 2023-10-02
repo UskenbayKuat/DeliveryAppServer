@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Interfaces.Clients;
 using MediatR;
-using Notification.Interfaces;
+using Notification.Services;
+using PublicApi.Commands.Deliveries.Models;
 
 namespace PublicApi.Commands.Orders.Handlers
 {

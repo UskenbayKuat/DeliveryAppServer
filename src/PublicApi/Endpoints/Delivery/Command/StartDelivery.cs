@@ -1,11 +1,9 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.ApiEndpoints;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PublicApi.Commands;
-using PublicApi.Commands.Deliveries;
+using PublicApi.Commands.Deliveries.Models;
 
 namespace PublicApi.Endpoints.Delivery.Command
 {

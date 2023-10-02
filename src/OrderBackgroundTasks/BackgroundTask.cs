@@ -1,14 +1,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.BackgroundTaskInterfaces;
-using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Interfaces.Clients;
+using ApplicationCore.Interfaces.Drivers;
+using ApplicationCore.Interfaces.Shared;
 using ApplicationCore.Models.Dtos.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Notification.Interfaces;
+using Notification.Services;
 
 namespace OrderBackgroundTasks
 {
@@ -17,7 +17,10 @@ namespace OrderBackgroundTasks
         private readonly ILogger<BackgroundTask> _logger;
         private readonly IBackgroundTaskQueue _backgroundQueue;
         private readonly IServiceScopeFactory _serviceProvider;
-        public BackgroundTask(IBackgroundTaskQueue backgroundQueue, IServiceScopeFactory serviceProvider, ILogger<BackgroundTask> logger)
+        public BackgroundTask(
+            IBackgroundTaskQueue backgroundQueue, 
+            IServiceScopeFactory serviceProvider, 
+            ILogger<BackgroundTask> logger)
         {
             _backgroundQueue = backgroundQueue;
             _serviceProvider = serviceProvider;

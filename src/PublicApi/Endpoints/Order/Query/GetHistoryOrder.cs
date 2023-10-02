@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Infrastructure.Config.Attributes;
+using Infrastructure.Config;
 using Ardalis.ApiEndpoints;
-using ApplicationCore.Interfaces.ClientInterfaces;
+using ApplicationCore.Interfaces.Clients;
 
 namespace PublicApi.Endpoints.Order.Query
 {

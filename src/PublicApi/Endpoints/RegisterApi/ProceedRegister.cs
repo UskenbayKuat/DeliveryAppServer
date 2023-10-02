@@ -1,11 +1,11 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
-using ApplicationCore.Interfaces.RegisterInterfaces;
+using ApplicationCore.Interfaces.Register;
 using ApplicationCore.Models.Dtos.Register;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
-using Infrastructure.Config.Attributes;
+using Infrastructure.Config;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands.Register;
 

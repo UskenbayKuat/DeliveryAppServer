@@ -1,9 +1,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Interfaces.Drivers;
 using Ardalis.ApiEndpoints;
-using Infrastructure.Config.Attributes;
+using Infrastructure.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 

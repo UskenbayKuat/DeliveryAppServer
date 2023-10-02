@@ -1,11 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Interfaces;
-using ApplicationCore.Interfaces.TokenInterfaces;
 using ApplicationCore.Models.Dtos.Shared;
-using ApplicationCore.Models.Values;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;

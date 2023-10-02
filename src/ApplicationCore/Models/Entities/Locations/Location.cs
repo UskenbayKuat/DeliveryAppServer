@@ -13,10 +13,11 @@ namespace ApplicationCore.Models.Entities.Locations
         public double Latitude { get; private set; }
         public double Longitude { get; private set; }
 
-        public void UpdateLocation(double latitude, double longitude)
+        public Location UpdateLocation(double latitude, double longitude)
         {
             Latitude = latitude;
             Longitude = longitude;
+            return this;
         }
         
     }

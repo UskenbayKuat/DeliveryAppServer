@@ -1,11 +1,12 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Interfaces.Drivers;
 using ApplicationCore.Models.Dtos.Deliveries;
 using AutoMapper;
 using MediatR;
-using Notification.Interfaces;
+using Notification.Services;
+using PublicApi.Commands.Deliveries.Models;
 
 namespace PublicApi.Commands.Deliveries.Handlers
 {

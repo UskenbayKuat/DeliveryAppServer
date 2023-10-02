@@ -1,11 +1,11 @@
-﻿using ApplicationCore.Interfaces.DeliveryInterfaces;
-using ApplicationCore.Models.Dtos.Deliveries;
+﻿using ApplicationCore.Models.Dtos.Deliveries;
 using AutoMapper;
 using MediatR;
-using Notification.Interfaces;
 using System.Threading.Tasks;
 using System.Threading;
-using ApplicationCore.Interfaces.ClientInterfaces;
+using PublicApi.Commands.Deliveries.Models;
+using ApplicationCore.Interfaces.Clients;
+using Notification.Services;
 
 namespace PublicApi.Commands.Deliveries.Handlers
 {

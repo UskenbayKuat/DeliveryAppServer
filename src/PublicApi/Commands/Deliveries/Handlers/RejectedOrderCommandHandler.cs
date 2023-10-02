@@ -1,10 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Interfaces.Clients;
+using ApplicationCore.Interfaces.Drivers;
 using MediatR;
-using Notification.Interfaces;
+using Notification.Services;
+using PublicApi.Commands.Deliveries.Models;
 
 namespace PublicApi.Commands.Deliveries.Handlers
 {
@@ -14,7 +15,10 @@ namespace PublicApi.Commands.Deliveries.Handlers
         private readonly IOrderCommand _orderCommand;
         private readonly INotify _notify;
 
-        public RejectedOrderCommandHandler(INotify notify, IDeliveryCommand deliveryCommand, IOrderCommand orderCommand)
+        public RejectedOrderCommandHandler(
+            INotify notify, 
+            IDeliveryCommand deliveryCommand, 
+            IOrderCommand orderCommand)
         {
             _notify = notify;
             _deliveryCommand = deliveryCommand;

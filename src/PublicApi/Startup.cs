@@ -1,5 +1,4 @@
 using OrderBackgroundTasks;
-using Infrastructure.Config.Middlewares;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PublicApi.Extensions;
 using Notification.Hubs;
+using Infrastructure.Config;
 
 namespace PublicApi
 {

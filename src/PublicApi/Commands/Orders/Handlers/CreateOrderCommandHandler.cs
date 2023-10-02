@@ -1,11 +1,12 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.ClientInterfaces;
-using ApplicationCore.Interfaces.DeliveryInterfaces;
+using ApplicationCore.Interfaces.Clients;
+using ApplicationCore.Interfaces.Drivers;
 using ApplicationCore.Models.Dtos.Orders;
 using AutoMapper;
 using MediatR;
-using Notification.Interfaces;
+using Notification.Services;
+using PublicApi.Commands.Orders.Models;
 
 namespace PublicApi.Commands.Orders.Handlers
 {

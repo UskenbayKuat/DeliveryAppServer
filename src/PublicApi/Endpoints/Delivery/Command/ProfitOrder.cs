@@ -1,14 +1,10 @@
-﻿using ApplicationCore.Interfaces.DeliveryInterfaces;
-using Ardalis.ApiEndpoints;
+﻿using Ardalis.ApiEndpoints;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using PublicApi.Commands.Deliveries;
-using ApplicationCore.Models.Dtos.Deliveries;
-using AutoMapper;
-using ApplicationCore.Interfaces.ClientInterfaces;
 using MediatR;
+using PublicApi.Commands.Deliveries.Models;
 
 namespace PublicApi.Endpoints.Delivery.Command
 {

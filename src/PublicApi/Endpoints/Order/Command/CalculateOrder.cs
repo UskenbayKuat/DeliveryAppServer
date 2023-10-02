@@ -1,13 +1,13 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Interfaces.ClientInterfaces;
+using ApplicationCore.Interfaces.Clients;
 using ApplicationCore.Models.Dtos.Orders;
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Commands;
-using PublicApi.Commands.Orders;
+using PublicApi.Commands.Orders.Models;
 
 namespace PublicApi.Endpoints.Clients.Command
 {

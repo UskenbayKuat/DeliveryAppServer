@@ -15,7 +15,12 @@ namespace ApplicationCore.Models.Dtos.Deliveries
         public DateTime FinishDate { get; set; }
         public string StateName { get; set; }
         public GeneralState StateValue { get; set; }
-        public int Hour => (FinishDate - StartDate).Hours;
+        public int Hour => Hours();
+        public int Hours()
+        {
+            var hour = (FinishDate - StartDate).Hours;
+            return hour >= 0 ? hour : 0;
+        }
         public double Price => OrderDtoList.Sum(x => x.Price);
         public List<OrderDto> OrderDtoList { get; set; } = new();
     }
