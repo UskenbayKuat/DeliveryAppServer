@@ -8,6 +8,7 @@ namespace ApplicationCore.Models.Dtos.Shared
         public string DriverName { get;  set; }
         public string DriverSurname { get;  set; }
         public string DriverPhoneNumber { get;  set; }
+        public int OrderId { get; set; }
         public LocationDto SetUserId(string userId)
         {
             UserId = userId;

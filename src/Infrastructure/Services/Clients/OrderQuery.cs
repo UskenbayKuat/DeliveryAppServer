@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.Clients;
 using ApplicationCore.Models.Dtos.Deliveries;
+using ApplicationCore.Models.Dtos.Shared;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Enums;
+using ApplicationCore.Specifications.Deliveries;
 using ApplicationCore.Specifications.Orders;
 using Ardalis.Specification;
 using Infrastructure;
@@ -84,6 +86,20 @@ namespace Infrastructure.Services.Clients
             }
             return deliveriesInfo;
         }
-
+        public async Task<LocationDto> GetCurrentLocationAsync(LocationDto dto)
+        {
+            var orderSpec = new OrderWithDeliverySpecification(dto.OrderId);
+            var order = await _context.FirstOrDefaultAsync(orderSpec)
+                ?? throw new ArgumentException($"Нет такой заказ по id {dto.OrderId}");
+            var driver = await _dbIdentityDbContext.Users.FirstOrDefaultAsync(x => x.Id == order.Delivery.Driver.UserId);
+            return new()
+            {
+                DriverName = driver.Name,
+                DriverPhoneNumber = driver.PhoneNumber,
+                DriverSurname = driver.Surname,
+                Latitude = order.Delivery.Location.Latitude,
+                Longitude = order.Delivery.Location.Longitude
+            };
+        }
     }
 }

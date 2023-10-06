@@ -10,6 +10,7 @@ using ApplicationCore.Specifications.Deliveries;
 using Infrastructure.Context.Identity;
 using Infrastructure.Config;
 using Microsoft.EntityFrameworkCore;
+using ApplicationCore.Models.Dtos.Shared;
 
 namespace Infrastructure.Services.Drivers
 {

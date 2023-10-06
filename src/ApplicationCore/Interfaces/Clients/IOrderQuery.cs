@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Models.Dtos.Deliveries;
-using ApplicationCore.Models.Dtos.Orders;
+using ApplicationCore.Models.Dtos.Shared;
 using ApplicationCore.Models.Entities.Orders;
-using ApplicationCore.Models.Values;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationCore.Interfaces.Clients
 {
@@ -17,5 +13,6 @@ namespace ApplicationCore.Interfaces.Clients
         Task<List<DeliveryDto>> GetHistoryAsync(string clientUserId);
         Task<IReadOnlyList<Order>> GetWaitingOrders(int routeId, DateTime dateTime);
         public Task<IReadOnlyList<Order>> GetByDriverUserIdAsync(string driverUserId);
+        Task<LocationDto> GetCurrentLocationAsync(LocationDto dto);
     }
 }

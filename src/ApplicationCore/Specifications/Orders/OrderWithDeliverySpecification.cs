@@ -24,5 +24,12 @@ namespace ApplicationCore.Specifications.Orders
                 .Where(o => o.State.StateValue == GeneralState.DELIVERED ||
                             o.State.StateValue == GeneralState.CANCALED);
         }
+        public OrderWithDeliverySpecification(int orderId)
+        {
+            Query
+                .Include(o => o.Delivery).ThenInclude(o => o.Location)
+                .Include(o => o.Delivery).ThenInclude(o => o.Driver)
+                .Where(o => o.Id == orderId);
+        }
     }
 }
