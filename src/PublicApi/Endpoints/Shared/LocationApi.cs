@@ -22,7 +22,7 @@ namespace PublicApi.Endpoints.Shared
         }
 
         [HttpPost("api/currentLocation")]
-        public async override Task<ActionResult> HandleAsync(LocationDto request, CancellationToken cancellationToken = default)
+        public async override Task<ActionResult> HandleAsync([FromBody]LocationDto request, CancellationToken cancellationToken = default)
         {
             try
             {
