@@ -86,21 +86,18 @@ namespace Infrastructure.Services.Clients
             {
                 return default;
             }
-            //await _stateHistory.RemoveAsync(order.Id, order.State.Id); 
+            await _stateHistory.RemoveAsync(order.Id, order.State.Id); 
             await _rejected.AddAsync(order);
-            var state = await _state.GetByStateAsync(GeneralState.WAITING_ON_REVIEW);
-            order.Delivery = default;
-            order.State = state;
-            await _context.UpdateAsync(order.SetSecretCodeEmpty());
-            return order;
+            order.State = await _state.GetByStateAsync(GeneralState.WAITING_ON_REVIEW);
+            return await _context.UpdateAsync(order
+                                        .SetSecretCodeEmpty()
+                                        .SetDelivery());
         }
 
         public async Task SetDeliveryAsync(Order order, Delivery delivery)
         {
-            var state = await _state.GetByStateAsync(GeneralState.ON_REVIEW);
-            order.State = state;
-            order.Delivery = delivery;
-            await _context.UpdateAsync(order);
+            order.State = await _state.GetByStateAsync(GeneralState.ON_REVIEW);
+            await _context.UpdateAsync(order.SetDelivery(delivery));
             await _backgroundTask.QueueAsync(new BackgroundOrder(order.Id, order.Delivery.Id));
         }
 

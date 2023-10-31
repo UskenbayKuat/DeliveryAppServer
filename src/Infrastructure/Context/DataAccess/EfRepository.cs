@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Context.DataAccess
 {
-    public class EfRepository<T> : IAsyncRepository<T> where T : BaseEntity
+    public class EfRepository<TEntity> : IAsyncRepository<TEntity> where TEntity : BaseEntity
     {
         private readonly AppDbContext _dbContext;
 
@@ -21,89 +21,90 @@ namespace Infrastructure.Context.DataAccess
             _dbContext = dbContext;
         }
 
-        public IQueryable<T> GetQueryableAsync(ISpecification<T> spec, CancellationToken cancellationToken = default)
+        public IQueryable<TEntity> GetQueryableAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default)
         {
             return ApplySpecification(spec);
         }
 
-        public async Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<TEntity>> ListAllAsync(CancellationToken cancellationToken = default)
         {
-            return await _dbContext.Set<T>().ToListAsync(cancellationToken);
+            return await _dbContext.Set<TEntity>().ToListAsync(cancellationToken);
         }
 
-        public async Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec,
+        public async Task<IReadOnlyList<TEntity>> ListAsync(ISpecification<TEntity> spec,
             CancellationToken cancellationToken = default)
         {
             var specificationResult = ApplySpecification(spec);
             return await specificationResult.ToListAsync(cancellationToken);
         }
 
-        public async Task<int> CountAsync(ISpecification<T> spec, CancellationToken cancellationToken = default)
+        public async Task<int> CountAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default)
         {
             var specificationResult = ApplySpecification(spec);
             return await specificationResult.CountAsync(cancellationToken);
         }
 
-        public async Task<T> AddAsync(T entity, CancellationToken cancellationToken = default)
+        public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            await _dbContext.Set<T>().AddAsync(entity, cancellationToken);
+            await _dbContext.Set<TEntity>().AddAsync(entity, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             return entity;
         }
 
-        public async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
+        public async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             entity.ModifiedDate = DateTime.UtcNow;
             _dbContext.Entry(entity).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync(cancellationToken);
+            return entity;
         }
 
-        public async Task DeleteAsync(T entity, CancellationToken cancellationToken = default)
+        public async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             entity.IsDeleted = true;
             entity.ModifiedDate = DateTime.UtcNow;
             await UpdateAsync(entity, cancellationToken);
         }
 
-        public async Task RemoveAsync(T entity, CancellationToken cancellationToken = default)
+        public async Task RemoveAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            _dbContext.Set<T>().Remove(entity);
+            _dbContext.Set<TEntity>().Remove(entity);
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<T> FirstAsync(ISpecification<T> spec, CancellationToken cancellationToken = default)
+        public async Task<TEntity> FirstAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default)
         {
             var specificationResult = ApplySpecification(spec);
             return await specificationResult.FirstAsync(cancellationToken);
         }
 
-        public async Task<T> FirstOrDefaultAsync(ISpecification<T> spec, CancellationToken cancellationToken = default)
+        public async Task<TEntity> FirstOrDefaultAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default)
         {
             var specificationResult = ApplySpecification(spec);
             return await specificationResult.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default)
+        public async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
         {
-            return await _dbContext.Set<T>().FirstOrDefaultAsync(expression, cancellationToken);
+            return await _dbContext.Set<TEntity>().FirstOrDefaultAsync(expression, cancellationToken);
         }
 
-        public async Task<bool> AnyAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default)
+        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
         {
-            return await _dbContext.Set<T>().AnyAsync(expression, cancellationToken);
+            return await _dbContext.Set<TEntity>().AnyAsync(expression, cancellationToken);
         }
 
-        public async Task<bool> AnyAsync(ISpecification<T> spec, CancellationToken cancellationToken = default)
+        public async Task<bool> AnyAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default)
         {
             var specificationResult = ApplySpecification(spec);
             return await specificationResult.AnyAsync(cancellationToken);
         }
 
-        private IQueryable<T> ApplySpecification(ISpecification<T> spec)
+        private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> spec)
         {
             var evaluator = new SpecificationEvaluator();
-            return evaluator.GetQuery(_dbContext.Set<T>().AsQueryable(), spec);
+            return evaluator.GetQuery(_dbContext.Set<TEntity>().AsQueryable(), spec);
         }
     }
 }
