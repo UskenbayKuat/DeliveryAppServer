@@ -54,6 +54,7 @@ namespace PublicApi.Extensions
             services.AddTransient<IProceedRegistration, ProceedRegistrationService>();
             services.AddTransient<ICalculate, CalculateService>();
             services.AddTransient<INotify, NotifyService>();
+            services.AddTransient<IMobileLogger, MobileLoggerService>();
             services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.JwtSettings));
             services.ConfigureDbContextServices(configuration);
         }

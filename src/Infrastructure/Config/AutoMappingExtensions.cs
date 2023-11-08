@@ -1,16 +1,12 @@
-using System;
 using System.Collections.Generic;
-using ApplicationCore.Entities;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Extensions;
-using ApplicationCore.Models.Dtos;
 using ApplicationCore.Models.Dtos.Deliveries;
 using ApplicationCore.Models.Dtos.Histories;
 using ApplicationCore.Models.Dtos.Orders;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Enums;
-using ApplicationCore.Models.Values;
 using DeliveryDto = ApplicationCore.Models.Dtos.Deliveries.DeliveryDto;
 
 namespace Infrastructure.Config
@@ -102,7 +98,7 @@ namespace Infrastructure.Config
                 DriverName = driver?.Name,
                 DriverSurname = driver?.Surname,
                 CarNumber = order.Delivery?.Driver.Car.CarNumber,
-                DeliveryState = order.Delivery?.State?.StateValue == GeneralState.INPROGRESS
+                DeliveryState = (order.Delivery?.State?.StateValue != GeneralState.DELIVERED && order.Delivery?.State?.StateValue == GeneralState.INPROGRESS)
                         ? order.Delivery?.State?.StateValue.GetDisplayName()
                         : order.State.StateValue.GetDisplayName(),
                 SecretCode = order.SecretCode,

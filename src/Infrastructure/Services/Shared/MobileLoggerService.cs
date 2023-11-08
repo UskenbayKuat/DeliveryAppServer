@@ -15,9 +15,11 @@ namespace Infrastructure.Services.Shared
             _context = context;
         }
 
-        public async Task AddAsync(MobileLoggerDto dto)
+        public Task AddAsync(MobileLoggerDto dto)
         {
-            _context.AddAsync(null);
+            var model = new MobileLogger(dto.Message, dto.StackTrace,
+                dto.FullName, dto.Email, dto.Type, dto.MobileEnum);
+            return _context.AddAsync(model);
         }
     }
 }
