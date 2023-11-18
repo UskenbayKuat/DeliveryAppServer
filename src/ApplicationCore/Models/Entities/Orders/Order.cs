@@ -76,6 +76,11 @@ namespace ApplicationCore.Models.Entities.Orders
             }
             return Task.CompletedTask;
         }
+        public Order SetDelivery(Delivery delivery = default)
+        {
+            Delivery = default;
+            return this;
+        }
 
     }
 }

@@ -10,20 +10,20 @@ using Ardalis.Specification;
 namespace ApplicationCore.Interfaces
 {
     //https://www.youtube.com/watch?v=YOakQq4GLU4&ab_channel=DevExpress
-    public interface IAsyncRepository<T> where T : BaseEntity
+    public interface IAsyncRepository<TEntity> where TEntity : BaseEntity
     {
-        IQueryable<T> GetQueryableAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);
-        Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default);
-        Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);
-        Task<T> AddAsync(T entity, CancellationToken cancellationToken = default);
-        Task UpdateAsync(T entity, CancellationToken cancellationToken = default);
-        Task DeleteAsync(T entity, CancellationToken cancellationToken = default);
-        Task<int> CountAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);
-        Task<T> FirstAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);
-        Task<T> FirstOrDefaultAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);
-        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default);
-        Task<bool> AnyAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default);
-        Task<bool> AnyAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);
-        Task RemoveAsync(T entity, CancellationToken cancellationToken = default);
+        IQueryable<TEntity> GetQueryableAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<TEntity>> ListAllAsync(CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<TEntity>> ListAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default);
+        Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default);
+        Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
+        Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default);
+        Task<int> CountAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default);
+        Task<TEntity> FirstAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default);
+        Task<TEntity> FirstOrDefaultAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default);
+        Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default);
+        Task<bool> AnyAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default);
+        Task<bool> AnyAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default);
+        Task RemoveAsync(TEntity entity, CancellationToken cancellationToken = default);
     }
 }

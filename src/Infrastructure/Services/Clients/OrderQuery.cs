@@ -7,7 +7,6 @@ using ApplicationCore.Models.Dtos.Deliveries;
 using ApplicationCore.Models.Dtos.Shared;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Enums;
-using ApplicationCore.Specifications.Deliveries;
 using ApplicationCore.Specifications.Orders;
 using Ardalis.Specification;
 using Infrastructure;
@@ -58,7 +57,6 @@ namespace Infrastructure.Services.Clients
         }
         private async Task<List<DeliveryDto>> GetDeliveryDtosAsync(ISpecification<Order> specification, string userId)
         {
-
             var orders = await _context
                 .GetQueryableAsync(specification)
                 .AsNoTracking()

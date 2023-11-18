@@ -30,7 +30,7 @@ namespace Infrastructure.Services.Clients
         {
             var orderHistory = await _context
                 .FirstOrDefaultAsync(o => o.Order.Id == orderId && o.State.Id == stateId)
-                ?? throw new ArgumentException("Не найдено история статус заказа");
+                ?? throw new ArgumentException("Не найдено статус заказа");
             await _context.RemoveAsync(orderHistory);
         }
 
