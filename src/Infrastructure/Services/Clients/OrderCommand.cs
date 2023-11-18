@@ -45,7 +45,7 @@ namespace Infrastructure.Services.Clients
             _stateHistory = stateHistory;
         }
 
-        public async Task<Order> CreateAsync(CreateOrderDto dto, string clientUserId)
+        public async Task<Order> CreateAsync(CreateOrderDto dto, Guid clientUserId)
         {
             var client = await _client.GetByUserId(clientUserId);
             var carType = await _contextCarType.FirstOrDefaultAsync(c => c.Name == dto.CarTypeName);
@@ -63,7 +63,7 @@ namespace Infrastructure.Services.Clients
             return await _context.AddAsync(order);
         }
 
-        public async Task<string> QRCodeAcceptAsync(QRCodeDto dto)
+        public async Task<Guid> QRCodeAcceptAsync(QRCodeDto dto)
         {
             var orderSpec = new OrderWithStateSpecification(dto.OrderId, dto.UserId);
             var order = await _context.FirstOrDefaultAsync(orderSpec);
@@ -75,10 +75,10 @@ namespace Infrastructure.Services.Clients
                 _ => throw new ArgumentException("Не правильный статус заказа")
             };
             await _stateHistory.AddAsync(order.SetSecretCodeEmpty());
-            return order.Client.UserId;
+            return order.Client.User.Id;
         }
 
-        public async Task<Order> RejectAsync(int orderId)
+        public async Task<Order> RejectAsync(Guid orderId)
         {
             var orderSpec = new OrderForRejectSpecification(orderId);
             var order = await _context.FirstOrDefaultAsync(orderSpec);
@@ -110,7 +110,7 @@ namespace Infrastructure.Services.Clients
                     o.State.StateValue == GeneralState.ON_REVIEW);
         }
 
-        public async Task<Order> UpdateStatePendingAsync(int orderId)
+        public async Task<Order> UpdateStatePendingAsync(Guid orderId)
         {
             var orderSpec = new OrderWithClientSpecification(orderId);
             var order = await _context.FirstOrDefaultAsync(orderSpec)
@@ -120,7 +120,7 @@ namespace Infrastructure.Services.Clients
             return order;
         }
 
-        public async Task CancelAsync(int orderId)
+        public async Task CancelAsync(Guid orderId)
         {
             var spec = new OrderWithStateSpecification(orderId, GeneralState.WAITING_ON_REVIEW);
             var order = await _context.FirstOrDefaultAsync(spec)
@@ -129,14 +129,14 @@ namespace Infrastructure.Services.Clients
             await _context.UpdateAsync(order.SetCancellationDate());
         }
 
-        public async Task<string> ProfitAsync(ProfitOrderDto dto)
+        public async Task<Guid> ProfitAsync(ProfitOrderDto dto)
         {
             var spec = new OrderWithStateSpecification(dto.OrderId, dto.UserId);
             var order = await _context.FirstOrDefaultAsync(spec)
                 ?? throw new ArgumentException($"У вас нет такой заказа: Id {dto.OrderId}");
             order.State = await _state.GetByStateAsync(GeneralState.AWAITING_TRANSFER_TO_CUSTOMER);
             await _context.UpdateAsync(order.SetSecretCode());
-            return order.Client.UserId;
+            return order.Client.User.Id;
         }
     }
 }

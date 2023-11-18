@@ -62,7 +62,7 @@ namespace Infrastructure.Config
                 Price = order.Price,
                 StateName = order.State.Name,
                 DeliveryDate = order.DeliveryDate,
-                ClientName = client.Name,
+                ClientName = client.UserName,
                 ClientSurname = client.Surname,
                 ClientPhoneNumber = client.PhoneNumber,
                 Latitude = order.Location.Latitude,
@@ -79,7 +79,7 @@ namespace Infrastructure.Config
 
             };
 
-        public static DeliveryDto GetDeliveryDto(this Order order, User client, User driver = null, StateHistoryDto stateHistoryDto = null) =>
+        public static DeliveryDto GetDeliveryDto(this Order order, StateHistoryDto stateHistoryDto = null) =>
             new()
             {
                 StartCityName = order.Route.StartCity.Name,
@@ -91,12 +91,12 @@ namespace Infrastructure.Config
                 Package = order.Package,
                 IsSingle = order.IsSingle,
                 Price = order.Price,
-                ClientName = client.Name,
-                ClientSurname = client.Surname,
-                ClientPhoneNumber = client.PhoneNumber,
-                DriverPhoneNumber = driver?.PhoneNumber,
-                DriverName = driver?.Name,
-                DriverSurname = driver?.Surname,
+                ClientName = order.Client.User.UserName,
+                ClientSurname = order.Client.User.Surname,
+                ClientPhoneNumber = order.Client.User.PhoneNumber,
+                DriverPhoneNumber = order.Delivery?.Driver?.User?.PhoneNumber,
+                DriverName = order.Delivery?.Driver?.User?.UserName,
+                DriverSurname = order.Delivery?.Driver?.User?.Surname,
                 CarNumber = order.Delivery?.Driver.Car.CarNumber,
                 DeliveryState = (order.Delivery?.State?.StateValue != GeneralState.DELIVERED && order.Delivery?.State?.StateValue == GeneralState.INPROGRESS)
                         ? order.Delivery?.State?.StateValue.GetDisplayName()

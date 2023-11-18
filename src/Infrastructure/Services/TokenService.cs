@@ -7,9 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Models.Dtos.Shared;
-using Infrastructure.Context.Identity;
 using Infrastructure.Config;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using ApplicationCore.Interfaces;
@@ -18,14 +16,14 @@ namespace Infrastructure.Services
 {
     public class TokenService : IGenerateToken, IRefreshToken
     {
-        private readonly AppIdentityDbContext _identityDb;
+        private readonly IAsyncRepository<User> _context;
         private readonly AuthOptions _options;
         public int LifeTimeRefreshTokenInYear { get; }
-        public TokenService(AppIdentityDbContext identityDb, IOptions<AuthOptions> options)
+        public TokenService(IOptions<AuthOptions> options, IAsyncRepository<User> context)
         {
-            _identityDb = identityDb;
             _options = options.Value;
             LifeTimeRefreshTokenInYear = _options.LifeTimeRefreshTokenInYear;
+            _context = context;
         }
 
         public string CreateAccessToken(User user) =>
@@ -35,7 +33,7 @@ namespace Infrastructure.Services
                         _options.Issuer,
                         _options.Audience,
                         notBefore: DateTime.UtcNow,
-                        claims: new List<Claim> { new(JwtRegisteredClaimNames.Sub, user.Id) },
+                        claims: new List<Claim> { new(JwtRegisteredClaimNames.Sub, user.Id.ToString()) },
                         signingCredentials: new SigningCredentials(
                             new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.SecretKey)),
                             SecurityAlgorithms.HmacSha256),
@@ -52,8 +50,8 @@ namespace Infrastructure.Services
 
         public async Task<string> RefreshTokenAsync(RefreshTokenDto tokenDto)
         {
-            var user = await _identityDb.Users
-                .FirstOrDefaultAsync(u =>
+            var user = await _context
+                .FirstOrDefaultWithAsNoTrackingkAsync(u =>
                         u.RefreshToken == tokenDto.RefreshToken &&
                         u.RefreshTokenExpiryTime >= DateTime.Now)
                 ?? throw new ArgumentException("Invalid account");

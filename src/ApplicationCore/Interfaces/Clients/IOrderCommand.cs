@@ -16,14 +16,13 @@ namespace ApplicationCore.Interfaces.Clients
 {
     public interface IOrderCommand
     {
-        public Task<Order> CreateAsync(CreateOrderDto dto, string clientUserId);
-        public Task<string> QRCodeAcceptAsync(QRCodeDto dto);
-        public Task<Order> RejectAsync(int orderId);
+        public Task<Order> CreateAsync(CreateOrderDto dto, Guid clientUserId);
+        public Task<Guid> QRCodeAcceptAsync(QRCodeDto dto);
+        public Task<Order> RejectAsync(Guid orderId);
         Task SetDeliveryAsync(Order order, Delivery delivery);
-        //
         Task<bool> IsOnReview(BackgroundOrder backgroundOrder);
-        Task<Order> UpdateStatePendingAsync(int orderId);
-        Task CancelAsync(int orderId);
-        Task<string> ProfitAsync(ProfitOrderDto dto);
+        Task<Order> UpdateStatePendingAsync(Guid orderId);
+        Task CancelAsync(Guid orderId);
+        Task<Guid> ProfitAsync(ProfitOrderDto dto);
     }
 }

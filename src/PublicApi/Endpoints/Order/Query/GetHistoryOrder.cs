@@ -24,8 +24,10 @@ namespace PublicApi.Endpoints.Order.Query
         {
             try
             {
+                var clientUserId = Guid.Parse(HttpContext.Items["UserId"].ToString());
+
                 var orderDtoList =
-                    await _orderQuery.GetHistoryAsync(HttpContext.Items["UserId"]?.ToString());
+                    await _orderQuery.GetHistoryAsync(clientUserId);
                 return Ok(orderDtoList);
             }
             catch (ArgumentException ex)

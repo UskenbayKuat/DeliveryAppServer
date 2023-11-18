@@ -3,11 +3,7 @@ using ApplicationCore.Interfaces.Clients;
 using ApplicationCore.Interfaces.Drivers;
 using ApplicationCore.Interfaces.Register;
 using ApplicationCore.Interfaces.Shared;
-using ApplicationCore.Models.Dtos;
 using ApplicationCore.Models.Dtos.Shared;
-using ApplicationCore.Models.Values;
-using Infrastructure.Context.DataAccess;
-using Infrastructure.Context.Identity;
 using Infrastructure.Config;
 using Infrastructure.Services;
 using Infrastructure.Services.Clients;
@@ -18,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Notification.Services;
+using Infrastructure.Context;
 
 namespace PublicApi.Extensions
 {
@@ -69,19 +66,13 @@ namespace PublicApi.Extensions
 
             if (useOnlyInMemoryDatabase)
             {
-                services.AddDbContext<AppDbContext>(c =>
+                services.AddDbContext<DeliveryContext>(c =>
                     c.UseInMemoryDatabase("AppDb"));
-         
-                services.AddDbContext<AppIdentityDbContext>(options =>
-                    options.UseInMemoryDatabase("AppIdentityDb"));
             }
             else
             {
-                services.AddDbContext<AppDbContext>(c =>
+                services.AddDbContext<DeliveryContext>(c =>
                     c.UseNpgsql(configuration.GetConnectionString("AppConnection")));
-
-                services.AddDbContext<AppIdentityDbContext>(options =>
-                    options.UseNpgsql(configuration.GetConnectionString("IdentityConnection")));
             }
         }
         

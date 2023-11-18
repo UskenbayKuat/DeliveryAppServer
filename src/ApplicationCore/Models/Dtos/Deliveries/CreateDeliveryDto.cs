@@ -5,10 +5,10 @@ namespace ApplicationCore.Models.Dtos.Deliveries
 {
     public class CreateDeliveryDto
     {
-        public int StartCityId { get; set; }
-        public int FinishCityId { get; set; }
+        public Guid StartCityId { get; set; }
+        public Guid FinishCityId { get; set; }
         public DateTime DeliveryDate { get; set; }
         public Location Location { get; set; }
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

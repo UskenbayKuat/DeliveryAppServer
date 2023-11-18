@@ -25,8 +25,9 @@ namespace PublicApi.Endpoints.Delivery.Query
         {
             try
             {
+                var driverUserId = HttpContext.Items["UserId"].ToString();
                 var deliveryDto =
-                    await _deliveryQuery.GetDeliveryIsActiveAsync(HttpContext.Items["UserId"]?.ToString());
+                    await _deliveryQuery.GetDeliveryIsActiveAsync(Guid.Parse(driverUserId));
                 return Ok(deliveryDto);
             }
             catch(ArgumentException ex)

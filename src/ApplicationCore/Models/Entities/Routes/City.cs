@@ -2,9 +2,8 @@
 {
     public class City : BaseEntity
     {
-        public City(int id, string name)
+        public City(string name)
         {
-            Id = id;
             Name = name;
         }
 

@@ -1,18 +1,17 @@
-using System.Collections.Generic;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Models.Dtos.Shared;
 
 namespace Notification.Services
 {
     public interface INotify
     {
-        public Task SendToDriverAsync(string userId, CancellationToken cancellationToken);
-        public Task SendToClient(string userId, CancellationToken cancellationToken);
-        public Task SendDriverLocationToClientsAsync(string driverUserId, LocationDto locationCommand);
-        public Task SendInfoToClientsAsync(string driverUserId);
-        public Task SendProfitClientAsync(string clientUserId);
-        Task QrCodeClientAsync(string clientUserId);
+        public Task SendToDriverAsync(Guid userId, CancellationToken cancellationToken);
+        public Task SendToClient(Guid userId, CancellationToken cancellationToken);
+        public Task SendDriverLocationToClientsAsync(Guid driverUserId, LocationDto locationCommand);
+        public Task SendInfoToClientsAsync(Guid driverUserId);
+        public Task SendProfitClientAsync(Guid clientUserId);
+        Task QrCodeClientAsync(Guid clientUserId);
     }
 }

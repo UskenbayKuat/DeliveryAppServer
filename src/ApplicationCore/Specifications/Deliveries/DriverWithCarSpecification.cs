@@ -1,13 +1,14 @@
 using ApplicationCore.Entities.AppEntities;
 using Ardalis.Specification;
+using System;
 
 namespace ApplicationCore.Specifications.Deliveries
 {
     public sealed class DriverWithCarSpecification : Specification<Driver>
     {
-        public DriverWithCarSpecification(string userId)
+        public DriverWithCarSpecification(Guid userId)
         {
-            Query.Include(d => d.Car).Where(d => d.UserId == userId);
+            Query.Include(d => d.Car).Where(d => d.User.Id == userId);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace PublicApi.Commands.Orders.Handlers
             if (delivery != null)
             {
                 await _orderCommand.SetDeliveryAsync(order, delivery);
-                await _notify.SendToDriverAsync(delivery.Driver.UserId, cancellationToken);
+                await _notify.SendToDriverAsync(delivery.Driver.User.Id, cancellationToken);
             }
         }
     }

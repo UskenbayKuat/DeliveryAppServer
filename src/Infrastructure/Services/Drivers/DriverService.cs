@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Cars;
@@ -40,7 +41,7 @@ namespace Infrastructure.Services.Drivers
             await _context.UpdateAsync(driver);
         }
 
-        public async Task<Driver> GetByUserIdAsync(string userId)
+        public async Task<Driver> GetByUserIdAsync(Guid userId)
         {
             var driverSpec = new DriverWithCarSpecification(userId);
             return await _context.FirstOrDefaultAsync(driverSpec);

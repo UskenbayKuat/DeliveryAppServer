@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Interfaces;
@@ -14,9 +15,9 @@ namespace Infrastructure.Services.Clients
             _context = context;
         }
 
-        public async Task<Client> GetByUserId(string userId)
+        public async Task<Client> GetByUserId(Guid userId)
         {
-            return await _context.FirstOrDefaultAsync(c => c.UserId == userId);
+            return await _context.FirstOrDefaultAsync(c => c.User.Id == userId);
         }
     }
 }

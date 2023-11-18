@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
-using Infrastructure.Context.DataAccess;
-using Infrastructure.Context.Identity;
+using Infrastructure.Context;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,12 +14,11 @@ namespace PublicApi
         public static async Task Main(string[] args) =>
             await CreateHostBuilder(args)
                 .Build()
-                .MigrateDbContext<AppDbContext>((context, provider) =>
+                .MigrateDbContext<DeliveryContext>((context, provider) =>
                 {
-                    var logger = provider.GetService<ILogger<AppDbContextInitializer>>();
-                    AppDbContextInitializer.SeedAsync(context, logger);
+                    var logger = provider.GetService<ILogger<DeliveryContextInitializer>>();
+                    DeliveryContextInitializer.SeedAsync(context, logger);
                 })
-                .MigrateDbContext<AppIdentityDbContext>((_, _) => {})
                 .RunAsync();
 
         private static IWebHostBuilder CreateHostBuilder(string[] args) =>

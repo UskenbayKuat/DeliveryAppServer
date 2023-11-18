@@ -3,10 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces.Drivers;
 using Ardalis.ApiEndpoints;
+using Infrastructure.Config;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PublicApi.Endpoints.Delivery.Command
 {
+    [Authorize]
     public class CancelDelivery : EndpointBaseAsync.WithoutRequest.WithActionResult
     {
         private readonly IDeliveryCommand _deliveryCommand;
@@ -21,7 +23,8 @@ namespace PublicApi.Endpoints.Delivery.Command
         {
             try
             {
-                await _deliveryCommand.CancellationAsync(HttpContext.Items["UserId"].ToString());
+                var driverUserId = HttpContext.Items["UserId"].ToString();
+                await _deliveryCommand.CancellationAsync(Guid.Parse(driverUserId));
                 return new NoContentResult();
             }
             catch (ArgumentException ex)

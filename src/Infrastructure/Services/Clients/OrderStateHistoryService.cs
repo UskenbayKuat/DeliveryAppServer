@@ -26,7 +26,7 @@ namespace Infrastructure.Services.Clients
             await _context.AddAsync(orderHistory);
         }
 
-        public async Task RemoveAsync(int orderId, int stateId)
+        public async Task RemoveAsync(Guid orderId, Guid stateId)
         {
             var orderHistory = await _context
                 .FirstOrDefaultAsync(o => o.Order.Id == orderId && o.State.Id == stateId)
@@ -34,7 +34,7 @@ namespace Infrastructure.Services.Clients
             await _context.RemoveAsync(orderHistory);
         }
 
-        public async Task<StateHistoryDto> GetAsync(int orderId)
+        public async Task<StateHistoryDto> GetAsync(Guid orderId)
         {
             var historySpec = new OrderStateHistoryWithStateSpecification(orderId);
             var ordersHistories = await _context

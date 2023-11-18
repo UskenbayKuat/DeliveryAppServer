@@ -5,7 +5,6 @@ using ApplicationCore.Interfaces.Shared;
 using ApplicationCore.Models.Dtos.Shared;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using NLog.Fluent;
 using Notification.Services;
 
 namespace Notification.Hubs
@@ -40,19 +39,20 @@ namespace Notification.Hubs
         public override async Task<Task> OnConnectedAsync()
         {
             _logger.LogInformation($"{DateTime.Now:g}:  Connect: ConnectingId: {Context.ConnectionId}, UserId: {Context.GetHttpContext().Items["UserId"]?.ToString()}");
-            await _chatHub.ConnectedAsync(Context.GetHttpContext().Items["UserId"]?.ToString(), Context.ConnectionId);
+            _ = Guid.TryParse(Context.GetHttpContext().Items["UserId"]?.ToString(), out var userId);
+            await _chatHub.ConnectedAsync(userId, Context.ConnectionId);
             return base.OnConnectedAsync();
         }
 
         public override async Task<Task> OnDisconnectedAsync(Exception exception)
         {
             _logger.LogInformation($"{DateTime.Now:g}: Disconnect: ConnectingId: {Context.ConnectionId}, UserId: {Context.GetHttpContext().Items["UserId"]?.ToString()}");
-            await _chatHub.DisconnectedAsync(Context.GetHttpContext().Items["UserId"]?.ToString(), Context.ConnectionId);
+            _ = Guid.TryParse(Context.GetHttpContext().Items["UserId"]?.ToString(), out var userId);
+            await _chatHub.DisconnectedAsync(userId, Context.ConnectionId);
             return base.OnDisconnectedAsync(exception);
         }
         public async Task SendMessage(string message)
         {
-            Console.WriteLine(DateTime.Now.ToString("g") + ": " + message);
             await Clients.Others.SendAsync("SendToDriver", message);
         }
     }

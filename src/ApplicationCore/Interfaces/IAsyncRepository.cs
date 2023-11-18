@@ -21,6 +21,7 @@ namespace ApplicationCore.Interfaces
         Task<int> CountAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default);
         Task<TEntity> FirstAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default);
         Task<TEntity> FirstOrDefaultAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default);
+        Task<TEntity> FirstOrDefaultWithAsNoTrackingkAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default);
         Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default);
         Task<bool> AnyAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default);
         Task<bool> AnyAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default);

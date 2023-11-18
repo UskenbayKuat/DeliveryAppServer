@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Interfaces;
@@ -15,7 +16,7 @@ namespace Infrastructure.Services.Clients
             _context = context;
         }
 
-        public async Task<bool> CheckRejectedAsync(int deliveryId, int orderId)
+        public async Task<bool> CheckRejectedAsync(Guid deliveryId, Guid orderId)
         {
             return await _context.AnyAsync(r =>
                     r.Delivery.Id == deliveryId &&

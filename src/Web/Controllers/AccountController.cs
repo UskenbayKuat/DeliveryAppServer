@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using ApplicationCore.Entities;
 using ApplicationCore.Entities.AppEntities;
-using Infrastructure.Context.Identity;
 using Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +13,11 @@ namespace Web.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        private readonly AppIdentityDbContext _identityDb;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, AppIdentityDbContext identityDb)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _identityDb = identityDb;
         }
 
         [HttpGet]

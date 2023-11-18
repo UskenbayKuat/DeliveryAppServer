@@ -1,8 +1,5 @@
  cd .\src\Infrastructure\
 
-dotnet ef --startup-project ..\PublicApi\ migrations add InitialAppDb --context AppDbContext
-dotnet ef --startup-project ..\PublicApi\ database update --context AppDbContext
-
-dotnet ef --startup-project ..\PublicApi\ migrations add InitialAppIdentityDb --context AppIdentityDbContext
-dotnet ef --startup-project ..\PublicApi\ database update --context AppIdentityDbContext
+dotnet ef --startup-project ..\PublicApi\ migrations add InitialDelivery --context DeliveryContext
+dotnet ef --startup-project ..\PublicApi\ database update --context DeliveryContext
 

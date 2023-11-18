@@ -21,7 +21,7 @@ namespace PublicApi.Commands.Orders.Handlers
         protected override async Task Handle(ConfirmOrderCommand request, CancellationToken cancellationToken)
         {
             var order  = await _orderCommand.UpdateStatePendingAsync(request.OrderId);
-            await _notify.SendToClient(order.Client.UserId, cancellationToken);
+            await _notify.SendToClient(order.Client.User.Id, cancellationToken);
         }
     }
 }

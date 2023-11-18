@@ -1,13 +1,14 @@
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Models.Enums;
 using Ardalis.Specification;
+using System;
 using System.Linq;
 
 namespace ApplicationCore.Specifications.Deliveries
 {
     public sealed class DeliveryWithOrderSpecification : Specification<Delivery>
     {
-        public DeliveryWithOrderSpecification(string userId, bool isActive = true)
+        public DeliveryWithOrderSpecification(Guid userId, bool isActive = true)
         {
             Query
                 .Include(d => d.State)
@@ -20,7 +21,8 @@ namespace ApplicationCore.Specifications.Deliveries
                 .Include(d => d.Orders).ThenInclude(o => o.Package)
                 .Include(d => d.Orders).ThenInclude(o => o.CarType)
                 .Include(d => d.Orders).ThenInclude(o => o.Location)
-                .Where(d => d.Driver.UserId == userId && !d.IsDeleted);
+                .Include(d => d.Driver).ThenInclude(o => o.User)
+                .Where(d => d.Driver.User.Id == userId && !d.IsDeleted);
             if (isActive)
             {
                 Query

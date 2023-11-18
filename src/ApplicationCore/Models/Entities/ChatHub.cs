@@ -1,11 +1,14 @@
+using System;
+
 namespace ApplicationCore.Entities.AppEntities
 {
     public class ChatHub : BaseEntity
     {
-        public string UserId { get; private set;}
+        public User User { get; set; }
+        public Guid UserId { get; private set;}
         public string ConnectionId { get; private set; }
 
-        public ChatHub(string userId, string connectionId)
+        public ChatHub(Guid userId, string connectionId)
         {
             UserId = userId;
             ConnectionId = connectionId;

@@ -1,20 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ApplicationCore.Entities.AppEntities.Routes
 {
     public class Route : BaseEntity
     {
-        public Route(int id, int startCityId, int finishCityId)
+        public Route(Guid startCityId, Guid finishCityId)
         {
-            Id = id;
             StartCityId = startCityId;
             FinishCityId = finishCityId;
         }
         
-        public int StartCityId { get; private set; }
+        public Guid StartCityId { get; private set; }
 
         public City StartCity { get; set;}
-        public int FinishCityId { get; private set; }
+        public Guid FinishCityId { get; private set; }
         
         public City FinishCity { get; set;}
     }

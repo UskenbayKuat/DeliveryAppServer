@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApplicationCore.Entities
 {
@@ -7,7 +8,8 @@ namespace ApplicationCore.Entities
         /// <summary>
         /// Id
         /// </summary>
-        public int Id { get; set; }
+        [Key]
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Дата создания сущности

@@ -1,8 +1,6 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Routes;
-using ApplicationCore.Models.Dtos;
 using System;
 using ApplicationCore.Models.Dtos.Orders;
 using ApplicationCore.Interfaces.Clients;

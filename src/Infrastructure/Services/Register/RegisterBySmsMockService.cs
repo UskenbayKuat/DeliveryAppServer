@@ -1,28 +1,23 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.Register;
 using ApplicationCore.Models.Dtos.Register;
 using ApplicationCore.Models.Values;
-using Infrastructure.Context.DataAccess;
-using Infrastructure.Context.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.Register
 {
     public class RegisterBySmsMockService : IRegistration
     {
         private readonly IGenerateToken _generateToken;
-        private readonly AppIdentityDbContext _identityDb;
-
-        public RegisterBySmsMockService(AppIdentityDbContext identityDb, IGenerateToken generateToken)
+        private readonly IAsyncRepository<User> _userRepository;
+        public RegisterBySmsMockService(IGenerateToken generateToken, IAsyncRepository<User> userRepository)
         {
-            _identityDb = identityDb;
             _generateToken = generateToken;
+            _userRepository = userRepository;
         }
 
         public async Task<ActionResult> SendTokenAsync(RegistrationDto dto) => 
@@ -33,25 +28,20 @@ namespace Infrastructure.Services.Register
         
         public async Task<ActionResult> Confirm(ConfirmRegistrationDto dto, CancellationToken cancellationToken)
         {
-             var user = await _identityDb.Users.FirstOrDefaultAsync(
+             var user = await _userRepository.FirstOrDefaultAsync(
                 u => u.PhoneNumber == dto.PhoneNumber && u.IsDriver == dto.IsDriver, cancellationToken)
                  ?? await GetUserAsync(dto.PhoneNumber, dto.IsDriver);
-            _identityDb.Users.Update(
-                user.AddRefreshToken(
-                            refreshToken:_generateToken.CreateRefreshToken(), 
-                            refreshTokenExpiryTime: DateTime.UtcNow.AddYears(_generateToken.LifeTimeRefreshTokenInYear)));
-            await _identityDb.SaveChangesAsync(cancellationToken);
+            var date = DateTime.UtcNow.AddYears(_generateToken.LifeTimeRefreshTokenInYear);
+            await _userRepository.UpdateAsync(
+                user.AddRefreshToken(_generateToken.CreateRefreshToken(), date));
 
             return new OkObjectResult(new{accessToken = _generateToken.CreateAccessToken(user), 
-                refreshToken = user.RefreshToken, name = user.Name, surname = user.Surname, isValid = user.IsValid, email = user.Email});
+                refreshToken = user.RefreshToken, name = user.UserName, surname = user.Surname, isValid = user.IsValid, email = user.Email});
         }
 
         private async Task<User> GetUserAsync(string phoneNumber, bool isDriver)
         {
-            var user = new User(phoneNumber, isDriver);
-            await _identityDb.Users.AddAsync(user);
-            await _identityDb.SaveChangesAsync();
-            return user;
+            return await _userRepository.AddAsync(new User(phoneNumber, isDriver));
         }
     }
 }

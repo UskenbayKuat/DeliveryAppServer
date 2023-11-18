@@ -17,7 +17,7 @@ namespace ApplicationCore.Models.Dtos.Orders
         public string AddressTo { get; set; }
         public string AddressFrom { get; set; } = string.Empty;
         public string Description { get; set; }
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
     }
 }

@@ -1,4 +1,5 @@
 using MediatR;
+using System;
 
 namespace PublicApi.Commands.Deliveries.Models
 {
@@ -6,8 +7,8 @@ namespace PublicApi.Commands.Deliveries.Models
     {
         public StartDeliveryCommand(string userId)
         {
-            UserId = userId;
+            UserId = Guid.Parse(userId);
         }
-        public string UserId { get; private set; }
+        public Guid UserId { get; private set; }
     }
 }

@@ -53,7 +53,7 @@ namespace Infrastructure.Services.Drivers
             {
                 throw new CarNotExistsException();
             }
-            var deliverySpec = new DeliveryWithStateSpecification(driver.Id);
+            var deliverySpec = new DeliveryWithStateSpecification(dto.UserId);
             return await _context.AnyAsync(deliverySpec)
                 ? throw new ArgumentException("У вас уже есть поездка")
                 : await CreateDeliveryAsync(dto, driver);
@@ -73,7 +73,7 @@ namespace Infrastructure.Services.Drivers
             return orders;
         }
 
-        public async Task<ActionResult> CancellationAsync(string driverUserId)
+        public async Task<ActionResult> CancellationAsync(Guid driverUserId)
         {
             var deliverySpec = new DeliveryWithStateSpecification(driverUserId);
             var delivery = await _context.FirstOrDefaultAsync(deliverySpec);
@@ -86,7 +86,7 @@ namespace Infrastructure.Services.Drivers
             return new NoContentResult();
         }
 
-        public async Task StartAsync(string driverUserId)
+        public async Task StartAsync(Guid driverUserId)
         {
             var deliverySpec = new DeliveryWithStateSpecification(driverUserId, GeneralState.WAITING_ORDER);
             var delivery = await _context.FirstOrDefaultAsync(deliverySpec);
@@ -116,9 +116,9 @@ namespace Infrastructure.Services.Drivers
             var deliverySpec = new DeliveryWithDriverSpecification(order.Route.Id, order.DeliveryDate, order.Location);
             var deliveries = await _context.ListAsync(deliverySpec);
             foreach (var delivery in deliveries)
-            {
+            { 
                 if (await _rejected.CheckRejectedAsync(delivery.Id, order.Id)) continue;
-                var connectionId = await _chatHub.GetConnectionIdAsync(delivery.Driver.UserId, default);
+                var connectionId = await _chatHub.GetConnectionIdAsync(delivery.Driver.User.Id, default);
                 if (!string.IsNullOrEmpty(connectionId)) return delivery;
             }
             return default;
@@ -139,13 +139,13 @@ namespace Infrastructure.Services.Drivers
             return delivery;
         }
 
-        public async Task FinishAsync(string userId)
+        public async Task FinishAsync(Guid userId)
         {
             var spec = new DeliveryWithOrderStateSpecification(userId);
             var delivery = await _context.FirstOrDefaultAsync(spec)
                 ?? throw new ArgumentException("Нет такой поездки");
             if (delivery.Orders.Any() &&
-                delivery.Orders.Any(x => x.State.StateValue != GeneralState.DELIVERED))
+                delivery.Orders.Exists(x => x.State.StateValue != GeneralState.DELIVERED))
             {
                 throw new ArgumentException("У вас активные заказы");
             }

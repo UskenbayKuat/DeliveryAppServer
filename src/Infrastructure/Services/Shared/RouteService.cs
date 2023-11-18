@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Interfaces;
@@ -14,7 +15,7 @@ namespace Infrastructure.Services.Shared
             _context = context;
         }
 
-        public async Task<Route> GetByCitiesIdAsync(int startCityId, int finishCityId) =>
+        public async Task<Route> GetByCitiesIdAsync(Guid startCityId, Guid finishCityId) =>
             await _context.FirstOrDefaultAsync(r =>
                 r.StartCityId == startCityId &&
                 r.FinishCityId == finishCityId);

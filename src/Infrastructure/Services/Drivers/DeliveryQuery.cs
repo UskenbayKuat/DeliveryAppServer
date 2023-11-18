@@ -7,24 +7,21 @@ using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.Drivers;
 using ApplicationCore.Models.Dtos.Deliveries;
 using ApplicationCore.Specifications.Deliveries;
-using Infrastructure.Context.Identity;
 using Infrastructure.Config;
 using Microsoft.EntityFrameworkCore;
-using ApplicationCore.Models.Dtos.Shared;
 
 namespace Infrastructure.Services.Drivers
 {
     public class DeliveryQuery : IDeliveryQuery
     {
-        private readonly AppIdentityDbContext _identityDbContext;
         private readonly IAsyncRepository<Delivery> _context;
 
-        public DeliveryQuery(AppIdentityDbContext identityDbContext, IAsyncRepository<Delivery> context)
+        public DeliveryQuery(
+            IAsyncRepository<Delivery> context)
         {
-            _identityDbContext = identityDbContext;
             _context = context;
         }
-        public async Task<ActiveDeliveryDto> GetDeliveryIsActiveAsync(string driverUserId)
+        public async Task<ActiveDeliveryDto> GetDeliveryIsActiveAsync(Guid driverUserId)
         {
             var deliverySpec = new DeliveryWithOrderSpecification(driverUserId);
             var delivery = await _context
@@ -37,14 +34,11 @@ namespace Infrastructure.Services.Drivers
             }
             var orderDtoList = (
                 from order in delivery.Orders
-                let user = _identityDbContext.Users
-                    .AsNoTracking()
-                    .FirstOrDefault(u => u.Id == order.Client.UserId)
-                select order.GetOrderDto(user, delivery.State.StateValue)).ToList();
+                select order.GetOrderDto(delivery.Driver.User, delivery.State.StateValue)).ToList();
             return delivery.MapToDeliveryDto(orderDtoList);
         }
 
-        public async Task<List<HistoryDeliveryDto>> GetHistoryAsync(string userId)
+        public async Task<List<HistoryDeliveryDto>> GetHistoryAsync(Guid userId)
         {
             var deliverySpec = new DeliveryWithOrderSpecification(userId, isActive: false);
             var deliveryList = await _context
@@ -57,10 +51,7 @@ namespace Infrastructure.Services.Drivers
             {
                 var orderDtoList = (
                     from order in delivery.Orders
-                    let user = _identityDbContext.Users
-                        .AsNoTracking()
-                        .FirstOrDefault(u => u.Id == order.Client.UserId)
-                    select order.GetOrderDto(user, delivery.State.StateValue)).ToList();
+                    select order.GetOrderDto(delivery.Driver.User, delivery.State.StateValue)).ToList();
                 resultList.Add(delivery.MapToHistoryDto(orderDtoList));
             }
             return resultList;

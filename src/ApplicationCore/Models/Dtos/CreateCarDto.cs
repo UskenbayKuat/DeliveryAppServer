@@ -1,18 +1,20 @@
+using System;
+
 namespace ApplicationCore.Models.Dtos
 {
     public class CreateCarDto
     {
-        public int CarBrandId { get; set; }
-        public int CarTypeId { get; set; }
-        public int CarColorId { get; set; }
+        public Guid CarBrandId { get; set; }
+        public Guid CarTypeId { get; set; }
+        public Guid CarColorId { get; set; }
         public int ProductionYear { get; set; }
         public string RegistrationCertificate { get; set; }
         public string LicensePlate { get; set; }
-        public string UserId { get; private set; }
+        public Guid UserId { get; private set; }
 
         public CreateCarDto SetUserId(string userId)
         {
-            UserId = userId;
+            UserId = Guid.Parse(userId);
             return this;
         }
     }

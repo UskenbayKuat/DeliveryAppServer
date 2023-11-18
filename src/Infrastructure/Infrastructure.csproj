@@ -7,6 +7,7 @@
 
     <ItemGroup>
       <None Remove="C:\Users\ulanzh\.nuget\packages\nlog.config\4.7.15\contentFiles\any\any\NLog.config" />
+      <None Remove="C:\Users\zhuri\.nuget\packages\nlog.config\4.7.15\contentFiles\any\any\NLog.config" />
     </ItemGroup>
 
     <ItemGroup>

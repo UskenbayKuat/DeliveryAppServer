@@ -23,7 +23,8 @@ namespace PublicApi.Endpoints.Delivery.Command
         {
             try
             {
-                await _deliveryCommand.FinishAsync(HttpContext.Items["UserId"].ToString());
+                var driverUserId = HttpContext.Items["UserId"].ToString();
+                await _deliveryCommand.FinishAsync(Guid.Parse(driverUserId));
                 return new NoContentResult();
             }
             catch (ArgumentException ex)

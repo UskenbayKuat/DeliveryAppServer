@@ -26,6 +26,7 @@ namespace PublicApi
             CreateMap<CreateOrderCommand, CreateOrderDto>();
             CreateMap<QRCodeCommand, QRCodeDto>();
             CreateMap<ProfitOrderCommand, ProfitOrderDto>();
+            CreateMap<MobileLoggerCommand, MobileLoggerDto>();
         }   
     }
 }

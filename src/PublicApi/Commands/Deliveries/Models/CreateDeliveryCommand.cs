@@ -6,14 +6,14 @@ namespace PublicApi.Commands.Deliveries.Models
 {
     public class CreateDeliveryCommand : IRequest
     {
-        public int StartCityId { get; set; }
-        public int FinishCityId { get; set; }
+        public Guid StartCityId { get; set; }
+        public Guid FinishCityId { get; set; }
         public DateTime DeliveryDate { get; set; }
         public Location Location { get; set; }
-        public string UserId { get; private set; }
+        public Guid UserId { get; private set; }
         public CreateDeliveryCommand SetUserId(string userId)
         {
-            UserId = userId;
+            UserId = Guid.Parse(userId);
             return this;
         }
     }

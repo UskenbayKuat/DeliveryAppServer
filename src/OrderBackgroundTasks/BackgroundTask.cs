@@ -63,7 +63,7 @@ namespace OrderBackgroundTasks
             await orderCommand.SetDeliveryAsync(order, delivery);
             _logger.LogInformation($"Order: {backgroundOrder.OrderId} state OnReview from DeliverId: {backgroundOrder.DeliveryId}");
             var notify = serviceProvider.GetService<INotify>();
-            await notify.SendToDriverAsync(delivery.Driver.UserId, stoppingToken);
+            await notify.SendToDriverAsync(delivery.Driver.User.Id, stoppingToken);
         }
     }
 }

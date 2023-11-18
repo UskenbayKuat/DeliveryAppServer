@@ -9,10 +9,10 @@ namespace ApplicationCore.Interfaces.Clients
 {
     public interface IOrderQuery
     {
-        public Task<List<DeliveryDto>> GetActiveOrdersForClientAsync(string clientUserId);
-        Task<List<DeliveryDto>> GetHistoryAsync(string clientUserId);
-        Task<IReadOnlyList<Order>> GetWaitingOrders(int routeId, DateTime dateTime);
-        public Task<IReadOnlyList<Order>> GetByDriverUserIdAsync(string driverUserId);
+        public Task<List<DeliveryDto>> GetActiveOrdersForClientAsync(Guid clientUserId);
+        Task<List<DeliveryDto>> GetHistoryAsync(Guid clientUserId);
+        Task<IReadOnlyList<Order>> GetWaitingOrders(Guid routeId, DateTime dateTime);
+        public Task<IReadOnlyList<Order>> GetByDriverUserIdAsync(Guid driverUserId);
         Task<LocationDto> GetCurrentLocationAsync(LocationDto dto);
     }
 }

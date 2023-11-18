@@ -1,30 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Exceptions;
 using ApplicationCore.Models.Entities.Cars;
-using Microsoft.AspNetCore.Http;
 
 namespace ApplicationCore.Entities.AppEntities
 {
     public class Driver : BaseEntity
     {
-        public Driver(string userId, string identificationNumber, string identificationSeries, DateTime identityCardCreateDate, string driverLicenceScanPath, string identityCardPhotoPath)
+        public Driver(string identificationNumber, string identificationSeries, DateTime identityCardCreateDate, string driverLicenceScanPath, string identityCardPhotoPath)
         {
-            UserId = userId;
             IdentificationNumber = identificationNumber;
             IdentificationSeries = identificationSeries;
             IdentityCardCreateDate = identityCardCreateDate;
             DriverLicenceScanPath = driverLicenceScanPath;
             IdentityCardPhotoPath = identityCardPhotoPath;
         }
-        public string UserId { get;private set; }
         public string IdentificationNumber { get;private set; }
         public string IdentificationSeries { get; private set;}
         public DateTime IdentityCardCreateDate { get; private set;}
         public string DriverLicenceScanPath { get; private set;}
         public string IdentityCardPhotoPath { get; private set;}
+        public User User { get; set; }
+
         private Car _car;
 
         public Car Car

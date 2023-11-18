@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,26 +20,26 @@ namespace Infrastructure.Services.Shared
             _orderQuery = orderQuery;
         }
 
-        public async Task ConnectedAsync(string userId, string connectId)
+        public async Task ConnectedAsync(Guid? userId, string connectId)
         {
             var chatHub = await _context.FirstOrDefaultAsync(c => c.UserId == userId)
                           ?? await CreateChatHubAsync(userId, connectId);
             await _context.UpdateAsync(chatHub.UpdateConnectId(connectId));
         }
 
-        public async Task<string> GetConnectionIdAsync(string userId, CancellationToken cancellationToken)
+        public async Task<string> GetConnectionIdAsync(Guid? userId, CancellationToken cancellationToken)
         {
-            var chatHub = await _context.FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
+            var chatHub = await _context.FirstOrDefaultAsync(c => userId.HasValue && c.UserId == userId, cancellationToken);
             return chatHub?.ConnectionId;
         }
 
-        public async Task<List<string>> GetConnectionIdListAsync(string driverUserId)
+        public async Task<List<string>> GetConnectionIdListAsync(Guid driverUserId)
         {
             var connectionIds = new List<string>();
             var orders = await _orderQuery.GetByDriverUserIdAsync(driverUserId);
             foreach (var order in orders)
             {
-                var chatHub = await _context.FirstOrDefaultAsync(c => c.UserId == order.Client.UserId);
+                var chatHub = await _context.FirstOrDefaultAsync(c => c.UserId == order.Client.User.Id);
                 if (chatHub != null && !string.IsNullOrEmpty(chatHub.ConnectionId))
                 {
                     connectionIds.Add(chatHub.ConnectionId);
@@ -47,14 +48,14 @@ namespace Infrastructure.Services.Shared
             return connectionIds;
         }
 
-        public async Task DisconnectedAsync(string userId, string connectId)
+        public async Task DisconnectedAsync(Guid? userId, string connectId)
         {
             ChatHub chatHub;
-            if (!string.IsNullOrEmpty(userId))
+            if (userId.HasValue)
             {
-                chatHub = await _context.FirstOrDefaultAsync(c => c.UserId == userId);
+                chatHub = await _context.FirstOrDefaultAsync(c => c.UserId == userId.Value);
             }
-            else if (!string.IsNullOrEmpty(userId))
+            else if (!string.IsNullOrEmpty(connectId))
             {
                 chatHub = await _context.FirstOrDefaultAsync(c => c.ConnectionId == connectId);
             }
@@ -65,13 +66,13 @@ namespace Infrastructure.Services.Shared
             await _context.UpdateAsync(chatHub?.RemoveConnectId());
         }
 
-        private async Task<ChatHub> CreateChatHubAsync(string userId, string connectId)
+        private async Task<ChatHub> CreateChatHubAsync(Guid? userId, string connectId)
         {
-            if (string.IsNullOrEmpty(userId))
+            if (!userId.HasValue)
             {
                 throw new HubException($"Error connect Hub userId -> null, connectId: {connectId}");
             }
-            var chatHub = new ChatHub(userId, connectId);
+            var chatHub = new ChatHub(userId.Value, connectId);
             await _context.AddAsync(chatHub);
             return chatHub;
         }

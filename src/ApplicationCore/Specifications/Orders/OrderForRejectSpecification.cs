@@ -1,12 +1,13 @@
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Enums;
 using Ardalis.Specification;
+using System;
 
 namespace ApplicationCore.Specifications.Orders
 {
     public sealed class OrderForRejectSpecification : Specification<Order>
     {
-        public OrderForRejectSpecification(int orderId)
+        public OrderForRejectSpecification(Guid orderId)
         {
             Query.Include(o => o.State)
                 .Include(o => o.Location)

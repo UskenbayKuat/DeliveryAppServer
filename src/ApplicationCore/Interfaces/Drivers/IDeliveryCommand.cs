@@ -16,9 +16,9 @@ namespace ApplicationCore.Interfaces.Drivers
         public Task<Delivery> FindIsActiveDeliveryAsync(Order order);
         public Task<Delivery> CreateAsync(CreateDeliveryDto dto);
         Task<IReadOnlyList<Order>> AddWaitingOrdersAsync(Delivery delivery);
-        public Task<ActionResult> CancellationAsync(string driverUserId);
-        public Task StartAsync(string driverUserId);
+        public Task<ActionResult> CancellationAsync(Guid driverUserId);
+        public Task StartAsync(Guid driverUserId);
         Task<LocationDto> UpdateLocationAsync(LocationDto request);
-        Task FinishAsync(string userId);
+        Task FinishAsync(Guid userId);
     }
 }

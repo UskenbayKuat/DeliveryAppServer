@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces.Clients;
@@ -22,8 +23,9 @@ namespace PublicApi.Endpoints.Clients.Query
         {
             try
             {
+                var clientUserId = Guid.Parse(HttpContext.Items["UserId"].ToString());
                 var deliveryInfos = 
-                    await _orderQuery.GetActiveOrdersForClientAsync(HttpContext.Items["UserId"]?.ToString());
+                    await _orderQuery.GetActiveOrdersForClientAsync(clientUserId);
                 return Ok(deliveryInfos);
             }
             catch

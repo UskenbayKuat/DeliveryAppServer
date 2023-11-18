@@ -8,9 +8,11 @@ namespace ApplicationCore.Specifications.Deliveries
 {
     public sealed class DeliveryWithDriverSpecification : Specification<Delivery>
     {
-        public DeliveryWithDriverSpecification(int routeId, DateTime dateTime, Location location)
+        public DeliveryWithDriverSpecification(Guid routeId, DateTime dateTime, Location location)
         {
-            Query.Include(d => d.Driver)
+            Query
+                .Include(d => d.Driver)
+                .Include(d => d.Driver.User)
                 .OrderBy(d => Math.Abs(d.Location.Latitude - location.Latitude) + Math.Abs(d.Location.Longitude - location.Longitude))
                 .Where(d =>
                     d.Route.Id == routeId &&

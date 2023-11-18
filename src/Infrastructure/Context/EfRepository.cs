@@ -10,13 +10,13 @@ using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Context.DataAccess
+namespace Infrastructure.Context
 {
     public class EfRepository<TEntity> : IAsyncRepository<TEntity> where TEntity : BaseEntity
     {
-        private readonly AppDbContext _dbContext;
+        private readonly DeliveryContext _dbContext;
 
-        public EfRepository(AppDbContext dbContext)
+        public EfRepository(DeliveryContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -88,6 +88,10 @@ namespace Infrastructure.Context.DataAccess
         public async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Set<TEntity>().FirstOrDefaultAsync(expression, cancellationToken);
+        }
+        public async Task<TEntity> FirstOrDefaultWithAsNoTrackingkAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(expression, cancellationToken);
         }
 
         public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)

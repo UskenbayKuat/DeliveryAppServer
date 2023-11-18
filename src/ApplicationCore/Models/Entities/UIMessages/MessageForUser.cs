@@ -2,9 +2,8 @@ namespace ApplicationCore.Entities.AppEntities.UIMessages
 {
     public class MessageForUser : BaseEntity
     {
-        public MessageForUser(int id, string description)
+        public MessageForUser(string description)
         {
-            Id = id;
             Description = description;
         }
 

@@ -1,15 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities.AppEntities.Orders;
 
 namespace ApplicationCore.Interfaces.Shared
 {
     public interface IChatHub
     {
-        public Task ConnectedAsync(string userId, string connectId);
-        public Task DisconnectedAsync(string userId, string connectId);
-        public Task<string> GetConnectionIdAsync(string userId, CancellationToken cancellationToken);
-        public Task<List<string>> GetConnectionIdListAsync(string driverUserId);
+        public Task ConnectedAsync(Guid? userId, string connectId);
+        public Task DisconnectedAsync(Guid? userId, string connectId);
+        public Task<string> GetConnectionIdAsync(Guid? userId, CancellationToken cancellationToken);
+        public Task<List<string>> GetConnectionIdListAsync(Guid driverUserId);
     }
 }

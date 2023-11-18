@@ -5,7 +5,7 @@ namespace ApplicationCore.Models.Dtos.Shared
 {
     public class BaseOrderDto
     {
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
         public string StartCityName { get; set; }
         public string FinishCityName { get; set; }
         public Package Package { get; set; }

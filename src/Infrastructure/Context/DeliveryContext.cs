@@ -10,10 +10,15 @@ using ApplicationCore.Models.Entities.Locations;
 using ApplicationCore.Models.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Context.DataAccess
+namespace Infrastructure.Context
 {
-    public sealed class AppDbContext : DbContext
+    public sealed class DeliveryContext : DbContext
     {
+        //users
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
+
         //logger
         public DbSet<MobileLogger> MobileLoggers { get; set; }
 
@@ -41,10 +46,10 @@ namespace Infrastructure.Context.DataAccess
         public DbSet<Delivery> Deliveries { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Package> Packages { get; set; }
-        public DbSet<RejectedOrder>  RejectedOrders { get; set; }
+        public DbSet<RejectedOrder> RejectedOrders { get; set; }
         public DbSet<OrderStateHistory> OrderStateHistories { get; set; }
-        public DbSet<State>  States { get; set; }
-        
+        public DbSet<State> States { get; set; }
+
         //kits
         public DbSet<Kit> Kits { get; set; }
         public DbSet<DriverKit> DriversKits { get; set; }
@@ -54,7 +59,7 @@ namespace Infrastructure.Context.DataAccess
         public DbSet<MessageForUser> MessagesForUser { get; set; }
 
 
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        public DeliveryContext(DbContextOptions<DeliveryContext> options) : base(options)
         {
         }
 

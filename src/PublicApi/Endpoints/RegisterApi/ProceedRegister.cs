@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.Register;
@@ -28,8 +29,10 @@ namespace PublicApi.Endpoints.RegisterApi
         [HttpPost("api/proceedRegister")]
         public override async Task<ActionResult> HandleAsync([FromBody]ProceedRegisterCommand request, CancellationToken cancellationToken = default)
         {
+            var userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
+
             return await _proceedRegistration.ProceedRegistration(_mapper.
-                Map<ProceedRegistrationDto>(request), HttpContext.Items["UserId"]?.ToString(), cancellationToken);
+                Map<ProceedRegistrationDto>(request), userId, cancellationToken);
         }
 
     }
