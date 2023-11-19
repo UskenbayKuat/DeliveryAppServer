@@ -126,7 +126,7 @@ namespace Infrastructure.Services.Clients
             var order = await _context.FirstOrDefaultAsync(spec)
                 ?? throw new ArgumentException($"Активный заказ нельзя отменить");
             order.State = await _state.GetByStateAsync(GeneralState.CANCALED);
-            await _context.UpdateAsync(order.SetCancellationDate());
+            await _stateHistory.AddAsync(order.SetCancellationDate());
         }
 
         public async Task<Guid> ProfitAsync(ProfitOrderDto dto)

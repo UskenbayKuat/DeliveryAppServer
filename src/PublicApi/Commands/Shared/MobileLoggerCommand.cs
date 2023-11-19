@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Models.Enums;
 
-namespace PublicApi.Commands
+namespace PublicApi.Commands.Shared
 {
     public class MobileLoggerCommand
     {

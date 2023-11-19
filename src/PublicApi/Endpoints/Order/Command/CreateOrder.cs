@@ -17,7 +17,7 @@ namespace PublicApi.Endpoints.Clients.Command
             _mediator = mediator;
         }
 
-        [HttpPost("api/client/createOrder")]
+        [HttpPost("api/createOrder")]
         public override async Task<ActionResult> HandleAsync([FromBody] CreateOrderCommand request,
             CancellationToken cancellationToken = default)
         {

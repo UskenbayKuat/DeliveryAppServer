@@ -29,10 +29,22 @@ namespace PublicApi.Endpoints.RegisterApi
         [HttpPost("api/proceedRegister")]
         public override async Task<ActionResult> HandleAsync([FromBody]ProceedRegisterCommand request, CancellationToken cancellationToken = default)
         {
-            var userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
+            try
+            {
 
-            return await _proceedRegistration.ProceedRegistration(_mapper.
-                Map<ProceedRegistrationDto>(request), userId, cancellationToken);
+                var userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
+                await _proceedRegistration.ProceedRegistration(_mapper.
+                    Map<ProceedRegistrationDto>(request), userId, cancellationToken);
+                return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch
+            {
+                return BadRequest("Ошибка системы");
+            }
         }
 
     }

@@ -20,7 +20,7 @@ namespace PublicApi.Endpoints.Delivery.Command
             _mediator = mediator;
         }
 
-        [HttpPost("api/driver/profitOrder")]
+        [HttpPost("api/profitOrder")]
         public override async Task<ActionResult> HandleAsync(
             [FromBody] ProfitOrderCommand request, CancellationToken cancellationToken = default)
         {

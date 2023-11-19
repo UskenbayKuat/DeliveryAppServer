@@ -18,7 +18,7 @@ namespace PublicApi.Endpoints.Delivery
             _mediator = mediator;
         }
 
-        [HttpPost("api/driver/confirmOrder")]
+        [HttpPost("api/confirmOrder")]
         public override async Task<ActionResult> HandleAsync([FromBody]ConfirmOrderCommand request,
             CancellationToken cancellationToken = default)
         {

@@ -20,6 +20,7 @@ namespace ApplicationCore.Entities.AppEntities
         public string DriverLicenceScanPath { get; private set;}
         public string IdentityCardPhotoPath { get; private set;}
         public User User { get; set; }
+        public Guid UserId { get; set; }
 
         private Car _car;
 

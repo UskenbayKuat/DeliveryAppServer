@@ -5,8 +5,9 @@ namespace ApplicationCore.Models.Dtos.Register
     public class ProceedRegistrationDto
     {
         public string PhoneNumber { get; set; }
-        public string Name { get; set; }
+        public string UserName { get; set; }
         public string Surname { get; set; }
+        public string Email { get; set; }
         public string IdentificationNumber { get; set; }
         public string IdentificationSeries { get; set; }
         public DateTime IdentityCardCreateDate { get; set; }

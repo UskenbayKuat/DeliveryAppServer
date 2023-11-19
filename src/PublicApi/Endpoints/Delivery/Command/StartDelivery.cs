@@ -15,7 +15,7 @@ namespace PublicApi.Endpoints.Delivery.Command
         {
             _mediator = mediator;
         }
-        [HttpPost("api/driver/startDelivery")]
+        [HttpPost("api/startDelivery")]
 
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = new())
         {

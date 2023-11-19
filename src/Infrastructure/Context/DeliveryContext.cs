@@ -70,6 +70,19 @@ namespace Infrastructure.Context
             modelBuilder.Entity<Package>().Property(c => c.Length).HasPrecision(18, 2);
             modelBuilder.Entity<Package>().Property(c => c.Weight).HasPrecision(18, 2);
             modelBuilder.Entity<Package>().Property(c => c.Width).HasPrecision(18, 2);
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Client)
+                .WithOne(c => c.User)
+                .HasForeignKey<Client>(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Driver)
+                .WithOne(c => c.User)
+                .HasForeignKey<Driver>(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             base.OnModelCreating(modelBuilder);
         }
     }

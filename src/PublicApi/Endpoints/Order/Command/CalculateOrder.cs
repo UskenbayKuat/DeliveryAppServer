@@ -23,7 +23,7 @@ namespace PublicApi.Endpoints.Clients.Command
             _mapper = mapper;
         }
 
-        [HttpPost("api/client/calculate")]
+        [HttpPost("api/calculate")]
         public override async Task<ActionResult> HandleAsync([FromBody] CreateOrderCommand request, CancellationToken cancellationToken = new CancellationToken())
         {
             try

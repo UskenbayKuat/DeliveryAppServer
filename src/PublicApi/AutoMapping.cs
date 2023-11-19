@@ -5,11 +5,11 @@ using ApplicationCore.Models.Dtos.Orders;
 using ApplicationCore.Models.Dtos.Register;
 using ApplicationCore.Models.Dtos.Shared;
 using ApplicationCore.Models.Values;
-using PublicApi.Commands;
 using PublicApi.Commands.Register;
 using PublicApi.Endpoints.Shared.RefreshToken;
 using PublicApi.Commands.Deliveries.Models;
 using PublicApi.Commands.Orders.Models;
+using PublicApi.Commands.Shared;
 
 namespace PublicApi
 {

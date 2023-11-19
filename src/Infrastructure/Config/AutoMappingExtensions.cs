@@ -79,7 +79,7 @@ namespace Infrastructure.Config
 
             };
 
-        public static DeliveryDto GetDeliveryDto(this Order order, StateHistoryDto stateHistoryDto = null) =>
+        public static DeliveryDto GetDeliveryDto(this Order order, StateHistoryDto stateHistoryDto) =>
             new()
             {
                 StartCityName = order.Route.StartCity.Name,
@@ -121,6 +121,9 @@ namespace Infrastructure.Config
                         break;
                     case GeneralState.RECEIVED_BY_DRIVER:
                         dto.ReceivedByDriver = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
+                        break;
+                    case GeneralState.CANCALED:
+                        dto.Canceled = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");
                         break;
                     case GeneralState.DELIVERED:
                         dto.Delivered = item.CreatedDate.ToString("dd.MM.yyyy, hh\\:mm");

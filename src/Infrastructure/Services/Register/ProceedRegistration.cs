@@ -6,6 +6,7 @@ using ApplicationCore.Exceptions;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.Register;
 using ApplicationCore.Models.Dtos.Register;
+using ApplicationCore.Specifications.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Infrastructure.Services.Register
@@ -18,25 +19,36 @@ namespace Infrastructure.Services.Register
             _contextUser = contextUser;
         }
 
-        public async Task<ActionResult> ProceedRegistration(ProceedRegistrationDto dto, Guid userId,
+        public async Task ProceedRegistration(ProceedRegistrationDto dto, Guid userId,
             CancellationToken cancellationToken)
         {
-            var user = (await _contextUser.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken))
-                       .AddFullName(dto.Name, dto.Surname) ??
+            var userSpec = new UserForProceedSpecification(userId);
+            var user = (await _contextUser.FirstOrDefaultAsync(userSpec, cancellationToken))
+                       .AddData(dto.UserName, dto.Surname, dto.Email) ??
                        throw new NotExistUserException("User is not found");
             if (user.IsDriver)
             {
-                var driver = new Driver(dto.IdentificationNumber, dto.IdentificationSeries,
-                    dto.IdentityCardCreateDate, dto.DriverLicenceScanPath, dto.IdentityCardPhotoPath);
-                user.Drivers.Add(driver);
+                if (user.Driver != null)
+                {
+                    throw new ArgumentException("Данные уже существует, нельзя изменить");
+                }
+                user.Driver = new Driver(
+                    dto.IdentificationNumber, 
+                    dto.IdentificationSeries,
+                    dto.IdentityCardCreateDate, 
+                    dto.DriverLicenceScanPath, 
+                    dto.IdentityCardPhotoPath);
             }
             else
             {
-                user.Clients.Add(new());
+                if (user.Client != null)
+                {
+                    throw new ArgumentException("Данные уже существует, нельзя изменить");
+                }
+                user.Client = new();
             }
 
-            user = await _contextUser.UpdateAsync(user);
-            return new OkObjectResult(new { name = user.UserName, surname = user.Surname, email = user.Email });
+            await _contextUser.UpdateAsync(user);
         }
     }
 }

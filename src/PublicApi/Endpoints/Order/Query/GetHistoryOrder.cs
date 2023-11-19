@@ -19,7 +19,7 @@ namespace PublicApi.Endpoints.Order.Query
             _orderQuery = orderQuery;
         }
 
-        [HttpPost("api/driver/historyOrder")]
+        [HttpPost("api/historyOrder")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
             try

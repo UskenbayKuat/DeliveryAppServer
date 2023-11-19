@@ -18,7 +18,7 @@ namespace PublicApi.Endpoints.Clients.Query
             _orderQuery = orderQuery;
         }
 
-        [HttpPost("api/client/activeOrders")]
+        [HttpPost("api/activeOrders")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
             try

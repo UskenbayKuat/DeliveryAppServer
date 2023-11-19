@@ -16,7 +16,7 @@ namespace PublicApi.Endpoints.Clients.Command
         {
             _orderCommand = orderCommand;
         }
-        [HttpPost("api/client/cancelOrder")]
+        [HttpPost("api/cancelOrder")]
         public override async Task<ActionResult> HandleAsync([FromBody]CancelOrderCommand request, 
             CancellationToken cancellationToken = new CancellationToken())
         {

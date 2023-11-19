@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace ApplicationCore.Entities.AppEntities
 {
@@ -13,14 +12,18 @@ namespace ApplicationCore.Entities.AppEntities
         public bool IsValid { get;private set; }
         public string RefreshToken { get;private set; }
         public DateTime? RefreshTokenExpiryTime { get;private set; }
-        public virtual List<Driver> Drivers { get; private set; } = new();
-        public virtual List<Client> Clients { get; private set; } = new();
+        public Driver Driver { get; set; } 
+        public Client Client { get; set; } 
         public User(string userName, string phoneNumber, string email, string surname)
         {
             UserName = userName;
             Email = email;
             PhoneNumber = phoneNumber;
             Surname = surname;
+        }
+        public User()
+        {
+            
         }
         public User(string phoneNumber, bool isDriver)
         {
@@ -34,10 +37,11 @@ namespace ApplicationCore.Entities.AppEntities
             RefreshTokenExpiryTime = refreshTokenExpiryTime;
             return this;
         }
-        public User AddFullName(string name, string surname)
+        public User AddData(string name, string surname, string email)
         {
             UserName = name;
             Surname = surname;
+            Email = email;
             IsValid = true;
             return this;
         }

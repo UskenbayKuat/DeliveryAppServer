@@ -18,7 +18,7 @@ namespace PublicApi.Endpoints.Delivery.Command
             _mediator = mediator;
         }
 
-        [HttpPost("api/driver/rejectOrder")]
+        [HttpPost("api/rejectOrder")]
         public override async Task<ActionResult> HandleAsync([FromBody] RejectedOrderCommand request,
             CancellationToken cancellationToken = default)
         {

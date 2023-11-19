@@ -17,7 +17,7 @@ namespace PublicApi.Endpoints.Delivery.Command
             _mediator = mediator;
         }
 
-        [HttpPost("api/driver/qrCode")]
+        [HttpPost("api/qrCode")]
         public override async Task<ActionResult> HandleAsync([FromBody] QRCodeCommand request,
             CancellationToken cancellationToken = default)
         {

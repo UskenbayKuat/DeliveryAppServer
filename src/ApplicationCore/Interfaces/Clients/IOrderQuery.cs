@@ -13,6 +13,6 @@ namespace ApplicationCore.Interfaces.Clients
         Task<List<DeliveryDto>> GetHistoryAsync(Guid clientUserId);
         Task<IReadOnlyList<Order>> GetWaitingOrders(Guid routeId, DateTime dateTime);
         public Task<IReadOnlyList<Order>> GetByDriverUserIdAsync(Guid driverUserId);
-        Task<LocationDto> GetCurrentLocationAsync(LocationDto dto);
+        Task<LocationDto> GetCurrentLocationAsync(Guid orderId);
     }
 }

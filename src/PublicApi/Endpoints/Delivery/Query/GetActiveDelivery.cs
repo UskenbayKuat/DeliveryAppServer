@@ -20,7 +20,7 @@ namespace PublicApi.Endpoints.Delivery.Query
             _logger = logger;
         }
 
-        [HttpPost("api/driver/activeDelivery")]
+        [HttpPost("api/activeDelivery")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
             try

@@ -18,7 +18,7 @@ namespace PublicApi.Endpoints.Delivery.Command
             _deliveryCommand = deliveryCommand;
         }
 
-        [HttpPost("api/driver/finishDelivery")]
+        [HttpPost("api/finishDelivery")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
             try

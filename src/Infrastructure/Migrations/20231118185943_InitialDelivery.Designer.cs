@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DeliveryContext))]
-    [Migration("20231118135756_InitialDelivery")]
+    [Migration("20231118185943_InitialDelivery")]
     partial class InitialDelivery
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -151,12 +151,13 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Clients");
                 });
@@ -197,14 +198,15 @@ namespace Infrastructure.Migrations
                     b.Property<double>("Rating")
                         .HasColumnType("double precision");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CarId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Drivers");
                 });
@@ -908,8 +910,10 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.Client", b =>
                 {
                     b.HasOne("ApplicationCore.Entities.AppEntities.User", "User")
-                        .WithMany("Clients")
-                        .HasForeignKey("UserId");
+                        .WithOne("Client")
+                        .HasForeignKey("ApplicationCore.Entities.AppEntities.Client", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -921,8 +925,10 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("CarId");
 
                     b.HasOne("ApplicationCore.Entities.AppEntities.User", "User")
-                        .WithMany("Drivers")
-                        .HasForeignKey("UserId");
+                        .WithOne("Driver")
+                        .HasForeignKey("ApplicationCore.Entities.AppEntities.Driver", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Car");
 
@@ -1132,9 +1138,9 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("ApplicationCore.Entities.AppEntities.User", b =>
                 {
-                    b.Navigation("Clients");
+                    b.Navigation("Client");
 
-                    b.Navigation("Drivers");
+                    b.Navigation("Driver");
                 });
 
             modelBuilder.Entity("ApplicationCore.Models.Entities.Orders.Order", b =>

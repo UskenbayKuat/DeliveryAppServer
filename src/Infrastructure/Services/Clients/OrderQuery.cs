@@ -31,7 +31,7 @@ namespace Infrastructure.Services.Clients
         public async Task<List<DeliveryDto>> GetActiveOrdersForClientAsync(Guid clientUserId)
         {
             var orderSpec = new OrderWithStateSpecification(clientUserId, false);
-            return await GetDeliveryDtosAsync(orderSpec, clientUserId);
+            return await GetDeliveryDtosAsync(orderSpec);
         }
 
 
@@ -44,7 +44,7 @@ namespace Infrastructure.Services.Clients
         public async Task<List<DeliveryDto>> GetHistoryAsync(Guid clientUserId)
         {
             var orderSpec = new OrderWithDeliverySpecification(clientUserId, true);
-            return await GetDeliveryDtosAsync(orderSpec, clientUserId);
+            return await GetDeliveryDtosAsync(orderSpec);
         }
 
         public async Task<IReadOnlyList<Order>> GetWaitingOrders(Guid routeId, DateTime dateTime)
@@ -52,7 +52,7 @@ namespace Infrastructure.Services.Clients
             var orderSpec = new OrderWithStateSpecification(routeId, dateTime);
             return await _context.ListAsync(orderSpec);
         }
-        private async Task<List<DeliveryDto>> GetDeliveryDtosAsync(ISpecification<Order> specification, Guid userId)
+        private async Task<List<DeliveryDto>> GetDeliveryDtosAsync(ISpecification<Order> specification)
         {
             var orders = await _context
                 .GetQueryableAsync(specification)
@@ -61,24 +61,37 @@ namespace Infrastructure.Services.Clients
             var deliveriesInfo = new List<DeliveryDto>();
             foreach (var order in orders)
             {
+                var orderState = await _stateHistory.GetAsync(order.Id);
                 if (order.State.StateValue == GeneralState.CANCALED)
                 {
-                    order.Delivery.Driver = null;
-                    deliveriesInfo.Add(order.GetDeliveryDto());
+                    order.Delivery = null;
+                    deliveriesInfo.Add(order.GetDeliveryDto(orderState));
                 }
                 else
                 {
-                    var orderState = await _stateHistory.GetAsync(order.Id);
-                    deliveriesInfo.Add(order.GetDeliveryDto(orderState));
+
+                    var deliveryDto = order.GetDeliveryDto(orderState);
+                    if (order.State.StateValue == GeneralState.DELIVERED)
+                    {
+                        deliveryDto.DriverPhoneNumber = string.Empty;
+                    }
+                    deliveriesInfo.Add(deliveryDto);
                 }
             }
             return deliveriesInfo;
         }
-        public async Task<LocationDto> GetCurrentLocationAsync(LocationDto dto)
+        public async Task<LocationDto> GetCurrentLocationAsync(Guid orderId)
         {
-            var orderSpec = new OrderWithDeliverySpecification(dto.OrderId);
-            var order = await _context.FirstOrDefaultAsync(orderSpec)
-                ?? throw new ArgumentException($"Нет такой заказ по id {dto.OrderId}");
+            var orderSpec = new OrderWithDeliverySpecification(orderId);
+            var order = await _context
+                .GetQueryableAsync(orderSpec)
+                .AsNoTracking()
+                .FirstOrDefaultAsync()
+                ?? throw new ArgumentException($"Нет такой заказ по id {orderId}");
+            if (order.Delivery is null)
+            {
+                return default;
+            }
             return new()
             {
                 DriverName = order.Delivery.Driver.User.UserName,

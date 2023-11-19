@@ -24,7 +24,7 @@ namespace PublicApi.Endpoints.Delivery.Command
             _driver = driver;
         }
 
-        [HttpPost("api/driver/createCar")]
+        [HttpPost("api/createCar")]
         public override async Task<ActionResult> HandleAsync([FromBody]CreateCarCommand request,
             CancellationToken cancellationToken = default)
         {

@@ -19,7 +19,7 @@ namespace PublicApi.Endpoints.Delivery.Query
             _deliveryQuery = deliveryQuery;
         }
 
-        [HttpPost("api/driver/historyDelivery")]
+        [HttpPost("api/historyDelivery")]
         public override async Task<ActionResult> HandleAsync(CancellationToken cancellationToken = default)
         {
             try

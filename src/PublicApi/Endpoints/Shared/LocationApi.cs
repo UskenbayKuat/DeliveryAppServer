@@ -5,6 +5,7 @@ using Ardalis.ApiEndpoints;
 using Infrastructure.Config;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using PublicApi.Commands.Shared;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 namespace PublicApi.Endpoints.Shared
 {
     [Authorize]
-    public class LocationApi : EndpointBaseAsync.WithRequest<LocationDto>.WithActionResult
+    public class LocationApi : EndpointBaseAsync.WithRequest<LocationCommand>.WithActionResult
     {
         private readonly IOrderQuery _orderQuery;
 
@@ -22,11 +23,11 @@ namespace PublicApi.Endpoints.Shared
         }
 
         [HttpPost("api/currentLocation")]
-        public async override Task<ActionResult> HandleAsync([FromBody]LocationDto request, CancellationToken cancellationToken = default)
+        public async override Task<ActionResult> HandleAsync([FromBody]LocationCommand request, CancellationToken cancellationToken = default)
         {
             try
             {
-                var response = await _orderQuery.GetCurrentLocationAsync(request);
+                var response = await _orderQuery.GetCurrentLocationAsync(request.OrderId);
                 return Ok(response);
             }
             catch (ArgumentException ex)
