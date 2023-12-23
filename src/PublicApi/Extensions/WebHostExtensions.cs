@@ -76,6 +76,6 @@ namespace PublicApi.Extensions
         {
             context.Database.Migrate();
             seeder(context, services);
-        }
+         }
     }
 }

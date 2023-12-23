@@ -75,8 +75,24 @@ namespace Infrastructure.Context
             if (!await context.Roles.AnyAsync())
             {
                 await context.Roles.AddRangeAsync(GetRoles());
+                await context.SaveChangesAsync();
+            }
+            if (!await context.UserRoles.AnyAsync())
+            {
+                await context.UserRoles.AddRangeAsync(GetUserRoles(context));
             }
             await context.SaveChangesAsync();
+        }
+
+        private static UserRole[] GetUserRoles(DeliveryContext context)
+        {
+            var role = context.Roles.First(x => x.RoleValue == RoleEnum.Admin);
+            var userRoles = new UserRole()
+            {
+                Role = role,
+                User = new("Admin", "-", "admin@admin.com", "Админ", true)
+            };
+            return new UserRole[] { userRoles };
         }
 
         private static List<Role> GetRoles()

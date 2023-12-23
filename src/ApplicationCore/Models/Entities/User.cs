@@ -14,12 +14,13 @@ namespace ApplicationCore.Entities.AppEntities
         public DateTime? RefreshTokenExpiryTime { get;private set; }
         public Driver Driver { get; set; } 
         public Client Client { get; set; } 
-        public User(string userName, string phoneNumber, string email, string surname)
+        public User(string userName, string phoneNumber, string email, string surname, bool isValid)
         {
             UserName = userName;
             Email = email;
             PhoneNumber = phoneNumber;
             Surname = surname;
+            IsValid = isValid;
         }
         public User()
         {

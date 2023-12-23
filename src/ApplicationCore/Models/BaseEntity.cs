@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ApplicationCore.Entities
 {
@@ -8,7 +9,7 @@ namespace ApplicationCore.Entities
         /// <summary>
         /// Id
         /// </summary>
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
         /// <summary>

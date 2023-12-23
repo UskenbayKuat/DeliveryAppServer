@@ -3,3 +3,14 @@
 dotnet ef --startup-project ..\PublicApi\ migrations add InitialDelivery --context DeliveryContext
 dotnet ef --startup-project ..\PublicApi\ database update --context DeliveryContext
 
+
+
+
+
+public void DeleteDatabase()
+{
+    // Удаление базы данных
+    Database.EnsureDeleted();
+}
+var context2 = services.GetService<TContext>() as DeliveryContext;
+context2.DeleteDatabase();
