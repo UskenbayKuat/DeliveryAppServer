@@ -8,7 +8,7 @@ namespace ApplicationCore.Specifications.Deliveries
     {
         public DriverWithCarSpecification(Guid userId)
         {
-            Query.Include(d => d.Car).Where(d => d.User.Id == userId);
+            Query.Include(d => d.Cars).Where(d => d.User.Id == userId);
         }
     }
 }

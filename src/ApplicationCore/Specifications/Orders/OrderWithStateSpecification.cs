@@ -35,7 +35,7 @@ namespace ApplicationCore.Specifications.Orders
                 .Include(o => o.Delivery.Driver.User)
                 .Include(o => o.Client)
                 .Include(o => o.Client.User)
-                .Include(o => o.Delivery.Driver.Car)
+                .Include(o => o.Delivery.Driver.Cars)
                 .Include(o => o.Delivery.State)
                 .Include(o => o.Location)
                 .Where(o => o.Client.User.Id == orderOrUserId && !o.IsDeleted)

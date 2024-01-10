@@ -49,7 +49,7 @@ namespace Infrastructure.Services.Drivers
         public async Task<Delivery> CreateAsync(CreateDeliveryDto dto)
         {
             var driver = await _driver.GetByUserIdAsync(dto.UserId);
-            if (driver?.Car is null)
+            if (driver.Cars == null || !driver.Cars.Any(x => !x.IsDeleted))
             {
                 throw new CarNotExistsException();
             }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using ApplicationCore.Entities.AppEntities;
 using ApplicationCore.Entities.AppEntities.Orders;
 using ApplicationCore.Extensions;
@@ -97,7 +98,7 @@ namespace Infrastructure.Config
                 DriverPhoneNumber = order.Delivery?.Driver?.User?.PhoneNumber,
                 DriverName = order.Delivery?.Driver?.User?.UserName,
                 DriverSurname = order.Delivery?.Driver?.User?.Surname,
-                CarNumber = order.Delivery?.Driver.Car.CarNumber,
+                CarNumber = order.Delivery?.Driver.Cars.First(x => !x.IsDeleted).CarNumber,
                 DeliveryState = (order.Delivery?.State?.StateValue != GeneralState.DELIVERED && order.Delivery?.State?.StateValue == GeneralState.INPROGRESS)
                         ? order.Delivery?.State?.StateValue.GetDisplayName()
                         : order.State.StateValue.GetDisplayName(),

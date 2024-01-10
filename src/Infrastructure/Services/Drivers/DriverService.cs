@@ -36,15 +36,22 @@ namespace Infrastructure.Services.Drivers
             var carBrand = await _contextCarBrand.FirstOrDefaultAsync(b => b.Id == dto.CarBrandId);
             var carColor = await _contextCarColor.FirstOrDefaultAsync(b => b.Id == dto.CarColorId);
             var carType = await _contextCarType.FirstOrDefaultAsync(b => b.Id == dto.CarTypeId);
-            driver.Car = new Car(dto.ProductionYear, dto.RegistrationCertificate, dto.LicensePlate)
-            { CarBrand = carBrand, CarColor = carColor, CarType = carType };
-            await _context.UpdateAsync(driver);
+            var car = new Car(
+                productionYear: dto.ProductionYear,
+                registrationCertificate: dto.RegistrationCertificate,
+                carNumber: dto.LicensePlate,
+                carBrand: carBrand,
+                carType: carType,
+                carColor: carColor);
+
+            await _context.UpdateAsync(driver.SetCar(car));
         }
 
         public async Task<Driver> GetByUserIdAsync(Guid userId)
         {
             var driverSpec = new DriverWithCarSpecification(userId);
-            return await _context.FirstOrDefaultAsync(driverSpec);
+            return await _context.FirstOrDefaultAsync(driverSpec) 
+                ?? throw new ArgumentException("Не найден водитель");
         }
     }
 }

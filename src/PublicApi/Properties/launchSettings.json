@@ -12,7 +12,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://192.168.63.195:5000",
+      "applicationUrl": "http://192.168.56.195:5000",
       "applicationUrl2": "http://localhost:5000",
       "applicationUrl1": "http://185.217.182.92:5000"
     }
