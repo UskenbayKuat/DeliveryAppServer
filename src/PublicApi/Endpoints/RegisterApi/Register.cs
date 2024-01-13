@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Interfaces.Register;
@@ -29,14 +30,26 @@ namespace PublicApi.Endpoints.RegisterApi
         [HttpPost("api/register")]
         public override async Task<ActionResult> HandleAsync([FromBody]RegisterCommand request, CancellationToken cancellationToken = default)
         {
-            if (!_validation.ValidationMobileNumber(request.PhoneNumber))
+            try
             {
-                _logger.Info("POST Обращение в RegisterApi номер телефона не прошел валидацию");
-                return BadRequest();
+                if (!_validation.ValidationMobileNumber(request.PhoneNumber))
+                {
+                    _logger.Info("POST Обращение в RegisterApi номер телефона не прошел валидацию");
+                    return BadRequest();
+                }
+                _logger.Info("POST Обращение в RegisterApi");
+                await _registration.RegisterAsync(_mapper
+                    .Map<RegistrationDto>(request));
+                return NoContent();
             }
-            _logger.Info("POST Обращение в RegisterApi");
-            return await _registration.SendTokenAsync(_mapper
-                .Map<RegistrationDto>(request));
+            catch(ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch
+            {
+                return BadRequest("Ошибка системы");
+            }
         }
     }
 }

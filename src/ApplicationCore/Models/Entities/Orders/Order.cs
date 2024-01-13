@@ -78,7 +78,7 @@ namespace ApplicationCore.Models.Entities.Orders
         }
         public Order SetDelivery(Delivery delivery = default)
         {
-            Delivery = default;
+            Delivery = delivery;
             return this;
         }
 

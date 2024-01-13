@@ -6,6 +6,7 @@ using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Entities.AppEntities.UIMessages;
 using ApplicationCore.Models.Entities;
 using ApplicationCore.Models.Entities.Cars;
+using ApplicationCore.Models.Entities.Dictionaries;
 using ApplicationCore.Models.Entities.Locations;
 using ApplicationCore.Models.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace Infrastructure.Context
 
         //logger
         public DbSet<MobileLogger> MobileLoggers { get; set; }
+        public DbSet<SmsLog> SmsLogs { get; set; }
 
         //users
         public DbSet<Driver> Drivers { get; set; }
@@ -57,6 +59,9 @@ namespace Infrastructure.Context
         //chat hub
         public DbSet<ChatHub> ChatHubs { get; set; }
         public DbSet<MessageForUser> MessagesForUser { get; set; }
+
+        //dictionary
+        public DbSet<DicSmsLog> DicSmsLogs { get; set; }
 
 
         public DeliveryContext(DbContextOptions<DeliveryContext> options) : base(options)

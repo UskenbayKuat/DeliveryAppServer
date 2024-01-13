@@ -18,11 +18,9 @@ namespace Infrastructure.Services
     {
         private readonly IAsyncRepository<User> _context;
         private readonly AuthOptions _options;
-        public int LifeTimeRefreshTokenInYear { get; }
         public TokenService(IOptions<AuthOptions> options, IAsyncRepository<User> context)
         {
             _options = options.Value;
-            LifeTimeRefreshTokenInYear = _options.LifeTimeRefreshTokenInYear;
             _context = context;
         }
 
@@ -56,6 +54,11 @@ namespace Infrastructure.Services
                         u.RefreshTokenExpiryTime >= DateTime.Now)
                 ?? throw new ArgumentException("Invalid account");
             return CreateAccessToken(user);
+        }
+
+        public DateTime GetLifeTimeRefreshToken()
+        {
+            return DateTime.Now.AddYears(_options.LifeTimeRefreshTokenInYear);
         }
     }
 }

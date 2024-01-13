@@ -19,3 +19,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "PublicApi.dll"]
+
+# Set the time zone
+ENV TZ=Asia/Almaty
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone

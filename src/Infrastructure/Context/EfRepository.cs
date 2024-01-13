@@ -54,7 +54,7 @@ namespace Infrastructure.Context
 
         public async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            entity.ModifiedDate = DateTime.UtcNow;
+            entity.ModifiedDate = DateTime.Now;
             _dbContext.Entry(entity).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync(cancellationToken);
             return entity;
@@ -63,7 +63,7 @@ namespace Infrastructure.Context
         public async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             entity.IsDeleted = true;
-            entity.ModifiedDate = DateTime.UtcNow;
+            entity.ModifiedDate = DateTime.Now;
             await UpdateAsync(entity, cancellationToken);
         }
 

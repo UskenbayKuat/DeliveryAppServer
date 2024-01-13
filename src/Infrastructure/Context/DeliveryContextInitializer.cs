@@ -7,6 +7,7 @@ using ApplicationCore.Entities.AppEntities.Cars;
 using ApplicationCore.Entities.AppEntities.Routes;
 using ApplicationCore.Extensions;
 using ApplicationCore.Models.Entities;
+using ApplicationCore.Models.Entities.Dictionaries;
 using ApplicationCore.Models.Entities.Orders;
 using ApplicationCore.Models.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -81,7 +82,25 @@ namespace Infrastructure.Context
             {
                 await context.UserRoles.AddRangeAsync(GetUserRoles(context));
             }
+            if (!await context.DicSmsLogs.AnyAsync())
+            {
+                await context.DicSmsLogs.AddAsync(GetDicSmsLog(context));
+            }
             await context.SaveChangesAsync();
+        }
+
+        private static DicSmsLog GetDicSmsLog(DeliveryContext context)
+        {
+            return new DicSmsLog(
+                minuteLife: 1,
+                tryCount: 3,
+                inputCount: 3,
+                message: "Добро пожаловать! Для завершения процесса подтверждения, введите следующий код: {0}",
+                kazInfoErrorMessage: "Извините за неудобства! В настоящее время отправка сообщений временно недоступна",
+                tryCountMessage: "Пожалуйста, обращайтесь в службу поддержки",
+                inputCountMessage: "Превышено количество попыток ввода с неверным кодам",
+                codeErrorMessage: "Неправильный код",
+                lifeTimeErrorMessage: "Пожалуйста, повторно введите свой номер");
         }
 
         private static UserRole[] GetUserRoles(DeliveryContext context)

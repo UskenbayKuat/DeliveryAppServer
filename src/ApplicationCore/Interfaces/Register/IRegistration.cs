@@ -8,8 +8,8 @@ namespace ApplicationCore.Interfaces.Register
 {
     public interface IRegistration
     {
-        public Task<ActionResult> SendTokenAsync(RegistrationDto dto);
+        public Task RegisterAsync(RegistrationDto dto);
 
-        public Task<ActionResult> Confirm(ConfirmRegistrationDto dto, CancellationToken cancellationToken);
+        public Task<ConfirmRegistrationDto> Confirm(ConfirmRegistrationDto dto, CancellationToken cancellationToken);
     }
 }

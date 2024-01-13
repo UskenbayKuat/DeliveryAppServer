@@ -47,12 +47,13 @@ namespace PublicApi.Extensions
             services.AddTransient<IValidation, ValidationService>();
             services.AddTransient<IGenerateToken, TokenService>();
             services.AddTransient<IRefreshToken, TokenService>();
-            services.AddTransient<IRegistration, RegisterBySmsMockService>();
+            services.AddTransient<IRegistration, RegisterBySmsService>();
             services.AddTransient<IProceedRegistration, ProceedRegistrationService>();
             services.AddTransient<ICalculate, CalculateService>();
             services.AddTransient<INotify, NotifyService>();
             services.AddTransient<IMobileLogger, MobileLoggerService>();
             services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.JwtSettings));
+            services.Configure<SmsOptions>(configuration.GetSection(AuthOptions.SmsOptions));
             services.ConfigureDbContextServices(configuration);
         }
         

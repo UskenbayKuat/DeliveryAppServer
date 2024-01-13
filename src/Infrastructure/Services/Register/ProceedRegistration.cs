@@ -23,9 +23,10 @@ namespace Infrastructure.Services.Register
             CancellationToken cancellationToken)
         {
             var userSpec = new UserForProceedSpecification(userId);
-            var user = (await _contextUser.FirstOrDefaultAsync(userSpec, cancellationToken))
-                       .AddData(dto.UserName, dto.Surname, dto.Email) ??
-                       throw new NotExistUserException("User is not found");
+            var user = (await _contextUser.FirstOrDefaultAsync(userSpec, cancellationToken)
+                ?? throw new ArgumentException("User is not found"))
+                .AddData(dto.UserName, dto.Surname, dto.Email);
+                       
             if (user.IsDriver)
             {
                 if (user.Driver != null)

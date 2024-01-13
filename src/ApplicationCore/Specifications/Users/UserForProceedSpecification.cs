@@ -11,7 +11,7 @@ namespace ApplicationCore.Specifications.Users
             Query
                 .Include(x => x.Driver)
                 .Include(x => x.Client)
-                .Where(u => u.Id == userId);
+                .Where(x => !x.IsDeleted && x.Id == userId);
         }
     }
 }
